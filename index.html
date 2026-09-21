@@ -2982,11 +2982,11 @@ function renderOverview(){
   const metric=(icon,value,label,sub)=>`<div class="vpm-metric"><i class="ti ${icon}"></i><strong>${value}</strong><span>${label}</span><em>${sub||''}</em></div>`;
   return `
   <div class="vpm-dashboard">
-    <div class="vpm-hero"><div class="vpm-hero-copy"><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>Oggi hai ${todays.length} attività in programma e ${alert.totale} da gestire.</p></div><div class="vpm-hero-photo" role="img" aria-label="Terrazza panoramica sul mare"></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div></div>
+    <div class="vpm-hero"><div class="vpm-hero-copy"><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>Oggi hai ${todays.length} attività in programma e ${alert.totale} da gestire.</p></div><div class="vpm-hero-photo" role="img" aria-label="Terrazza panoramica sul mare"></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div><div class="vpm-hero-second-quote">Gestiamo<br>destinazioni,<br>non solo immobili.</div></div>
     <div class="vpm-workspace">
       <div class="vpm-maincol">
         <section class="vpm-panel">
-          <h2 class="vpm-panel-title">Oggi <small>${today.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small>${haModulo('prenotazioni')?'<button data-nav-prenotazioni><i class="ti ti-plus"></i> Prenotazioni</button>':''}</h2>
+          <h2 class="vpm-panel-title">Oggi <small>${today.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small>${haModulo('prenotazioni')?'<button data-nav-prenotazioni><i class="ti ti-plus"></i> Nuova prenotazione</button>':''}</h2>
           <div class="vpm-timeline"><div class="vpm-time-labels"><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span></div>
           <div class="vpm-timeline-track">${todays.length?todays.map(e=>`<div class="vpm-event" data-goto-evento="${e.propId}::${e.tab}"><i class="ti ti-calendar-event"></i><div><b>${e.titolo}</b><span>${e.immobile}</span></div></div>`).join(''):'<div class="vpm-empty">Nessuna attività registrata per oggi. Le attività compaiono qui dalle prenotazioni e dalle scadenze reali.</div>'}</div></div>
         </section>
@@ -3003,12 +3003,17 @@ function renderOverview(){
           <div class="vpm-properties" id="vpm-properties">${propCards||'<p class="vpm-empty">Non ci sono ancora immobili. Aggiungi il primo dalla barra laterale.</p>'}</div>
         </section>
         <div class="vpm-bottom">
-          <section class="vpm-panel"><h2 class="vpm-panel-title">Panoramica prenotazioni <small>Situazione attuale</small></h2>
-            <div class="vpm-mini-bars"><div><span>Confermate</span><b style="width:${Math.max(4,Math.min(100,activeBookings.length/Math.max(1,bookings.length)*100))}%"></b><strong>${activeBookings.length}</strong></div>
-            <div><span>Da confermare</span><b style="width:${Math.max(4,Math.min(100,pending.length/Math.max(1,bookings.length)*100))}%"></b><strong>${pending.length}</strong></div>
-            <div><span>Arrivi futuri</span><b style="width:${Math.max(4,Math.min(100,upcoming/Math.max(1,bookings.length)*100))}%"></b><strong>${upcoming}</strong></div></div>
+          <section class="vpm-panel vpm-revenue"><h2 class="vpm-panel-title">Andamento entrate <small>Riepilogo registrato</small></h2>
+            <div class="vpm-revenue-amount">${fmtCurrency(revenue)}</div>
+            <div class="vpm-chart-bars" aria-label="Riepilogo entrate registrate"><span style="height:28%"></span><span style="height:38%"></span><span style="height:49%"></span><span style="height:58%"></span><span style="height:69%"></span><span style="height:84%"></span></div>
+            <div class="vpm-chart-labels"><span>Gen</span><span>Feb</span><span>Mar</span><span>Apr</span><span>Mag</span><span>Giu</span></div>
+            <small class="vpm-chart-note">Barre illustrative · totale da movimenti registrati</small>
           </section>
-          <section class="vpm-panel"><h2 class="vpm-panel-title">Prossime scadenze <small>${next.length} attività</small></h2>${next.length?next.map(e=>`<div class="vpm-upcoming" data-goto-evento="${e.propId}::${e.tab}"><strong>${fmtDate(e.data)}</strong> ${e.titolo} · ${e.immobile}</div>`).join(''):'<p class="vpm-empty">Nessuna attività imminente.</p>'}</section>
+          <section class="vpm-panel vpm-occupancy"><h2 class="vpm-panel-title">Occupazione immobili</h2>
+            <div class="vpm-occupancy-body"><div class="vpm-donut" style="--occupied:${props.length?Math.round(props.filter(p=>rentInfo(p).rented).length/props.length*100):0}%"><strong>${props.length?Math.round(props.filter(p=>rentInfo(p).rented).length/props.length*100):0}%</strong></div>
+            <div class="vpm-occupancy-legend"><div><i class="occupied"></i> Occupati <b>${props.filter(p=>rentInfo(p).rented).length}</b></div><div><i class="free"></i> Disponibili <b>${props.filter(p=>!rentInfo(p).rented).length}</b></div><div><i class="maintenance"></i> Con interventi aperti <b>${props.filter(p=>(p.manutenzioni||[]).some(m=>m.stato!=='completata')).length}</b></div></div></div>
+          </section>
+          <section class="vpm-panel vpm-next"><h2 class="vpm-panel-title">Prossime scadenze <small>${next.length} attività</small></h2>${next.length?next.map(e=>`<div class="vpm-upcoming" data-goto-evento="${e.propId}::${e.tab}"><strong>${fmtDate(e.data)}</strong> ${safeText(e.titolo)} · ${safeText(e.immobile)}</div>`).join(''):'<p class="vpm-empty">Nessuna attività imminente.</p>'}</section>
         </div>
       </div>
       <aside class="vpm-sidecol">

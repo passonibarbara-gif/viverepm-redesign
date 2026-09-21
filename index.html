@@ -834,7 +834,7 @@ let state = {
   guestWizardStep: 1,
   guestDates: {checkin:'', checkout:'', adulti:1, bambini:0, animali:0},
   guestBookingData: {nomeProprio:'', cognome:'', telefono:'', indirizzo:'', note:'', documento:null, adulti:1, bambini:0, animali:0},
-  vistaGestore: 'overview', // 'overview' | 'immobili' | 'tutte-prenotazioni'
+  vistaGestore: 'overview', // 'overview' | 'immobili' | 'tutte-prenotazioni' | 'clienti' | 'attivita' | 'contabilita'
   gestoreRecuperoMode: false,
   ownerAuthMode: 'login', // 'login' | 'signup'
   selectedClienteId: null, // scheda cliente selezionata lato gestore (CRM)
@@ -2793,6 +2793,9 @@ function renderSidebar(){
       <p class="brand-sub">Property management</p>
       <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='overview'?'active':''}" data-nav="overview"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-layout-dashboard"></i></span>Panoramica${alertPortfolio.totale>0?`<span class="nav-badge">${alertPortfolio.totale}</span>`:''}</div></div>
       <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='immobili'?'active':''}" data-nav="immobili"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-home"></i></span>Immobili <span class="vpm-nav-count">${propsVisibili.length}</span></div></div>
+      ${haModulo('clienti') || isAdmin() ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='clienti'?'active':''}" data-nav="clienti"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-users"></i></span>Clienti e proprietari</div></div>` : ''}
+      ${haModulo('interventi') || haModulo('controlli') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='attivita'?'active':''}" data-nav="attivita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-tool"></i></span>Interventi e controlli</div></div>` : ''}
+      ${haModulo('spese') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='contabilita'?'active':''}" data-nav="contabilita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-wallet"></i></span>Contabilità e report</div></div>` : ''}
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
       ${haModulo('clienti') || isAdmin() ? `
         <div class="nav-section-label">Clienti (${clientiVisibili.length})</div>
@@ -2811,6 +2814,44 @@ function renderSidebar(){
       ${state.gestoreUnlocked ? `<div class="nav-item" data-action="logout-gestore" style="color:var(--terracotta);"><div class="nav-item-main"><span class="nav-icon" style="color:var(--terracotta);"><i class="ti ti-logout"></i></span>Esci</div></div>` : ''}
     </div>
   `;
+}
+
+
+// Portfolio pages use the same authorized property collection and existing dossier actions.
+function vpmPortfolioShell(section,title,subtitle,metrics,body){
+  const metricHtml=metrics.map(([icon,value,label])=>`<div class="vpm-portfolio-metric"><i class="ti ${icon}"></i><strong>${value}</strong><span>${label}</span></div>`).join('');
+  return `<div class="vpm-portfolio-page"><header class="vpm-portfolio-hero"><div><span>VIVEREPM · ${section}</span><h1>${title}</h1><p>${subtitle}</p></div><i class="ti ti-plant-2"></i></header><div class="vpm-portfolio-metrics">${metricHtml}</div>${body}</div>`;
+}
+function vpmPortfolioSafe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function renderClientiPortfolio(){
+  const props=immobiliVisibili();
+  const ids=new Set(props.map(p=>p.clienteId));
+  const clients=isAdmin()?state.clienti:state.clienti.filter(c=>ids.has(c.id));
+  const cards=clients.map(c=>{
+    const own=props.filter(p=>p.clienteId===c.id);
+    return `<article class="vpm-portfolio-row"><span class="vpm-portfolio-avatar"><i class="ti ti-user"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(c.nome||'Cliente senza nome')}</h3><p>${vpmPortfolioSafe(c.email||'Email non inserita')}${c.telefono?' · '+vpmPortfolioSafe(c.telefono):''}</p><small>${own.length} immobil${own.length===1?'e':'i'} collegat${own.length===1?'o':'i'}</small></div><button data-nav-cliente="${vpmPortfolioSafe(c.id)}">Apri scheda <i class="ti ti-arrow-up-right"></i></button></article>`;
+  }).join('');
+  return vpmPortfolioShell('RELAZIONI','Clienti e proprietari','Contatti e immobili collegati, in un unico spazio.',[['ti-users',clients.length,'Clienti registrati'],['ti-home',props.length,'Immobili gestiti'],['ti-user-check',props.filter(p=>ids.has(p.clienteId)&&clients.some(c=>c.id===p.clienteId)).length,'Immobili associati'],['ti-home-plus',props.filter(p=>!p.clienteId).length,'Da associare']],`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Rubrica clienti <small>${clients.length}</small></h2>${isAdmin()?'<button class="vpm-portfolio-add" data-action="new-cliente"><i class="ti ti-plus"></i> Nuovo cliente</button>':''}</div><label class="vpm-portfolio-search"><i class="ti ti-search"></i><input type="search" data-portfolio-search placeholder="Cerca nome, email o telefono..."></label><div class="vpm-portfolio-list">${cards||'<p class="vpm-portfolio-empty">Nessun cliente registrato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun cliente corrisponde alla ricerca.</p></section>`);
+}
+function renderAttivitaPortfolio(){
+  const props=immobiliVisibili();
+  const all=props.flatMap(p=>(p.manutenzioni||[]).map(m=>({p,m})));
+  const open=all.filter(({m})=>m.stato!=='completata');
+  const late=props.filter(p=>calcProssimoControllo(p).inRitardo);
+  const today=new Date().toISOString().slice(0,10);
+  const planned=open.filter(({m})=>m.dataProgrammazione&&m.dataProgrammazione>=today);
+  const rows=all.map(({p,m})=>`<article class="vpm-portfolio-row" data-portfolio-status="${m.stato==='completata'?'done':'open'}"><span class="vpm-portfolio-avatar"><i class="ti ti-tool"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(m.descrizione||m.titolo||'Intervento')}</h3><p>${vpmPortfolioSafe(p.nome)} · ${vpmPortfolioSafe(m.stato||'Da valutare')}</p><small>${m.dataProgrammazione?'Programmato: '+fmtDate(m.dataProgrammazione):'Nessuna data programmata'}</small></div><button data-vpm-open-tab="${vpmPortfolioSafe(p.id)}::interventi">Gestisci <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
+  const controls=late.map(p=>`<article class="vpm-portfolio-row"><span class="vpm-portfolio-avatar"><i class="ti ti-clipboard-check"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(p.nome)}</h3><p>Controllo periodico da verificare</p><small>${calcProssimoControllo(p).data?fmtDate(calcProssimoControllo(p).data):'Nessun controllo registrato'}</small></div><button data-vpm-open-tab="${vpmPortfolioSafe(p.id)}::controlli">Apri controlli <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
+  return vpmPortfolioShell('OPERATIVITÀ','Interventi e controlli','Le attività registrate per tutti i tuoi immobili.',[['ti-tool',open.length,'Interventi aperti'],['ti-calendar-event',planned.length,'Interventi programmati'],['ti-clipboard-check',late.length,'Controlli da verificare'],['ti-check',all.length-open.length,'Interventi completati']],`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Interventi <small>${all.length}</small></h2></div><div class="vpm-portfolio-filters"><button class="active" data-portfolio-filter="all">Tutti</button><button data-portfolio-filter="open">Aperti</button><button data-portfolio-filter="done">Completati</button></div><div class="vpm-portfolio-list">${rows||'<p class="vpm-portfolio-empty">Nessun intervento registrato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun intervento per il filtro selezionato.</p></section>${haModulo('controlli')?`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Controlli da verificare <small>${late.length}</small></h2></div><div class="vpm-portfolio-list">${controls||'<p class="vpm-portfolio-empty">Nessun controllo in ritardo.</p>'}</div></section>`:''}`);
+}
+function renderContabilitaPortfolio(){
+  const props=immobiliVisibili();
+  const movements=props.flatMap(p=>(p.spese||[]).map(m=>({p,m})));
+  const income=movements.filter(({m})=>m.tipo==='entrata').reduce((n,{m})=>n+(Number(m.importo)||0),0);
+  const expenses=movements.filter(({m})=>m.tipo!=='entrata').reduce((n,{m})=>n+(Number(m.importo)||0),0);
+  const pending=movements.filter(({m})=>m.stato==='approvata');
+  const rows=movements.sort((a,b)=>String(b.m.data||'').localeCompare(String(a.m.data||''))).map(({p,m})=>`<article class="vpm-portfolio-row" data-portfolio-status="${m.tipo==='entrata'?'income':'expense'}"><span class="vpm-portfolio-avatar"><i class="ti ${m.tipo==='entrata'?'ti-trending-up':'ti-receipt'}"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(m.descrizione||m.voce||'Movimento registrato')}</h3><p>${vpmPortfolioSafe(p.nome)} · ${m.data?fmtDate(m.data):'Data non inserita'}</p><small>${vpmPortfolioSafe(m.stato||'')}</small></div><strong class="vpm-portfolio-amount">${fmtCurrency(Number(m.importo)||0)}</strong><button data-vpm-open-tab="${vpmPortfolioSafe(p.id)}::spese">Apri <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
+  return vpmPortfolioShell('AMMINISTRAZIONE','Contabilità e report','Riepilogo dei movimenti effettivamente registrati nei tuoi immobili.',[['ti-trending-up',fmtCurrency(income),'Entrate registrate'],['ti-trending-down',fmtCurrency(expenses),'Uscite registrate'],['ti-wallet',fmtCurrency(income-expenses),'Saldo movimenti'],['ti-receipt',pending.length,'Spese approvate']],`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Movimenti registrati <small>${movements.length}</small></h2></div><div class="vpm-portfolio-filters"><button class="active" data-portfolio-filter="all">Tutti</button><button data-portfolio-filter="income">Entrate</button><button data-portfolio-filter="expense">Uscite</button></div><div class="vpm-portfolio-list">${rows||'<p class="vpm-portfolio-empty">Nessun movimento registrato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun movimento per il filtro selezionato.</p></section>`);
 }
 
 function renderClienteCRM(c){
@@ -4520,6 +4561,9 @@ function render(){
     else if(clienteSelezionato) main = renderClienteCRM(clienteSelezionato);
     else if(state.vistaGestore==='tutte-prenotazioni') main = renderTuttePrenotazioni();
     else if(state.vistaGestore==='immobili') main = renderImmobili();
+    else if(state.vistaGestore==='clienti') main = renderClientiPortfolio();
+    else if(state.vistaGestore==='attivita') main = renderAttivitaPortfolio();
+    else if(state.vistaGestore==='contabilita') main = renderContabilitaPortfolio();
     else main = renderOverview();
     content = `<div class="app">${renderSidebar()}<main>${main}</main></div>`;
   }
@@ -4589,6 +4633,24 @@ function attachHandlers(){
   };
   if(bookingSearch)bookingSearch.addEventListener('input',applyBookingFilter);
   bookingFilters.forEach(btn=>btn.addEventListener('click',()=>{bookingFilters.forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyBookingFilter();}));
+  document.querySelectorAll('[data-vpm-open-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+    const [id,tab]=btn.getAttribute('data-vpm-open-tab').split('::');
+    if(!immobileConsentito(id))return;
+    state.selectedId=id;state.selectedClienteId=null;state.vistaGestore='overview';state.dossierTab=tab;
+    render();
+  }));
+  const portfolioSearch=document.querySelector('[data-portfolio-search]');
+  if(portfolioSearch)portfolioSearch.addEventListener('input',()=>{
+    const term=portfolioSearch.value.trim().toLocaleLowerCase('it');let shown=0;
+    document.querySelectorAll('.vpm-portfolio-list .vpm-portfolio-row').forEach(row=>{const ok=row.textContent.toLocaleLowerCase('it').includes(term);row.hidden=!ok;if(ok)shown++;});
+    const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
+  });
+  document.querySelectorAll('[data-portfolio-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-portfolio-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+    const filter=btn.dataset.portfolioFilter;let shown=0;
+    document.querySelectorAll('.vpm-portfolio-list .vpm-portfolio-row[data-portfolio-status]').forEach(row=>{const ok=filter==='all'||row.dataset.portfolioStatus===filter;row.hidden=!ok;if(ok)shown++;});
+    const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
+  }));
   const clearErrorBtn = document.querySelector('[data-clear-error]');
   if(clearErrorBtn) clearErrorBtn.addEventListener('click', ()=>{ state.error = null; render(); });
 
@@ -4762,9 +4824,9 @@ function attachHandlers(){
   document.querySelectorAll('[data-nav]').forEach(node=>{
     node.addEventListener('click', ()=>{
       const id = node.getAttribute('data-nav');
-      state.selectedId = (id==='overview'||id==='immobili') ? null : id;
+      state.selectedId = ['overview','immobili','clienti','attivita','contabilita'].includes(id) ? null : id;
       state.selectedClienteId = null;
-      state.vistaGestore = id==='immobili' ? 'immobili' : 'overview';
+      state.vistaGestore = ['immobili','clienti','attivita','contabilita'].includes(id) ? id : 'overview';
       state.calendarOffset = 0;
       state.priceCalendarOffset = 0;
       if(state.selectedId){

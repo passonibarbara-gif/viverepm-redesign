@@ -425,3 +425,21 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-inbox-direction.sent{background:#e4f5eb;color:#287d58}
 .vpm-inbox-direction.received{background:#e4f1ff;color:#2d6eab}
 .vpm-inbox-direction i{font-size:12px}
+
+/* Owner communications workflow */
+.vpm-owner-row{align-items:center}
+.vpm-owner-actions{display:grid;gap:7px;min-width:155px}
+.vpm-owner-actions>button{border:1px solid #d6e8f0;border-radius:8px;background:#fff;color:#168b97;padding:10px 12px;cursor:pointer;font-size:11px}
+.vpm-owner-actions>button:first-child{background:#e6f7f5;border-color:#bde9e4;color:#136e72;font-weight:700}
+.vpm-owner-actions>button.vpm-owner-close{background:transparent;color:#718597}
+.vpm-inbox-direction.reply{background:#fff1d6;color:#996414}
+.vpm-inbox-direction.waiting{background:#e3f1ff;color:#286eaa}
+.vpm-inbox-direction.closed{background:#e4f5eb;color:#287d58}
+.vpm-owner-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
+.vpm-owner-overview button{display:flex;align-items:center;gap:13px;text-align:left;border:1px solid #e3edf3;background:#fff;border-radius:12px;padding:15px 18px;color:#2d5064;cursor:pointer;font:inherit}
+.vpm-owner-overview button:first-child{border-left:4px solid #dfaa46}
+.vpm-owner-overview button:nth-child(2){border-left:4px solid #64a4cf}
+.vpm-owner-overview button>i:first-child{font-size:21px;color:#258c91}
+.vpm-owner-overview button>i:last-child{margin-left:auto;color:#8198a9}
+.vpm-owner-overview strong{font-size:24px;margin-right:5px;color:#234456}
+@media(max-width:650px){.vpm-owner-overview{grid-template-columns:1fr}.vpm-owner-actions{width:100%;grid-template-columns:1fr 1fr}}

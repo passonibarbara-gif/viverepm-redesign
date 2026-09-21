@@ -2950,7 +2950,7 @@ function renderOverview(){
   const today=new Date();
   const todayKey=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
   const todays=futureEvents.filter(e=>e.data===todayKey);
-  const next=futureEvents.filter(e=>e.data>=todayKey).slice(0,5);
+  const next=futureEvents.filter(e=>e.data>=todayKey).slice(0,4);
   const cover=(p)=>getCoverPhotoUrl(p);
   const status=(p)=>propertyStatus(p);
   const propCards=props.map(p=>{
@@ -2974,7 +2974,7 @@ function renderOverview(){
   const metric=(icon,value,label,sub)=>`<div class="vpm-metric"><i class="ti ${icon}"></i><strong>${value}</strong><span>${label}</span><em>${sub||''}</em></div>`;
   return `
   <div class="vpm-dashboard">
-    <div class="vpm-hero"><div><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>La tua gestione immobiliare, tutta sotto controllo.</p></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div></div>
+    <div class="vpm-hero"><div><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>Oggi hai ${todays.length} attività in programma e ${alert.totale} da gestire.</p></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div></div>
     <div class="vpm-workspace">
       <div class="vpm-maincol">
         <section class="vpm-panel">
@@ -2995,8 +2995,12 @@ function renderOverview(){
           <div class="vpm-properties" id="vpm-properties">${propCards||'<p class="vpm-empty">Non ci sono ancora immobili. Aggiungi il primo dalla barra laterale.</p>'}</div>
         </section>
         <div class="vpm-bottom">
-          <section class="vpm-panel"><h2 class="vpm-panel-title">Calendario scadenze</h2>${renderDashboardCalendar()}</section>
-          <section class="vpm-panel"><h2 class="vpm-panel-title">Prossime attività</h2>${next.length?next.map(e=>`<div class="vpm-upcoming" data-goto-evento="${e.propId}::${e.tab}"><strong>${fmtDate(e.data)}</strong> ${e.titolo} · ${e.immobile}</div>`).join(''):'<p class="vpm-empty">Nessuna attività imminente.</p>'}</section>
+          <section class="vpm-panel"><h2 class="vpm-panel-title">Panoramica prenotazioni <small>Situazione attuale</small></h2>
+            <div class="vpm-mini-bars"><div><span>Confermate</span><b style="width:${Math.max(4,Math.min(100,activeBookings.length/Math.max(1,bookings.length)*100))}%"></b><strong>${activeBookings.length}</strong></div>
+            <div><span>Da confermare</span><b style="width:${Math.max(4,Math.min(100,pending.length/Math.max(1,bookings.length)*100))}%"></b><strong>${pending.length}</strong></div>
+            <div><span>Arrivi futuri</span><b style="width:${Math.max(4,Math.min(100,upcoming/Math.max(1,bookings.length)*100))}%"></b><strong>${upcoming}</strong></div></div>
+          </section>
+          <section class="vpm-panel"><h2 class="vpm-panel-title">Prossime scadenze <small>${next.length} attività</small></h2>${next.length?next.map(e=>`<div class="vpm-upcoming" data-goto-evento="${e.propId}::${e.tab}"><strong>${fmtDate(e.data)}</strong> ${e.titolo} · ${e.immobile}</div>`).join(''):'<p class="vpm-empty">Nessuna attività imminente.</p>'}</section>
         </div>
       </div>
       <aside class="vpm-sidecol">

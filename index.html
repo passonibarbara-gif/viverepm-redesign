@@ -832,8 +832,35 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 .vpm-modal-cliente .vpm-client-file input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .vpm-modal-cliente .modal-actions:before{content:"♧  Il tuo immobile. La nostra gestione.";font-family:'Fraunces',serif;font-style:italic;color:#357574;font-size:12px;margin-right:auto}
 @media(max-width:580px){.vpm-modal-cliente .vpm-client-grid{grid-template-columns:1fr}.vpm-modal-cliente .vpm-modal-head:before{display:none}.vpm-modal-cliente .modal-actions:before{display:none}}
+
+/* Exact approved intervention-dialog visual system applied to owner dialog */
+.vpm-modal-premium.vpm-modal-cliente{max-width:760px!important;border-radius:19px!important;padding:0 25px 20px!important}
+.vpm-modal-cliente .vpm-modal-head{margin:0 -25px 15px!important;padding:18px 25px 16px!important;background:#fff!important;border-radius:19px 19px 0 0!important}
+.vpm-modal-cliente .vpm-modal-head:before{display:none!important}
+.vpm-modal-cliente .vpm-modal-head:after{left:25px!important;width:49px!important;height:3px!important;background:#099a9b!important}
+.vpm-modal-cliente .vpm-modal-eyebrow{margin:0 165px 12px 0!important}
+.vpm-modal-cliente .vpm-modal-tagline{position:absolute;right:77px;top:19px;font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:#245763;transform:rotate(-6deg);white-space:nowrap}
+.vpm-modal-cliente .vpm-modal-tagline i{color:#cb963b;font-size:18px}
+.vpm-modal-cliente .vpm-modal-title-icon{width:58px!important;height:58px!important;border-radius:50%!important;background:#e4f8f7!important;color:#087f84!important;font-size:29px!important}
+.vpm-modal-cliente .vpm-modal-title-row{gap:17px!important}
+.vpm-modal-cliente .vpm-modal-title-row h2{font-size:30px!important;line-height:1.13!important}
+.vpm-modal-cliente .vpm-modal-subtitle{margin:5px 0 0;font-size:12px;line-height:1.35;color:#607783}
+.vpm-modal-cliente .vpm-client-grid{grid-template-columns:1fr 1fr!important;gap:0 15px!important}
+.vpm-modal-cliente .vpm-client-grid .field:first-child,.vpm-modal-cliente .vpm-client-grid .field:last-child{grid-column:1/-1}
+.vpm-modal-cliente .vpm-client-grid .field{margin-bottom:11px!important}
+.vpm-modal-cliente .field>label{display:flex;align-items:center;gap:6px;margin-bottom:5px!important;font-family:'IBM Plex Sans',sans-serif!important;letter-spacing:.025em!important;font-size:11px!important;color:#244351!important}
+.vpm-modal-cliente .field>label i{font-size:15px;color:#098c91}
+.vpm-modal-cliente .field input:not([type=file]){min-height:41px!important;padding:9px 12px!important;font-size:13px!important;border-radius:9px!important}
+.vpm-modal-cliente .vpm-client-email-note{padding:10px 13px!important;margin:0 0 12px!important;font-size:11px!important;background:#e8f5ff!important}
+.vpm-modal-cliente .vpm-client-document{margin:0 0 7px!important}
+.vpm-modal-cliente .vpm-client-file{min-height:62px!important;padding:10px 14px!important;background:#f1faff!important;border-color:#b5d8e9!important}
+.vpm-modal-cliente .vpm-client-file>i{color:#107a95!important}
+.vpm-modal-cliente .modal-actions{margin:14px -25px -20px!important;padding:12px 25px!important}
+.vpm-modal-cliente .modal-actions:before{content:"Il tuo immobile. La nostra gestione."!important;color:#236e71!important;font-size:12px!important}
+.vpm-modal-cliente .modal-actions .btn-primary{background:linear-gradient(105deg,#006b70,#008f89)!important}
+@media(max-width:650px){.vpm-modal-premium.vpm-modal-cliente{padding:0 15px 15px!important}.vpm-modal-cliente .vpm-modal-head{margin:0 -15px 13px!important;padding:16px 15px!important}.vpm-modal-cliente .vpm-modal-tagline{display:none}.vpm-modal-cliente .vpm-modal-eyebrow{margin-right:45px!important}.vpm-modal-cliente .vpm-client-grid{grid-template-columns:1fr!important}.vpm-modal-cliente .modal-actions{margin:12px -15px -15px!important;padding:12px 15px!important}.vpm-modal-cliente .modal-actions:before{display:none}}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-18">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-19">
 </head>
 <body>
 <div id="root"></div>
@@ -4169,13 +4196,13 @@ function renderModalRaw(){
     return `
       <div class="overlay" data-close-overlay><div class="modal" data-stop>
         <h2>${editing && editing.id ? 'Modifica cliente' : 'Nuovo cliente'}</h2>
-        <form id="clienteForm"><div class="vpm-client-intro"><span class="vpm-client-intro-icon"><i class="ti ti-user-heart"></i></span><div><strong>Un nuovo proprietario, una nuova relazione.</strong><small>Raccogli i contatti e prepara il suo accesso a ViverePM.</small></div></div><div class="vpm-client-grid">
-          <div class="field"><label>Nome</label><input name="nome" required value="${c.nome||''}" placeholder="Nome e cognome"></div>
-          <div class="field"><label>Telefono</label><input name="telefono" required value="${c.telefono||''}" placeholder="+39..."></div>
-          <div class="field"><label>Email</label><input type="email" name="email" required value="${c.email||''}" placeholder="nome@esempio.it"></div>
-          <div class="field"><label>Indirizzo di residenza (facoltativo)</label><input name="indirizzo" value="${c.indirizzo||''}" placeholder="Via, città"></div>
+        <form id="clienteForm"><div class="vpm-client-grid">
+          <div class="field vpm-client-name"><label><i class="ti ti-user"></i> Nome e cognome</label><input name="nome" required value="${c.nome||''}" placeholder="Nome e cognome"></div>
+          <div class="field"><label><i class="ti ti-phone"></i> Telefono</label><input name="telefono" required value="${c.telefono||''}" placeholder="+39..."></div>
+          <div class="field"><label><i class="ti ti-mail"></i> Email</label><input type="email" name="email" required value="${c.email||''}" placeholder="nome@esempio.it"></div>
+          <div class="field"><label><i class="ti ti-map-pin"></i> Indirizzo di residenza (facoltativo)</label><input name="indirizzo" value="${c.indirizzo||''}" placeholder="Via, città"></div>
           </div><p class="vpm-client-email-note"><i class="ti ti-mail-check"></i> Il proprietario userà questa email per creare autonomamente il suo accesso dall’Area Proprietari.</p>
-          <div class="field vpm-client-document"><label>Documento d’identità (facoltativo)</label><div class="vpm-client-file"><i class="ti ti-cloud-upload"></i><div><strong>Carica un documento</strong><small>Immagini del documento di identità</small></div><input type="file" name="documenti" accept="image/*" multiple></div></div>
+          <div class="field vpm-client-document"><label><i class="ti ti-id"></i> Documento d’identità (facoltativo)</label><div class="vpm-client-file"><i class="ti ti-cloud-upload"></i><div><strong>Carica un documento</strong><small>Foto o immagini del documento</small></div><input type="file" name="documenti" accept="image/*" multiple></div></div>
           ${(c.documenti && c.documenti.length) ? `<div class="photo-strip" style="margin-bottom:14px;">${c.documenti.map((f,i)=>`
             <span class="photo-thumb-wrap">
               <img class="photo-thumb" src="${f}">
@@ -4662,7 +4689,7 @@ function renderModal(){
   const titleMatch=html.match(/<h2>([\s\S]*?)<\/h2>/);
   if(!titleMatch)return html;
   const icon=icons[type]||'ti-sparkles';
-  const heading='<header class="vpm-modal-head"><div class="vpm-modal-eyebrow"><span class="vpm-modal-brand">VIVERE<span>PM</span></span><span class="vpm-modal-category">GESTIONE IMMOBILI</span></div><button type="button" class="vpm-modal-x" data-close aria-label="Chiudi finestra"><i class="ti ti-x"></i></button><div class="vpm-modal-title-row"><span class="vpm-modal-title-icon"><i class="ti '+icon+'"></i></span><div><span class="vpm-modal-kicker">VIVEREPM · '+(type==='property'?'IMMOBILI':type==='cliente'?'PROPRIETARI':type==='maintenance'||type==='programmaIntervento'||type==='completaIntervento'?'INTERVENTI':'GESTIONE')+'</span><h2>'+titleMatch[1]+'</h2></div></div></header>';
+  const heading='<header class="vpm-modal-head"><div class="vpm-modal-eyebrow"><span class="vpm-modal-brand">VIVERE<span>PM</span></span><span class="vpm-modal-category">GESTIONE IMMOBILI</span></div><span class="vpm-modal-tagline">Valore ai tuoi spazi <i class="ti ti-heart"></i></span><button type="button" class="vpm-modal-x" data-close aria-label="Chiudi finestra"><i class="ti ti-x"></i></button><div class="vpm-modal-title-row"><span class="vpm-modal-title-icon"><i class="ti '+icon+'"></i></span><div><span class="vpm-modal-kicker">VIVEREPM · '+(type==='property'?'IMMOBILI':type==='cliente'?'PROPRIETARI':type==='maintenance'||type==='programmaIntervento'||type==='completaIntervento'?'INTERVENTI':'GESTIONE')+'</span><h2>'+titleMatch[1]+'</h2>'+(type==='cliente'?'<p class="vpm-modal-subtitle">Registra i dati del proprietario e prepara il suo accesso.</p>':'')+'</div></div></header>';
   return html.replace('<div class="modal" data-stop>','<div class="modal vpm-modal-premium vpm-modal-'+type+'" data-stop role="dialog" aria-modal="true">')
     .replace(titleMatch[0],heading);
 }

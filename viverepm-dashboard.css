@@ -174,3 +174,24 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 @media(max-width:860px){
   .vpm-hero-photo{background-image:linear-gradient(90deg,#eaf8ff 0%,rgba(234,248,255,.35) 45%,#eaf8ff 100%),url('https://images.pexels.com/photos/19102633/pexels-photo-19102633.jpeg?auto=compress&cs=tinysrgb&w=900');background-position:center,center 56%;background-size:cover,cover}
 }
+
+/* Approved mockup image: local asset cropped from the user's selected reference,
+   no unrelated external stock photography. */
+@media(min-width:861px){
+ .vpm-hero{background:linear-gradient(90deg,#eaf8ff 0%,#eaf8ff 37%,#e9f8ff 100%)}
+ .vpm-hero-photo{
+   inset:0 14% 0 49%;
+   background-image:linear-gradient(90deg,#eaf8ff 0%,rgba(234,248,255,.78) 6%,rgba(234,248,255,0) 19%,rgba(234,248,255,0) 78%,#eaf8ff 100%),url('./assets/viverepm-terrace.svg');
+   background-size:100% 100%,auto 100%;
+   background-position:center,center;
+   background-repeat:no-repeat;
+ }
+ .vpm-hero-quote{position:relative;z-index:5;text-shadow:0 0 10px #eaf8ff,0 0 18px #eaf8ff}
+ .vpm-hero-second-quote{position:relative;z-index:5}
+}
+@media(max-width:860px){
+ .vpm-hero-photo{
+  background-image:linear-gradient(90deg,#eaf8ff,rgba(234,248,255,.4),#eaf8ff),url('./assets/viverepm-terrace.svg');
+  background-size:100% 100%,auto 100%;background-position:center;background-repeat:no-repeat
+ }
+}

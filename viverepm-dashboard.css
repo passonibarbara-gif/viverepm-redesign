@@ -478,3 +478,24 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-modal-premium .modal-actions .danger{margin-right:auto}
 .vpm-modal-premium .amenity-chip{border-radius:10px}
 @media(max-width:650px){.overlay:has(>.vpm-modal-premium){padding:9px;align-items:center}.vpm-modal-premium{max-height:94dvh;padding:0 17px 17px;border-radius:15px}.vpm-modal-premium .vpm-modal-head{margin:0 -17px 18px;padding:16px 17px 17px;border-radius:15px 15px 0 0}.vpm-modal-premium .vpm-modal-head:after{left:17px}.vpm-modal-premium .vpm-modal-x{right:14px;top:13px}.vpm-modal-premium .vpm-modal-title-icon{width:42px;height:42px;font-size:20px}.vpm-modal-premium .vpm-modal-title-row h2{font-size:23px}.vpm-modal-premium .field-row{grid-template-columns:1fr;gap:0}.vpm-modal-premium .modal-actions{bottom:-17px;margin:20px -17px -17px;padding:13px 17px}.vpm-modal-premium .vpm-modal-category{font-size:8px}}
+
+/* Intervention modal: approved visual language with actual existing fields */
+.vpm-modal-premium.vpm-modal-maintenance{max-width:720px}
+.vpm-modal-maintenance .vpm-maint-property{display:flex;align-items:center;gap:13px;margin:0 0 20px;padding:13px 17px;border-radius:12px;background:linear-gradient(100deg,#f0fafa,#fff8ed);border-left:3px solid #e6a246}
+.vpm-modal-maintenance .vpm-maint-property>i{display:grid;place-items:center;width:43px;height:43px;border-radius:10px;background:#def3f3;color:#096a75;font-size:23px}
+.vpm-modal-maintenance .vpm-maint-property div{display:grid;gap:3px}
+.vpm-modal-maintenance .vpm-maint-property span{font-size:10px;letter-spacing:.12em;color:#627c84;font-weight:700}
+.vpm-modal-maintenance .vpm-maint-property strong{font-family:'Fraunces',serif;font-size:17px;color:#173e46}
+.vpm-modal-maintenance .vpm-maint-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.vpm-modal-maintenance .vpm-maint-option{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:85px;padding:10px 5px!important;text-align:center;border:1px solid #dce8ee;border-radius:11px;background:#fff;cursor:pointer;color:#2b4d59!important;font:600 11px 'IBM Plex Sans',sans-serif!important;letter-spacing:0!important;text-transform:none!important}
+.vpm-modal-maintenance .vpm-maint-option input{position:absolute;opacity:0;width:1px;height:1px}
+.vpm-modal-maintenance .vpm-maint-option:has(input:checked){border-color:#08aaa8;background:#ecfbf9;box-shadow:0 0 0 1px #08aaa8}
+.vpm-modal-maintenance .vpm-maint-option-icon{font-size:25px;color:#008c92}
+.vpm-modal-maintenance .vpm-maint-color-1 .vpm-maint-option-icon{color:#db8522}
+.vpm-modal-maintenance .vpm-maint-color-2 .vpm-maint-option-icon{color:#8d65b6}
+.vpm-modal-maintenance .vpm-maint-color-3 .vpm-maint-option-icon{color:#2f77bc}
+.vpm-modal-maintenance .vpm-maint-color-4 .vpm-maint-option-icon{color:#a66ac3}
+.vpm-modal-maintenance .vpm-maint-color-5 .vpm-maint-option-icon{color:#49a64e}
+.vpm-modal-maintenance .vpm-maint-native-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;padding:0!important}
+.vpm-modal-maintenance .vpm-maint-upload input[type=file]{border-style:dashed!important;background:#f3fbfd!important}
+@media(max-width:580px){.vpm-modal-maintenance .vpm-maint-options{grid-template-columns:repeat(3,minmax(0,1fr))}}

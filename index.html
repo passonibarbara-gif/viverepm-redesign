@@ -750,7 +750,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-8">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-9">
 </head>
 <body>
 <div id="root"></div>
@@ -2880,16 +2880,37 @@ function renderAttivitaPortfolio(){
     ${haModulo('controlli')?`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Controlli periodici <small>${controls.length}</small></h2><p>Scadenze calcolate dalla periodicità impostata nella scheda di ciascun immobile.</p></div><div class="vpm-portfolio-filters vpm-control-filters"><button class="active" data-control-filter="all">Tutti</button><button data-control-filter="late">Da verificare ${late.length}</button><button data-control-filter="upcoming">Prossimi ${upcoming.length}</button></div><div class="vpm-portfolio-list" data-activity-list="controls">${controlRows||'<p class="vpm-portfolio-empty">Nessun immobile da controllare.</p>'}</div><p class="vpm-control-no-results" hidden>Nessun controllo corrisponde ai filtri.</p></section>`:''}
   `);
 }
+let vpmFinanceFilter={property:'all',period:'all',type:'all'};
+function vpmFinanceMovements(){
+  const today=new Date(),start=period=>{const d=new Date(today.getFullYear(),today.getMonth(),1);if(period==='previous')d.setMonth(d.getMonth()-1);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0')].join('-');};
+  return immobiliVisibili().flatMap(p=>(p.spese||[]).map(m=>({p,m}))).filter(({p,m})=>{
+    if(vpmFinanceFilter.property!=='all'&&p.id!==vpmFinanceFilter.property)return false;
+    if(vpmFinanceFilter.period==='all')return true;
+    const month=String(m.data||'').slice(0,7);
+    return month===start(vpmFinanceFilter.period);
+  });
+}
+function vpmFinanceExport(){
+  const rows=vpmFinanceMovements().filter(({m})=>vpmFinanceFilter.type==='all'||(vpmFinanceFilter.type==='income'?m.tipo==='entrata':m.tipo!=='entrata'));
+  const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const data=[['Data','Immobile','Descrizione','Tipo','Stato','Importo EUR'],...rows.map(({p,m})=>[m.data||'',p.nome||'',m.descrizione||m.voce||'',m.tipo==='entrata'?'Entrata':'Uscita',m.stato||'',Number(m.importo)||0])];
+  const csv='\uFEFF'+data.map(row=>row.map(quote).join(';')).join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  const link=document.createElement('a');link.href=url;link.download='viverepm-movimenti-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function renderContabilitaPortfolio(){
-  const props=immobiliVisibili();
-  const movements=props.flatMap(p=>(p.spese||[]).map(m=>({p,m})));
+  const movements=vpmFinanceMovements();
   const income=movements.filter(({m})=>m.tipo==='entrata').reduce((n,{m})=>n+(Number(m.importo)||0),0);
   const expenses=movements.filter(({m})=>m.tipo!=='entrata').reduce((n,{m})=>n+(Number(m.importo)||0),0);
-  const pending=movements.filter(({m})=>m.stato==='approvata');
-  const rows=movements.sort((a,b)=>String(b.m.data||'').localeCompare(String(a.m.data||''))).map(({p,m})=>`<article class="vpm-portfolio-row" data-portfolio-status="${m.tipo==='entrata'?'income':'expense'}"><span class="vpm-portfolio-avatar"><i class="ti ${m.tipo==='entrata'?'ti-trending-up':'ti-receipt'}"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(m.descrizione||m.voce||'Movimento registrato')}</h3><p>${vpmPortfolioSafe(p.nome)} · ${m.data?fmtDate(m.data):'Data non inserita'}</p><small>${vpmPortfolioSafe(m.stato||'')}</small></div><strong class="vpm-portfolio-amount">${fmtCurrency(Number(m.importo)||0)}</strong><button data-vpm-open-tab="${vpmPortfolioSafe(p.id)}::spese">Apri <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
-  return vpmPortfolioShell('AMMINISTRAZIONE','Contabilità e report','Riepilogo dei movimenti effettivamente registrati nei tuoi immobili.',[['ti-trending-up',fmtCurrency(income),'Entrate registrate'],['ti-trending-down',fmtCurrency(expenses),'Uscite registrate'],['ti-wallet',fmtCurrency(income-expenses),'Saldo movimenti'],['ti-receipt',pending.length,'Spese approvate']],`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Movimenti registrati <small>${movements.length}</small></h2></div><div class="vpm-portfolio-filters"><button class="active" data-portfolio-filter="all">Tutti</button><button data-portfolio-filter="income">Entrate</button><button data-portfolio-filter="expense">Uscite</button></div><div class="vpm-portfolio-list">${rows||'<p class="vpm-portfolio-empty">Nessun movimento registrato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun movimento per il filtro selezionato.</p></section>`);
+  const pending=movements.filter(({m})=>m.stato==='approvata'&&m.tipo!=='entrata');
+  const safe=vpmPortfolioSafe;
+  const options=immobiliVisibili().map(p=>`<option value="${safe(p.id)}" ${vpmFinanceFilter.property===p.id?'selected':''}>${safe(p.nome)}</option>`).join('');
+  const rows=movements.slice().sort((a,b)=>String(b.m.data||'').localeCompare(String(a.m.data||''))).map(({p,m})=>`<article class="vpm-portfolio-row" data-portfolio-status="${m.tipo==='entrata'?'income':'expense'}"><span class="vpm-portfolio-avatar"><i class="ti ${m.tipo==='entrata'?'ti-trending-up':'ti-receipt'}"></i></span><div class="vpm-portfolio-row-main"><h3>${safe(m.descrizione||m.voce||'Movimento registrato')}</h3><p>${safe(p.nome)} · ${m.data?fmtDate(m.data):'Data non inserita'}</p><small>${safe(m.stato||'')}</small></div><strong class="vpm-portfolio-amount">${fmtCurrency(Number(m.importo)||0)}</strong><button data-vpm-open-tab="${safe(p.id)}::spese">Apri <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
+  return vpmPortfolioShell('AMMINISTRAZIONE','Contabilità e report','Riepilogo dei movimenti effettivamente registrati nei tuoi immobili.',[['ti-trending-up',fmtCurrency(income),'Entrate registrate'],['ti-trending-down',fmtCurrency(expenses),'Uscite registrate'],['ti-wallet',fmtCurrency(income-expenses),'Saldo movimenti'],['ti-receipt',pending.length,'Spese approvate']],`
+    <div class="vpm-finance-toolbar"><label>Immobile<select data-finance-property><option value="all">Tutti gli immobili</option>${options}</select></label><label>Periodo<select data-finance-period><option value="all" ${vpmFinanceFilter.period==='all'?'selected':''}>Tutto lo storico</option><option value="current" ${vpmFinanceFilter.period==='current'?'selected':''}>Mese corrente</option><option value="previous" ${vpmFinanceFilter.period==='previous'?'selected':''}>Mese precedente</option></select></label><button type="button" data-finance-export><i class="ti ti-download"></i> Esporta CSV</button></div>
+    <p class="vpm-finance-note"><i class="ti ti-info-circle"></i> Il saldo rappresenta entrate meno uscite registrate nel periodo selezionato. Non comprende compensi o ripartizioni non registrati nei movimenti.</p>
+    <section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Movimenti registrati <small>${movements.length}</small></h2></div><div class="vpm-portfolio-filters"><button class="${vpmFinanceFilter.type==='all'?'active':''}" data-finance-type="all">Tutti</button><button class="${vpmFinanceFilter.type==='income'?'active':''}" data-finance-type="income">Entrate</button><button class="${vpmFinanceFilter.type==='expense'?'active':''}" data-finance-type="expense">Uscite</button></div><div class="vpm-portfolio-list">${rows||'<p class="vpm-portfolio-empty">Nessun movimento nel periodo selezionato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun movimento per il filtro selezionato.</p></section>`);
 }
-
 function renderClienteCRM(c){
   const immobili = state.properties.filter(p=>p.clienteId===c.id);
 
@@ -4724,6 +4745,18 @@ function attachHandlers(){
   }));
   const activityPropertyFilter=document.querySelector('[data-activity-property-filter]');
   if(activityPropertyFilter)activityPropertyFilter.addEventListener('change',applyActivityFilters);
+  const financeProperty=document.querySelector('[data-finance-property]');
+  if(financeProperty)financeProperty.addEventListener('change',()=>{vpmFinanceFilter.property=financeProperty.value;render();});
+  const financePeriod=document.querySelector('[data-finance-period]');
+  if(financePeriod)financePeriod.addEventListener('change',()=>{vpmFinanceFilter.period=financePeriod.value;render();});
+  document.querySelectorAll('[data-finance-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    vpmFinanceFilter.type=btn.dataset.financeType;
+    document.querySelectorAll('[data-finance-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    let shown=0;document.querySelectorAll('.vpm-portfolio-row[data-portfolio-status]').forEach(row=>{const ok=vpmFinanceFilter.type==='all'||row.dataset.portfolioStatus===vpmFinanceFilter.type;row.hidden=!ok;if(ok)shown++;});
+    const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
+  }));
+  const financeExport=document.querySelector('[data-finance-export]');
+  if(financeExport)financeExport.addEventListener('click',vpmFinanceExport);
   const clearErrorBtn = document.querySelector('[data-clear-error]');
   if(clearErrorBtn) clearErrorBtn.addEventListener('click', ()=>{ state.error = null; render(); });
 

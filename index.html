@@ -2953,13 +2953,21 @@ function renderOverview(){
   const next=futureEvents.filter(e=>e.data>=todayKey).slice(0,4);
   const cover=(p)=>getCoverPhotoUrl(p);
   const status=(p)=>propertyStatus(p);
+  const safeText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const propCards=props.map(p=>{
     const st=status(p),url=cover(p),rent=rentInfo(p);
-    return `<div class="prop-card" data-nav="${p.id}">
-      ${url?`<img class="prop-cover" src="${url}" alt="">`:`<div class="prop-cover" style="background:linear-gradient(135deg,#d6f5f5,#e3f0fc);display:grid;place-items:center;color:#0b8994;font-size:34px"><i class="ti ti-home"></i></div>`}
-      <div class="prop-card-head"><div class="prop-card-main"><div><div class="prop-name">${p.nome}</div><div class="prop-addr">${p.indirizzo||'Indirizzo da inserire'}</div></div></div><span class="status-seal ${st}">${statusLabel[st]}</span></div>
-      <div class="prop-rent ${rent.rented?'':'vacant'}">${rent.rented?'Occupato':'Disponibile'}</div>
-      <div class="prop-card-foot"><span class="prop-catasto">${p.catasto||''}</span>${p.prezzoNotte?`<span class="prop-price">€ ${p.prezzoNotte} / notte</span>`:''}</div>
+    const occupato=Boolean(rent.rented);
+    const foto=url?`<img class="prop-cover" src="${safeText(url)}" alt="Foto di ${safeText(p.nome)}" loading="lazy">`:`<div class="prop-cover vpm-no-photo"><i class="ti ti-home"></i><span>Foto da aggiungere</span></div>`;
+    const ospiti=p.maxOspiti||p.ospitiMax||p.postiLetto||null;
+    const camere=p.camere||p.numeroCamere||null;
+    return `<div class="prop-card vpm-property-card" data-nav="${safeText(p.id)}">
+      <div class="vpm-property-photo">${foto}<span class="vpm-property-status ${occupato?'occupied':'free'}">${occupato?'Occupata':'Disponibile'}</span></div>
+      <div class="vpm-property-body">
+        <div class="vpm-property-name">${safeText(p.nome)}</div>
+        <div class="vpm-property-address"><i class="ti ti-map-pin"></i>${safeText(p.indirizzo||'Indirizzo da inserire')}</div>
+        <div class="vpm-property-details">${ospiti?`<span><i class="ti ti-users"></i> ${safeText(ospiti)} ospiti</span>`:''}${camere?`<span><i class="ti ti-bed"></i> ${safeText(camere)} camere</span>`:''}</div>
+        <div class="vpm-property-foot"><span>${p.prezzoNotte?`<b>€ ${safeText(p.prezzoNotte)}</b> / notte`:'Apri scheda immobile'}</span><i class="ti ti-dots"></i></div>
+      </div>
     </div>`;
   }).join('');
   const alertRows=[
@@ -2974,7 +2982,7 @@ function renderOverview(){
   const metric=(icon,value,label,sub)=>`<div class="vpm-metric"><i class="ti ${icon}"></i><strong>${value}</strong><span>${label}</span><em>${sub||''}</em></div>`;
   return `
   <div class="vpm-dashboard">
-    <div class="vpm-hero"><div><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>Oggi hai ${todays.length} attività in programma e ${alert.totale} da gestire.</p></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div></div>
+    <div class="vpm-hero"><div class="vpm-hero-copy"><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>Oggi hai ${todays.length} attività in programma e ${alert.totale} da gestire.</p></div><div class="vpm-hero-photo" role="img" aria-label="Terrazza panoramica sul mare"></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div></div>
     <div class="vpm-workspace">
       <div class="vpm-maincol">
         <section class="vpm-panel">
@@ -2991,7 +2999,7 @@ function renderOverview(){
           ${metric('ti-tool',openMaintenance,'Interventi aperti')}
         </div>
         <section class="vpm-panel">
-          <div class="vpm-property-tools"><h2 class="vpm-panel-title" style="margin:0">I tuoi immobili <small>${props.length}</small></h2><div class="vpm-filterbar"><button class="active" type="button" data-vpm-filter="all">Tutti ${props.length}</button><button type="button" data-vpm-filter="occupied">Occupati</button><button type="button" data-vpm-filter="free">Disponibili</button></div><input class="vpm-property-search" id="vpm-property-search" type="search" placeholder="⌕ Cerca immobile..."></div>
+          <div class="vpm-property-tools"><h2 class="vpm-panel-title" style="margin:0">I tuoi immobili <small>${props.length}</small></h2><div class="vpm-filterbar"><button class="active" type="button" data-vpm-filter="all">Tutti ${props.length}</button><button type="button" data-vpm-filter="occupied">Occupati</button><button type="button" data-vpm-filter="free">Disponibili</button><button type="button" data-vpm-filter="maintenance">In manutenzione</button></div><input class="vpm-property-search" id="vpm-property-search" type="search" placeholder="⌕ Cerca immobile..."></div>
           <div class="vpm-properties" id="vpm-properties">${propCards||'<p class="vpm-empty">Non ci sono ancora immobili. Aggiungi il primo dalla barra laterale.</p>'}</div>
         </section>
         <div class="vpm-bottom">
@@ -3010,9 +3018,10 @@ function renderOverview(){
           ${haModulo('prenotazioni')?'<button data-nav-prenotazioni><i class="ti ti-calendar-event"></i>Prenotazioni</button>':''}
           ${isAdmin()?'<button data-action="open-settings"><i class="ti ti-settings"></i>Impostazioni</button>':''}
         </div></section>
-        <section class="vpm-panel" style="background:linear-gradient(135deg,#e3f6fb,#fff)"><h2 class="vpm-panel-title">Il tuo tempo è prezioso.</h2><p style="font-size:13px;color:#5d7790;line-height:1.6">Noi ci occupiamo del resto.</p></section>
+        <section class="vpm-panel vpm-promo"><div class="vpm-promo-plant"><i class="ti ti-plant-2"></i></div><div><h2 class="vpm-panel-title">Il tuo tempo<br>è prezioso.</h2><p>Noi ci occupiamo<br>del resto.</p></div></section>
       </aside>
     </div>
+    <footer class="vpm-footer"><div><i class="ti ti-plant-2"></i><span>Tecnologia, persone e valore<br>per far crescere i tuoi immobili.</span></div><strong>ViverePM</strong><small>PEOPLE · PLACES · POSSIBILITIES</small></footer>
   </div>`;
 }
 
@@ -3826,7 +3835,7 @@ function renderTopNav(){
   }
   const isOspiti = state.view==='ospiti';
   return `<div class="topnav">
-    <div class="topnav-brand">${state.settings.nomeAgenzia || 'Property Manager'}</div>
+    <div class="topnav-brand"><label class="vpm-global-search"><i class="ti ti-search"></i><input id="vpm-global-search" type="search" placeholder="Cerca immobili, prenotazioni, ospiti..." aria-label="Cerca immobili"></label></div>
     <div class="topnav-tabs">
       ${!isOspiti ? `
         <button class="tab-btn ${state.view==='gestore'?'active':''}" data-view="gestore">Gestore${alert.totale>0?`<span class="nav-badge">${alert.totale}</span>`:''}</button>
@@ -4458,6 +4467,8 @@ function animateBentoNumbers(){
 }
 
 function attachHandlers(){
+  const globalSearch=document.getElementById('vpm-global-search');
+  if(globalSearch)globalSearch.addEventListener('keydown',ev=>{if(ev.key!=='Enter')return;const q=globalSearch.value.trim().toLocaleLowerCase('it');if(!q)return;const p=immobiliVisibili().find(p=>[p.nome,p.indirizzo,p.catasto].some(v=>String(v||'').toLocaleLowerCase('it').includes(q)));if(p){state.selectedId=p.id;state.selectedClienteId=null;state.vistaGestore='overview';render();return;}const booking=immobiliVisibili().find(p=>(p.prenotazioni||[]).some(b=>String(b.nome||'').toLocaleLowerCase('it').includes(q)));if(booking){state.selectedId=booking.id;state.selectedClienteId=null;state.dossierTab='prenotazioni';render();return;}globalSearch.setCustomValidity('Nessun immobile o ospite trovato');globalSearch.reportValidity();globalSearch.setCustomValidity('');});
   const vpmSearch=document.getElementById('vpm-property-search');
   const vpmFilterButtons=[...document.querySelectorAll('[data-vpm-filter]')];
   const vpmApplyFilter=()=>{
@@ -4465,8 +4476,9 @@ function attachHandlers(){
     const filter=vpmFilterButtons.find(b=>b.classList.contains('active'))?.dataset.vpmFilter||'all';
     const visible=immobiliVisibili().filter(p=>{
       const text=[p.nome,p.indirizzo,p.catasto].join(' ').toLocaleLowerCase('it');
-      const occupied=Boolean(p.locazione&&p.locazione.attivo);
-      return text.includes(term)&&(filter==='all'||(filter==='occupied'?occupied:!occupied));
+      const occupied=Boolean(rentInfo(p).rented);
+      const maintenance=(p.manutenzioni||[]).some(m=>m.stato!=='completata');
+      return text.includes(term)&&(filter==='all'||(filter==='occupied'?occupied:filter==='free'?!occupied:maintenance));
     });
     const ids=new Set(visible.map(p=>String(p.id)));
     document.querySelectorAll('#vpm-properties .prop-card').forEach(el=>{el.style.display=ids.has(el.getAttribute('data-nav'))?'':'none';});

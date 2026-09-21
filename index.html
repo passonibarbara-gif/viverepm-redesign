@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>ViverePM | Gestione immobili</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="viverepm-dashboard.css">
 <meta name="theme-color" content="#12302C">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -751,6 +750,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
 </style>
+<link rel="stylesheet" href="viverepm-dashboard.css">
 </head>
 <body>
 <div id="root"></div>
@@ -4454,6 +4454,22 @@ function animateBentoNumbers(){
 }
 
 function attachHandlers(){
+  const vpmSearch=document.getElementById('vpm-property-search');
+  const vpmFilterButtons=[...document.querySelectorAll('[data-vpm-filter]')];
+  const vpmApplyFilter=()=>{
+    const term=(vpmSearch?.value||'').toLocaleLowerCase('it').trim();
+    const filter=vpmFilterButtons.find(b=>b.classList.contains('active'))?.dataset.vpmFilter||'all';
+    const visible=immobiliVisibili().filter(p=>{
+      const text=[p.nome,p.indirizzo,p.catasto].join(' ').toLocaleLowerCase('it');
+      const occupied=Boolean(p.locazione&&p.locazione.attivo);
+      return text.includes(term)&&(filter==='all'||(filter==='occupied'?occupied:!occupied));
+    });
+    const ids=new Set(visible.map(p=>String(p.id)));
+    document.querySelectorAll('#vpm-properties .prop-card').forEach(el=>{el.style.display=ids.has(el.getAttribute('data-nav'))?'':'none';});
+  };
+  if(vpmSearch)vpmSearch.addEventListener('input',vpmApplyFilter);
+  vpmFilterButtons.forEach(btn=>btn.addEventListener('click',()=>{vpmFilterButtons.forEach(b=>b.classList.remove('active'));btn.classList.add('active');vpmApplyFilter();}));
+
   const clearErrorBtn = document.querySelector('[data-clear-error]');
   if(clearErrorBtn) clearErrorBtn.addEventListener('click', ()=>{ state.error = null; render(); });
 

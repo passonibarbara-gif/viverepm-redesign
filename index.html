@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>ViverePM | Gestione immobili</title>
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="viverepm-dashboard.css">
 <meta name="theme-color" content="#12302C">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -2788,7 +2789,7 @@ function renderSidebar(){
 
   return `
     <div class="sidebar">
-      <p class="brand">vivere<span class="brand-accent">pm.</span></p>
+      <p class="brand"><i class="ti ti-home" style="font-size:26px;color:#37c6ce;margin-right:5px"></i>Vivere<span class="brand-accent">PM</span></p>
       <p class="brand-sub">Property management</p>
       <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore!=='tutte-prenotazioni'?'active':''}" data-nav="overview"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-layout-dashboard"></i></span>Panoramica${alertPortfolio.totale>0?`<span class="nav-badge">${alertPortfolio.totale}</span>`:''}</div></div>
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
@@ -2935,118 +2936,80 @@ function renderTuttePrenotazioni(){
   `;
 }
 
+
 function renderOverview(){
-  const props = immobiliVisibili();
-  const manutenzioniUrgenti = props.reduce((s,p)=>s + (p.manutenzioni||[]).filter(m=>m.stato!=='completata' && daysUntil(m.scadenza)<=30).length, 0);
-  const affittati = props.filter(p=>p.locazione && p.locazione.attivo);
-  const canoneMensile = affittati.reduce((s,p)=>s+(Number(p.locazione.canone)||0),0);
-  const contrattiInScadenza = affittati.filter(p=>daysUntil(p.locazione.scadenzaContratto)<=60).length;
-  const richiestePendenti = props.reduce((s,p)=>s + (p.prenotazioni||[]).filter(b=>b.stato==='richiesta').length, 0);
-
-  if(props.length===0){
-    return `
-      <h1 class="page-title">Panoramica</h1>
-      <p class="page-sub">Il tuo portfolio immobiliare, in un colpo d'occhio.</p>
-      <div class="empty-state">
-        <div class="big">Nessun immobile registrato</div>
-        <div>Aggiungi il primo immobile per iniziare a tracciare valore, spese e manutenzioni.</div>
-        <br>
-        <button class="btn-new" style="width:auto;padding:10px 20px;" data-action="new-property">+ Nuovo immobile</button>
-      </div>
-    `;
-  }
-
-  const cards = props.map(p=>{
-    const status = propertyStatus(p);
-    const rent = rentInfo(p);
-    const rentLine = rent.rented
-      ? `<div class="prop-rent ${rent.expiring?'expiring':''}">Affittato · ${fmtCurrency(p.locazione.canone)}/mese${rent.expiring?` · scade tra ${rent.giorni}gg`:''}</div>`
-      : `<div class="prop-rent vacant">Libero</div>`;
-    const bookableLine = p.disponibilePrenotazioni ? `<div class="prop-bookable"><i class="ti ti-circle-check-filled"></i> Prenotabile online</div>` : '';
-    const copertina = getCoverPhotoUrl(p);
-    return `
-      <div class="prop-card" data-nav="${p.id}">
-        ${copertina ? `<img class="prop-cover" src="${copertina}">` : ''}
-        <div class="prop-card-head">
-          <div class="prop-card-main">${propertyTypeIcon(p.tipo)}<div><div class="prop-name">${p.nome}</div><div class="prop-addr">${p.indirizzo || '—'}</div></div></div>
-          <span class="status-seal ${status}">${statusLabel[status]}</span>
-        </div>
-        ${rentLine}
-        ${bookableLine}
-        <div class="prop-card-foot">
-          <span class="prop-catasto">${p.catasto}</span>
-          ${p.prezzoNotte ? `<span class="prop-price">€ ${p.prezzoNotte}/notte</span>` : ''}
-        </div>
-      </div>
-    `;
+  const props=immobiliVisibili();
+  const alert=calcolaAlertPortfolio();
+  const bookings=props.flatMap(p=>(p.prenotazioni||[]).filter(b=>b.stato!=='rifiutata').map(b=>({p,b})));
+  const activeBookings=bookings.filter(x=>x.b.stato==='confermata'||x.b.stato==='confermato');
+  const pending=bookings.filter(x=>x.b.stato==='richiesta');
+  const revenue=props.reduce((n,p)=>n+(p.spese||[]).filter(x=>x.tipo==='entrata').reduce((a,x)=>a+(Number(x.importo)||0),0),0);
+  const upcoming=bookings.filter(x=>x.b.checkin && x.b.checkin>=new Date().toISOString().slice(0,10)).length;
+  const openMaintenance=props.reduce((n,p)=>n+(p.manutenzioni||[]).filter(m=>m.stato!=='completata').length,0);
+  const futureEvents=raccogliEventiPortfolio();
+  const today=new Date();
+  const todayKey=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+  const todays=futureEvents.filter(e=>e.data===todayKey);
+  const next=futureEvents.filter(e=>e.data>=todayKey).slice(0,5);
+  const cover=(p)=>getCoverPhotoUrl(p);
+  const status=(p)=>propertyStatus(p);
+  const propCards=props.map(p=>{
+    const st=status(p),url=cover(p),rent=rentInfo(p);
+    return `<div class="prop-card" data-nav="${p.id}">
+      ${url?`<img class="prop-cover" src="${url}" alt="">`:`<div class="prop-cover" style="background:linear-gradient(135deg,#d6f5f5,#e3f0fc);display:grid;place-items:center;color:#0b8994;font-size:34px"><i class="ti ti-home"></i></div>`}
+      <div class="prop-card-head"><div class="prop-card-main"><div><div class="prop-name">${p.nome}</div><div class="prop-addr">${p.indirizzo||'Indirizzo da inserire'}</div></div></div><span class="status-seal ${st}">${statusLabel[st]}</span></div>
+      <div class="prop-rent ${rent.rented?'':'vacant'}">${rent.rented?'Occupato':'Disponibile'}</div>
+      <div class="prop-card-foot"><span class="prop-catasto">${p.catasto||''}</span>${p.prezzoNotte?`<span class="prop-price">€ ${p.prezzoNotte} / notte</span>`:''}</div>
+    </div>`;
   }).join('');
-
-  const secondRow = (affittati.length) ? `
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-label">Canone mensile attivo</div>
-        <div class="stat-value sage">${fmtCurrency(canoneMensile)}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Immobili affittati</div>
-        <div class="stat-value">${affittati.length} / ${props.length}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Contratti in scadenza (60gg)</div>
-        <div class="stat-value ${contrattiInScadenza>0?'terracotta':''}">${contrattiInScadenza}</div>
-      </div>
-    </div>
-  ` : '';
-
-  const alertPortfolio = calcolaAlertPortfolio();
-  const alertBanner = alertPortfolio.totale>0 ? `
-    <div class="alert-banner">
-      <div class="alert-banner-title"><i class="ti ti-alert-triangle"></i> ${alertPortfolio.totale} cos${alertPortfolio.totale>1?'e':'a'} da controllare</div>
-      ${alertPortfolio.prenotazioniPendenti>0 ? `<div class="alert-banner-item clickable" data-goto-alert="prenotazioni"><b>${alertPortfolio.prenotazioniPendenti}</b> richiest${alertPortfolio.prenotazioniPendenti>1?'e':'a'} di prenotazione da confermare o rifiutare</div>` : ''}
-      ${alertPortfolio.spesePagare>0 ? `<div class="alert-banner-item clickable" data-goto-alert="spese"><b>${alertPortfolio.spesePagare}</b> spes${alertPortfolio.spesePagare>1?'e':'a'} approvat${alertPortfolio.spesePagare>1?'e':'a'} da pagare</div>` : ''}
-      ${alertPortfolio.controlliRitardo>0 ? `<div class="alert-banner-item clickable" data-goto-alert="controlli"><b>${alertPortfolio.controlliRitardo}</b> immobil${alertPortfolio.controlliRitardo>1?'i':'e'} con controllo periodico in ritardo</div>` : ''}
-      ${alertPortfolio.preventiviRisposti>0 ? `<div class="alert-banner-item clickable" data-goto-alert="interventi"><b>${alertPortfolio.preventiviRisposti}</b> preventiv${alertPortfolio.preventiviRisposti>1?'i':'o'} con risposta del proprietario da gestire</div>` : ''}
-      ${alertPortfolio.interventiDaTriage>0 ? `<div class="alert-banner-item clickable" data-goto-alert="interventi-nuovi"><b>${alertPortfolio.interventiDaTriage}</b> nuov${alertPortfolio.interventiDaTriage>1?'i':'o'} intervent${alertPortfolio.interventiDaTriage>1?'i':'o'} da valutare</div>` : ''}
-      ${alertPortfolio.messaggiProprietario>0 ? `<div class="alert-banner-item clickable" data-goto-alert="messaggi"><b>${alertPortfolio.messaggiProprietario}</b> messagg${alertPortfolio.messaggiProprietario>1?'i':'io'} dal proprietario non lett${alertPortfolio.messaggiProprietario>1?'i':'o'}</div>` : ''}
-      ${alertPortfolio.messaggiOspiti>0 ? `<div class="alert-banner-item clickable" data-goto-alert="messaggi-ospiti"><b>${alertPortfolio.messaggiOspiti}</b> messagg${alertPortfolio.messaggiOspiti>1?'i':'io'} da${alertPortfolio.messaggiOspiti>1?' ospiti':' un ospite'} non lett${alertPortfolio.messaggiOspiti>1?'i':'o'}</div>` : ''}
-    </div>
-  ` : '';
-
+  const alertRows=[
+    [alert.prenotazioniPendenti,'prenotazioni','ti-calendar-event','Prenotazioni da confermare'],
+    [alert.spesePagare,'spese','ti-receipt','Spese approvate da pagare'],
+    [alert.controlliRitardo,'controlli','ti-clipboard-check','Controlli periodici in ritardo'],
+    [alert.preventiviRisposti,'interventi','ti-tool','Preventivi da gestire'],
+    [alert.interventiDaTriage,'interventi-nuovi','ti-tool','Nuovi interventi da valutare'],
+    [alert.messaggiProprietario,'messaggi','ti-message','Messaggi dai proprietari'],
+    [alert.messaggiOspiti,'messaggi-ospiti','ti-message-circle','Messaggi dagli ospiti']
+  ].filter(x=>x[0]).map(x=>`<div class="vpm-alert" data-goto-alert="${x[1]}"><i class="ti ${x[2]}"></i><span><strong>${x[3]}</strong><small>${x[0]} ${x[0]===1?'attività':'attività'} da controllare</small></span><i class="ti ti-chevron-right"></i></div>`).join('');
+  const metric=(icon,value,label,sub)=>`<div class="vpm-metric"><i class="ti ${icon}"></i><strong>${value}</strong><span>${label}</span><em>${sub||''}</em></div>`;
   return `
-    <div class="vpm-overview"><div class="vpm-overview-main">
-    <h1 class="page-title">Buongiorno, benvenuta in ViverePM</h1>
-    <p class="page-sub">Tutti i tuoi immobili e le attività da gestire, in un unico posto.</p>
-    ${alertBanner}
-    <div class="bento-row">
-      <div class="bento-tile ${manutenzioniUrgenti>0?'alert':''}"><div class="bento-label">Manutenzioni entro 30gg</div><div class="bento-value ${manutenzioniUrgenti>0?'terracotta':''}" data-count="${manutenzioniUrgenti}">0</div></div>
-      <div class="bento-tile"><div class="bento-label">Immobili in portfolio</div><div class="bento-value" data-count="${props.length}">0</div></div>
-      <div class="bento-tile ${richiestePendenti>0?'alert':''}"><div class="bento-label">Richieste da evadere</div><div class="bento-value ${richiestePendenti>0?'terracotta':''}" data-count="${richiestePendenti}">0</div></div>
-    </div>
-    ${secondRow}
-
-    <p class="section-label">Calendario scadenze e prenotazioni</p>
-    ${renderDashboardCalendar()}
-
-    <p class="section-label" style="margin-top:32px;">Immobili</p>
-    <div class="prop-grid">${cards}</div>
-    </div>
-    <aside class="vpm-overview-side" aria-label="Avvisi e azioni rapide">
-      <div class="vpm-side-card"><h2 class="vpm-side-head">Da tenere d'occhio <i class="ti ti-bell"></i></h2>
-        ${alertPortfolio.prenotazioniPendenti ? '<div class="vpm-alert-link" data-goto-alert="prenotazioni"><i class="ti ti-calendar-event"></i><span><strong>Richieste prenotazione</strong><br>In attesa di risposta</span></div>' : ''}
-        ${alertPortfolio.interventiDaTriage ? '<div class="vpm-alert-link" data-goto-alert="interventi-nuovi"><i class="ti ti-tool"></i><span><strong>Interventi da gestire</strong><br>Nuove manutenzioni</span></div>' : ''}
-        ${alertPortfolio.spesePagare ? '<div class="vpm-alert-link" data-goto-alert="spese"><i class="ti ti-receipt"></i><span><strong>Spese da pagare</strong><br>Spese già approvate</span></div>' : ''}
-        ${alertPortfolio.controlliRitardo ? '<div class="vpm-alert-link" data-goto-alert="controlli"><i class="ti ti-clipboard-check"></i><span><strong>Controlli in ritardo</strong><br>Controlli periodici</span></div>' : ''}
-        ${alertPortfolio.messaggiProprietario ? '<div class="vpm-alert-link" data-goto-alert="messaggi"><i class="ti ti-message-circle"></i><span><strong>Messaggi da leggere</strong><br>Dai proprietari</span></div>' : ''}
-        ${alertPortfolio.messaggiOspiti ? '<div class="vpm-alert-link" data-goto-alert="messaggi-ospiti"><i class="ti ti-message-circle"></i><span><strong>Messaggi ospiti</strong><br>Da leggere</span></div>' : ''}
-        ${alertPortfolio.totale===0 ? '<p class="vpm-empty-alert">Tutto sotto controllo. Non ci sono avvisi da gestire al momento.</p>' : ''}
+  <div class="vpm-dashboard">
+    <div class="vpm-hero"><div><h1 class="page-title">Buongiorno, benvenuta in ViverePM!</h1><p>La tua gestione immobiliare, tutta sotto controllo.</p></div><div class="vpm-hero-quote">“Case ben gestite,<br>persone più felici.”</div></div>
+    <div class="vpm-workspace">
+      <div class="vpm-maincol">
+        <section class="vpm-panel">
+          <h2 class="vpm-panel-title">Oggi <small>${today.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small>${haModulo('prenotazioni')?'<button data-nav-prenotazioni><i class="ti ti-plus"></i> Prenotazioni</button>':''}</h2>
+          <div class="vpm-timeline"><div class="vpm-time-labels"><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span></div>
+          <div class="vpm-timeline-track">${todays.length?todays.map(e=>`<div class="vpm-event" data-goto-evento="${e.propId}::${e.tab}"><i class="ti ti-calendar-event"></i><div><b>${e.titolo}</b><span>${e.immobile}</span></div></div>`).join(''):'<div class="vpm-empty">Nessuna attività registrata per oggi. Le attività compaiono qui dalle prenotazioni e dalle scadenze reali.</div>'}</div></div>
+        </section>
+        <div class="vpm-metrics">
+          ${metric('ti-home',props.length,'Immobili gestiti')}
+          ${metric('ti-calendar-event',activeBookings.length,'Prenotazioni confermate')}
+          ${metric('ti-currency-euro',fmtCurrency(revenue),'Entrate registrate')}
+          ${metric('ti-users',upcoming,'Arrivi futuri')}
+          ${metric('ti-spray',props.reduce((n,p)=>n+(p.manutenzioni||[]).filter(m=>/pulizi/i.test(m.descrizione||'')&&m.stato!=='completata').length,0),'Pulizie da gestire')}
+          ${metric('ti-tool',openMaintenance,'Interventi aperti')}
+        </div>
+        <section class="vpm-panel">
+          <div class="vpm-property-tools"><h2 class="vpm-panel-title" style="margin:0">I tuoi immobili <small>${props.length}</small></h2><div class="vpm-filterbar"><button class="active" type="button" data-vpm-filter="all">Tutti ${props.length}</button><button type="button" data-vpm-filter="occupied">Occupati</button><button type="button" data-vpm-filter="free">Disponibili</button></div><input class="vpm-property-search" id="vpm-property-search" type="search" placeholder="⌕ Cerca immobile..."></div>
+          <div class="vpm-properties" id="vpm-properties">${propCards||'<p class="vpm-empty">Non ci sono ancora immobili. Aggiungi il primo dalla barra laterale.</p>'}</div>
+        </section>
+        <div class="vpm-bottom">
+          <section class="vpm-panel"><h2 class="vpm-panel-title">Calendario scadenze</h2>${renderDashboardCalendar()}</section>
+          <section class="vpm-panel"><h2 class="vpm-panel-title">Prossime attività</h2>${next.length?next.map(e=>`<div class="vpm-upcoming" data-goto-evento="${e.propId}::${e.tab}"><strong>${fmtDate(e.data)}</strong> ${e.titolo} · ${e.immobile}</div>`).join(''):'<p class="vpm-empty">Nessuna attività imminente.</p>'}</section>
+        </div>
       </div>
-      <div class="vpm-side-card"><h2 class="vpm-side-head">Azioni rapide <i class="ti ti-bolt"></i></h2>
-        ${isAdmin() ? '<button class="vpm-quick-btn" data-action="new-property"><i class="ti ti-home-plus"></i> Aggiungi immobile</button>' : ''}
-        ${isAdmin() ? '<button class="vpm-quick-btn" data-action="new-cliente"><i class="ti ti-user-plus"></i> Nuovo cliente</button>' : ''}
-        ${haModulo('prenotazioni') ? '<button class="vpm-quick-btn" data-nav-prenotazioni><i class="ti ti-calendar"></i> Gestisci prenotazioni</button>' : ''}
-      </div>
-    </aside></div>
-  `;
+      <aside class="vpm-sidecol">
+        <section class="vpm-panel"><h2 class="vpm-panel-title">Attenzioni per te <small>${alert.totale}</small></h2>${alertRows||'<p class="vpm-empty">Tutto sotto controllo: nessun avviso aperto.</p>'}</section>
+        <section class="vpm-panel"><h2 class="vpm-panel-title">Azioni rapide</h2><div class="vpm-quickgrid">
+          ${isAdmin()?'<button data-action="new-property"><i class="ti ti-home-plus"></i>Nuovo immobile</button><button data-action="new-cliente"><i class="ti ti-user-plus"></i>Nuovo cliente</button>':''}
+          ${haModulo('prenotazioni')?'<button data-nav-prenotazioni><i class="ti ti-calendar-event"></i>Prenotazioni</button>':''}
+          ${isAdmin()?'<button data-action="open-settings"><i class="ti ti-settings"></i>Impostazioni</button>':''}
+        </div></section>
+        <section class="vpm-panel" style="background:linear-gradient(135deg,#e3f6fb,#fff)"><h2 class="vpm-panel-title">Il tuo tempo è prezioso.</h2><p style="font-size:13px;color:#5d7790;line-height:1.6">Noi ci occupiamo del resto.</p></section>
+      </aside>
+    </div>
+  </div>`;
 }
 
 function renderRiepilogoControlli(p, editable){

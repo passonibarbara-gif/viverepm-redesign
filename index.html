@@ -3976,7 +3976,7 @@ function renderProprietariView(){
     `;
   } else if(ownerTab==='prenotazioni'){
     ownerTabContent = p.disponibilePrenotazioni ? `
-      ${renderCalendar(p.prenotazioni, state.calendarOffset)}
+      ${renderCalendar([...(p.prenotazioni||[]),...vpmOwnerBlockingBookings(p)], state.calendarOffset)}
       <table style="margin-top:16px;"><thead><tr><th>Ospite</th><th>Date</th><th>Stato</th></tr></thead><tbody>${bookingRows}</tbody></table>
     ` : `<div class="empty-inline">Questo immobile non è attualmente disponibile per prenotazioni brevi.</div>`;
   } else if(ownerTab==='interventi'){

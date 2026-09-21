@@ -951,7 +951,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:800px){.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{grid-template-columns:1fr 1fr}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row{grid-column:1/-1}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:1/-1}.vpm-modal-property .vpm-prop-owner .vpm-prop-fields{grid-template-columns:1fr}.vpm-modal-property .vpm-prop-intro{margin:-2px 0 12px}.vpm-modal-property .vpm-modal-tagline{display:none}}
 @media(max-width:580px){.vpm-modal-premium.vpm-modal-property{padding:0 15px 15px!important}.vpm-modal-property .vpm-modal-head{margin:0 -15px 12px!important;padding:15px!important}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{grid-template-columns:1fr}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row,.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:1}.vpm-modal-property .vpm-prop-illustration{width:95px;height:50px}.vpm-modal-property .vpm-prop-owner .vpm-prop-fields>#newClienteFields .field-row{grid-template-columns:1fr}.vpm-modal-property .modal-actions{margin:12px -15px -15px!important;padding:12px 15px!important}.vpm-modal-property .modal-actions:before{display:none}}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-21">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-22">
 </head>
 <body>
 <div id="root"></div>
@@ -2394,7 +2394,7 @@ function propertyAvailableForDates(p, checkin, checkout, adulti, bambini, animal
   const capacitaTotale = (p.capacitaAdulti||0) + (p.capacitaBambini||0);
   if(capacitaTotale>0 && ((adulti||0)+(bambini||0)) > capacitaTotale) return false;
   if((animali||0)>0 && !p.animaliAmmessi) return false;
-  const {confirmed} = getBookedDaysMap(p.prenotazioni);
+  const {confirmed} = getBookedDaysMap([...(p.prenotazioni||[]),...vpmOwnerBlockingBookings(p)]);
   for(let d=new Date(checkin); d<new Date(checkout); d.setDate(d.getDate()+1)){
     if(confirmed.has(d.toISOString().slice(0,10))) return false;
   }
@@ -3888,7 +3888,18 @@ function renderProprietariView(){
       </div>
     ` : '';
     ownerTabContent = `
+      <div class="vpm-owner-hero"><div><span class="vpm-owner-hero-label">IL TUO SPAZIO · VIVEREPM</span><h2>Benvenuto, ${vpmOwnerEscape((clienteLoggato.nome||'').split(' ')[0])}</h2><p>Il tuo immobile. La nostra gestione. Tutto sotto controllo.</p></div><img src="assets/viverepm-terrace.svg" alt="Terrazza ViverePM"></div>
       ${alertBannerProprietario}
+      <div class="vpm-owner-tile-grid">
+        ${vpmOwnerNavCard('prenotazioni','ti-calendar-event','Prenotazioni','Calendario e soggiorni','teal',(p.prenotazioni||[]).filter(b=>b.stato==='richiesta').length)}
+        ${vpmOwnerNavCard('spese','ti-wallet','Rendiconti','Entrate, spese e pagamenti','orange',alertProprietario.speseInAttesa)}
+        ${vpmOwnerNavCard('interventi','ti-tools','Interventi','Lavori e autorizzazioni','purple',alertProprietario.preventiviInAttesa)}
+        ${vpmOwnerNavCard('messaggi','ti-messages','Messaggi','Scrivi al tuo gestore','blue',(p.messaggi||[]).filter(m=>m.autore==='gestore'&&!m.letto).length)}
+        ${vpmOwnerNavCard('documenti','ti-files','Documenti','Consulta e carica file','blue',0)}
+        ${vpmOwnerNavCard('disponibilita','ti-calendar-off','Uso personale','Blocca le tue date','orange',0)}
+        ${vpmOwnerNavCard('profilo','ti-user-circle','I miei dati','Aggiorna il profilo','purple',0)}
+        ${vpmOwnerNavCard('foto','ti-photo','Foto immobile','Immagini e interventi','teal',0)}
+      </div>
       <div class="dash-hero">
         <div class="dash-hero-title">${state.settings.nomeAgenzia||'La tua agenzia'}</div>
         <div class="dash-grid">
@@ -3956,7 +3967,7 @@ function renderProprietariView(){
     ownerTabContent = '<div class="vpm-owner-section-intro purple"><i class="ti ti-user-circle"></i><div><strong>I tuoi dati</strong><small>Aggiorna recapiti e indirizzo di residenza.</small></div></div><form id="vpmOwnerProfileForm" class="vpm-owner-form"><div class="field"><label>Nome e cognome</label><input name="nome" required maxlength="150" value="'+vpmOwnerEscape(clienteLoggato.nome)+'"></div><div class="field-row"><div class="field"><label>Telefono</label><input name="telefono" type="tel" maxlength="50" value="'+vpmOwnerEscape(clienteLoggato.telefono)+'"></div><div class="field"><label>Email di accesso</label><input type="email" value="'+vpmOwnerEscape(clienteLoggato.email)+'" disabled></div></div><div class="field"><label>Indirizzo di residenza</label><input name="indirizzo" maxlength="250" value="'+vpmOwnerEscape(clienteLoggato.indirizzo)+'"></div><p class="vpm-owner-hint">Per cambiare l’email di accesso contatta il gestore.</p><button type="submit" class="btn-primary"><i class="ti ti-check"></i> Salva i miei dati</button></form>';
   }
 
-  return `<div class="portal-shell" style="max-width:760px;">
+  return `<div class="portal-shell vpm-owner-shell" style="max-width:1060px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
       ${mieiImmobili.length>1 ? `<button class="link-btn" data-owner-back>← I miei immobili</button>` : `<span></span>`}
       <button class="link-btn" data-owner-logout>Esci</button>
@@ -5637,6 +5648,41 @@ function attachHandlers(){
   if(ownerBack) ownerBack.addEventListener('click', ()=>{ state.ownerPropId = null; state.ownerDossierTab = 'panoramica'; render(); });
   document.querySelectorAll('[data-owner-tab]').forEach(b=>b.addEventListener('click', ()=>{ state.ownerDossierTab = b.getAttribute('data-owner-tab'); render(); }));
 
+
+  // Azioni dell'area proprietari: ogni operazione controlla l'immobile collegato all'email autenticata.
+  const ownerProfileForm=document.getElementById('vpmOwnerProfileForm');
+  if(ownerProfileForm)ownerProfileForm.addEventListener('submit',async ev=>{
+    ev.preventDefault();
+    const c=vpmOwnerClient();if(!c)return;
+    const fd=new FormData(ownerProfileForm),nome=String(fd.get('nome')||'').trim();
+    if(!nome){alert('Inserisci il nome.');return;}
+    c.nome=nome;c.telefono=String(fd.get('telefono')||'').trim();c.indirizzo=String(fd.get('indirizzo')||'').trim();
+    await saveData();render();
+  });
+  const ownerBlockForm=document.getElementById('vpmOwnerBlockForm');
+  if(ownerBlockForm)ownerBlockForm.addEventListener('submit',async ev=>{
+    ev.preventDefault();
+    const p=vpmOwnerProperty();if(!p)return;
+    const fd=new FormData(ownerBlockForm),dal=String(fd.get('dal')||''),al=String(fd.get('al')||'');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dal)||!/^\d{4}-\d{2}-\d{2}$/.test(al)||dal>=al){alert('Indica un periodo valido: il giorno di partenza deve essere successivo al giorno iniziale.');return;}
+    if(dal<new Date().toISOString().slice(0,10)){alert('Non puoi bloccare un periodo già passato.');return;}
+    const overlaps=(a,b)=>a.checkin<al&&a.checkout>dal;
+    if((p.prenotazioni||[]).some(b=>b.stato!=='rifiutata'&&b.checkin&&b.checkout&&overlaps(b))||vpmOwnerBlocks(p).some(b=>overlaps({checkin:b.dal,checkout:b.al}))){alert('Periodo non disponibile: ci sono già prenotazioni, richieste o altri blocchi.');return;}
+    if(!Array.isArray(p.blocchiProprietario))p.blocchiProprietario=[];
+    p.blocchiProprietario.push({id:uid(),dal,al,nota:String(fd.get('nota')||'').trim(),creatoIl:new Date().toISOString()});
+    await saveData();render();
+  });
+  document.querySelectorAll('[data-owner-remove-block]').forEach(btn=>btn.addEventListener('click',async()=>{
+    const p=vpmOwnerProperty();if(!p)return;
+    if(!confirm('Rimuovere questo blocco e rendere nuovamente prenotabile il periodo?'))return;
+    p.blocchiProprietario=vpmOwnerBlocks(p).filter(b=>b.id!==btn.getAttribute('data-owner-remove-block'));
+    await saveData();render();
+  }));
+  const ownerUpload=document.querySelector('[data-owner-upload-doc]');
+  if(ownerUpload)ownerUpload.addEventListener('click',()=>{
+    const p=vpmOwnerProperty();if(p)openModal('documentoImmobile',null,p.id,'owner');
+  });
+
   // portale ospiti — percorso guidato a step
   document.querySelectorAll('[data-guest-pick]').forEach(b=>b.addEventListener('click', ()=>{
     state.guestPropId = b.getAttribute('data-guest-pick');
@@ -5890,7 +5936,9 @@ function attachHandlers(){
     const fileInput = documentoImmobileForm.querySelector('input[type=file]');
     if(!fileInput || !fileInput.files[0]) return;
     const url = await readFileAsDataUrl(fileInput.files[0]);
-    addDocumentoImmobile(state.modal.propId, { url, nome: fileInput.files[0].name, descrizione: fd.get('descrizione') });
+    const target=state.modal&&state.modal.context==='owner'?vpmOwnerProperty():state.properties.find(p=>p.id===state.modal.propId);
+    if(!target || target.id!==state.modal.propId)return;
+    addDocumentoImmobile(target.id, { url, nome: fileInput.files[0].name, descrizione: fd.get('descrizione') });
   });
 
   const clienteForm = document.getElementById('clienteForm');

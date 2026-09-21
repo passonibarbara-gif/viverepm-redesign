@@ -2942,6 +2942,26 @@ function renderClienteCRM(c){
     </div>`;
 }
 
+let vpmBookingMonthOffset=0;
+let vpmBookingSelectedDay='';
+function vpmBookingCalendar(rows){
+  const now=new Date(),month=new Date(now.getFullYear(),now.getMonth()+vpmBookingMonthOffset,1);
+  const year=month.getFullYear(),m=month.getMonth(),days=new Date(year,m+1,0).getDate();
+  const offset=(month.getDay()+6)%7;
+  const localKey=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+  const today=localKey(now),safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'" :'&#39;'}[c]));
+  const dayRows=day=>rows.filter(({b})=>b.stato!=='rifiutata'&&b.checkin&&b.checkout&&b.checkin<=day&&b.checkout>=day);
+  const cells=Array.from({length:offset},()=>'<div class="vpm-calendar-blank"></div>');
+  for(let d=1;d<=days;d++){
+    const key=localKey(new Date(year,m,d)),active=dayRows(key),arrival=active.filter(({b})=>b.checkin===key).length,departure=active.filter(({b})=>b.checkout===key).length;
+    const confirmed=active.filter(({b})=>b.stato==='confermata'||b.stato==='confermato').length,pending=active.filter(({b})=>b.stato==='richiesta').length;
+    cells.push(`<button type="button" class="vpm-calendar-day ${key===today?'today':''} ${key===vpmBookingSelectedDay?'selected':''}" data-booking-day="${key}" aria-label="${d} ${month.toLocaleDateString('it-IT',{month:'long'})}: ${confirmed} confermate, ${pending} richieste"><b>${d}</b><span class="vpm-calendar-dots">${confirmed?'<i class="confirmed"></i>':''}${pending?'<i class="pending"></i>':''}</span>${arrival||departure?`<small>${arrival?'↓'+arrival:''} ${departure?'↑'+departure:''}</small>`:''}</button>`);
+  }
+  const selected=vpmBookingSelectedDay&&vpmBookingSelectedDay.startsWith(year+'-'+String(m+1).padStart(2,'0'))?vpmBookingSelectedDay:'';
+  const agenda=selected?dayRows(selected):[];
+  const agendaHtml=selected?`<div class="vpm-calendar-agenda"><h3>${new Date(selected+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'})} <small>${agenda.length} prenotazioni</small></h3>${agenda.map(({p,b})=>`<button data-vai-a-immobile="${safe(p.id)}"><strong>${safe(p.nome)}</strong><span>${safe(b.nome||'Ospite')} · ${b.checkin===selected?'Arrivo · ':''}${b.checkout===selected?'Partenza · ':''}${safe(b.stato)}</span></button>`).join('')||'<p>Nessuna prenotazione per questa data.</p>'}</div>`:'' ;
+  return `<section class="vpm-calendar-panel"><div class="vpm-calendar-head"><div><span>PIANIFICAZIONE</span><h2>Calendario occupazioni</h2><p>Seleziona un giorno per vedere le prenotazioni. La partenza è indicata separatamente.</p></div><div class="vpm-calendar-controls"><button type="button" data-booking-month="-1" aria-label="Mese precedente"><i class="ti ti-chevron-left"></i></button><strong>${month.toLocaleDateString('it-IT',{month:'long',year:'numeric'})}</strong><button type="button" data-booking-month="1" aria-label="Mese successivo"><i class="ti ti-chevron-right"></i></button><button type="button" data-booking-today>Oggi</button></div></div><div class="vpm-calendar-weekdays">${['Lun','Mar','Mer','Gio','Ven','Sab','Dom'].map(x=>'<span>'+x+'</span>').join('')}</div><div class="vpm-calendar-grid">${cells.join('')}</div><div class="vpm-calendar-legend"><span><i class="confirmed"></i> Confermata</span><span><i class="pending"></i> Da confermare</span><span>↓ Arrivi · ↑ Partenze</span></div>${agendaHtml}</section>`;
+}
 function renderTuttePrenotazioni(){
   const righe = [];
   immobiliVisibili().forEach(p=>{
@@ -2951,7 +2971,7 @@ function renderTuttePrenotazioni(){
   });
   righe.sort((a,b)=>new Date(b.b.createdAt)-new Date(a.b.createdAt));
 
-  const today=new Date().toISOString().slice(0,10);
+  const today=(()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')})();
   const confermate=righe.filter(({b})=>b.stato==='confermata'||b.stato==='confermato');
   const pendenti=righe.filter(({b})=>b.stato==='richiesta');
   const arrivi=confermate.filter(({b})=>b.checkin===today);
@@ -2992,6 +3012,7 @@ function renderTuttePrenotazioni(){
     <div class="vpm-bookings-page">
       <div class="vpm-bookings-hero"><div><span>VIVEREPM · ORGANIZZAZIONE</span><h1>Prenotazioni</h1><p>Arrivi, partenze e richieste dei tuoi immobili, tutto sotto controllo.</p></div><i class="ti ti-calendar-event"></i></div>
       <div class="vpm-booking-stats"><div><i class="ti ti-calendar-event"></i><strong>${righe.length}</strong><span>Prenotazioni totali</span></div><div><i class="ti ti-calendar-question"></i><strong>${pendenti.length}</strong><span>Da confermare</span></div><div><i class="ti ti-login"></i><strong>${arrivi.length}</strong><span>Arrivi oggi</span></div><div><i class="ti ti-logout"></i><strong>${partenze.length}</strong><span>Partenze oggi</span></div></div>
+      ${vpmBookingCalendar(righe)}
       <div class="vpm-booking-layout"><section class="vpm-booking-list-panel"><div class="vpm-booking-toolbar"><div><h2>Tutte le prenotazioni <small>${righe.length}</small></h2><p>Gestisci le richieste e apri le schede degli immobili.</p></div><label><i class="ti ti-search"></i><input type="search" id="vpm-booking-search" placeholder="Cerca ospite o immobile..."></label></div><div class="vpm-booking-filters"><button class="active" data-booking-filter="all">Tutte ${righe.length}</button><button data-booking-filter="richiesta">Da confermare ${pendenti.length}</button><button data-booking-filter="confirmed">Confermate ${confermate.length}</button><button data-booking-filter="rifiutata">Rifiutate</button></div><div id="vpm-booking-list">${cards}</div><p id="vpm-booking-no-results" hidden>Nessuna prenotazione corrisponde alla ricerca.</p></section>
       <aside class="vpm-booking-side"><section><h2>Oggi <small>${new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long'})}</small></h2><p>Arrivi <strong>${arrivi.length}</strong> · Partenze <strong>${partenze.length}</strong></p>${arrivi.map(({p,b})=>`<div class="vpm-booking-next"><b>Arrivo: ${safe(b.nome)}</b><span>${safe(p.nome)}</span></div>`).concat(partenze.map(({p,b})=>`<div class="vpm-booking-next"><b>Partenza: ${safe(b.nome)}</b><span>${safe(p.nome)}</span></div>`)).join('')||'<p>Nessun arrivo o partenza oggi.</p>'}</section><section><h2>Prossimi arrivi</h2>${prossimi.map(({p,b})=>`<button class="vpm-booking-next" data-vai-a-immobile="${safe(p.id)}"><b>${fmtDate(b.checkin)} · ${safe(b.nome)}</b><span>${safe(p.nome)} →</span></button>`).join('')||'<p>Nessun arrivo confermato in programma.</p>'}</section></aside></div></div>
   `;
@@ -4869,6 +4890,14 @@ function attachHandlers(){
     });
   });
 
+  document.querySelectorAll('[data-booking-month]').forEach(btn=>btn.addEventListener('click',()=>{
+    vpmBookingMonthOffset+=Number(btn.getAttribute('data-booking-month'));vpmBookingSelectedDay='';render();
+  }));
+  const bookingToday=document.querySelector('[data-booking-today]');
+  if(bookingToday)bookingToday.addEventListener('click',()=>{vpmBookingMonthOffset=0;const d=new Date();vpmBookingSelectedDay=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');render();});
+  document.querySelectorAll('[data-booking-day]').forEach(btn=>btn.addEventListener('click',()=>{
+    vpmBookingSelectedDay=btn.getAttribute('data-booking-day');render();
+  }));
   const navPrenotazioniBtn = document.querySelector('[data-nav-prenotazioni]');
   if(navPrenotazioniBtn) navPrenotazioniBtn.addEventListener('click', ()=>{
     state.selectedId = null;

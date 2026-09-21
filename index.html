@@ -750,7 +750,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-6">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-8">
 </head>
 <body>
 <div id="root"></div>
@@ -2865,7 +2865,7 @@ function renderAttivitaPortfolio(){
   const taskRow=({p,m})=>{
     const done=m.stato==='completata',date=m.dataProgrammazione,lateTask=!done&&date&&date<today;
     const quote=m.preventivo?.stato;
-    return `<article class="vpm-portfolio-row vpm-activity-row" data-portfolio-status="${done?'done':lateTask?'late':date?'planned':'open'}" data-activity-property="${safe(p.id)}"><span class="vpm-portfolio-avatar"><i class="ti ${done?'ti-check':'ti-tool'}"></i></span><div class="vpm-portfolio-row-main"><h3>${safe(m.descrizione||m.titolo||'Intervento')}</h3><p>${safe(p.nome)} · ${safe(m.stato||'Da valutare')}</p><small>${date?'Programmato: '+fmtDate(date):'Da programmare'}${quote?' · Preventivo: '+safe(quote):''}</small>${lateTask?'<span class="vpm-activity-flag">Data di intervento superata</span>':''}</div><button data-vpm-open-tab="${safe(p.id)}::interventi" aria-label="${done?'Visualizza dettaglio intervento completato':'Gestisci intervento'}">${done?'Visualizza dettaglio':'Gestisci'} <i class="ti ti-arrow-up-right"></i></button></article>`;
+    return `<article class="vpm-portfolio-row vpm-activity-row" data-portfolio-status="${done?'done':lateTask?'late':date?'planned':'open'}" data-activity-property="${safe(p.id)}"><span class="vpm-portfolio-avatar"><i class="ti ${done?'ti-check':'ti-tool'}"></i></span><div class="vpm-portfolio-row-main"><h3>${safe(m.descrizione||m.titolo||'Intervento')}</h3><p>${safe(p.nome)} · ${safe(m.stato||'Da valutare')}</p><small>${done?(date?'Data programmata: '+fmtDate(date):'Intervento completato'):(date?'Programmato: '+fmtDate(date):'Da programmare')}${quote?' · Preventivo: '+safe(quote):''}</small>${lateTask?'<span class="vpm-activity-flag">Data di intervento superata</span>':''}</div><div class="vpm-activity-actions">${done?'<span class="vpm-activity-completed"><i class="ti ti-circle-check"></i> Completato</span>':''}<button data-vpm-open-tab="${safe(p.id)}::interventi" aria-label="${done?'Visualizza dettaglio intervento completato':'Gestisci intervento'}"><i class="ti ${done?'ti-eye':'ti-arrow-up-right'}"></i> ${done?'Visualizza dettaglio':'Gestisci'}</button></div></article>`;
   };
   const sorted=all.slice().sort((a,b)=>{
     const rank=x=>x.m.stato==='completata'?3:x.m.dataProgrammazione&&x.m.dataProgrammazione<today?0:x.m.dataProgrammazione?1:2;

@@ -3695,7 +3695,7 @@ function renderDossier(p){
       tabContent = `<div class="vacant-box"><div>Questo modulo si attiva quando l'immobile è "Disponibile per prenotazioni". Vai su Modifica per attivarlo.</div></div>`;
     } else {
       tabContent = `
-        ${renderCalendar(p.prenotazioni, state.calendarOffset)}
+        ${renderCalendar([...(p.prenotazioni||[]),...vpmOwnerBlockingBookings(p)], state.calendarOffset)}
         <p class="section-label" style="margin-top:24px;">Prenotazioni ricevute</p>
         ${renderPrenotazioni(p)}
       `;
@@ -3773,6 +3773,16 @@ function renderDossier(p){
 }
 
 // ---------- Vista Area Proprietari ----------
+
+function vpmOwnerClient(){return state.ownerAuth?getClienteByEmail(state.ownerAuth.email):null;}
+function vpmOwnerProperty(){const c=vpmOwnerClient();return c?state.properties.find(p=>p.id===state.ownerPropId&&p.clienteId===c.id):null;}
+function vpmOwnerEscape(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function vpmOwnerBlocks(p){return Array.isArray(p.blocchiProprietario)?p.blocchiProprietario:[];}
+function vpmOwnerBlockingBookings(p){return vpmOwnerBlocks(p).map(b=>({checkin:b.dal,checkout:b.al,stato:'confermata',nome:'Uso personale',id:b.id}));}
+function vpmOwnerDocList(p){const docs=p.documenti||[];return docs.length?docs.map(d=>'<div class="vpm-owner-doc"><i class="ti ti-file-description"></i><div><strong>'+vpmOwnerEscape(d.nome||'Documento')+'</strong><small>'+vpmOwnerEscape(d.descrizione||fmtDate(d.data))+'</small></div><a class="icon-btn" href="'+d.url+'" target="_blank" rel="noopener" download="'+vpmOwnerEscape(d.nome||'documento')+'">Apri <i class="ti ti-external-link"></i></a></div>').join(''):'<div class="vpm-owner-empty">Non ci sono ancora documenti per questo immobile.</div>';}
+function vpmOwnerBlockList(p){const blocks=vpmOwnerBlocks(p).slice().sort((a,b)=>String(a.dal).localeCompare(String(b.dal)));return blocks.length?blocks.map(b=>'<div class="vpm-owner-block"><i class="ti ti-calendar-off"></i><div><strong>'+fmtDate(b.dal)+' — '+fmtDate(b.al)+'</strong><small>'+vpmOwnerEscape(b.nota||'Uso personale')+'</small></div><button class="icon-btn danger" data-owner-remove-block="'+vpmOwnerEscape(b.id)+'">Rimuovi</button></div>').join(''):'<div class="vpm-owner-empty">Nessuna data bloccata per uso personale.</div>';}
+function vpmOwnerNavCard(tab,icon,title,description,color,count){return '<button type="button" class="vpm-owner-tile '+color+'" data-owner-tab="'+tab+'"><span class="vpm-owner-tile-icon"><i class="ti '+icon+'"></i></span><strong>'+title+'</strong><small>'+description+'</small>'+(count?'<span class="vpm-owner-tile-count">'+count+'</span>':'')+'<i class="ti ti-arrow-up-right vpm-owner-tile-arrow"></i></button>';}
+
 function renderProprietariView(){
   if(state.ownerRecoveryMode){
     return `<div class="portal-shell" style="text-align:center;">
@@ -3858,7 +3868,10 @@ function renderProprietariView(){
     {id:'interventi', label:'Interventi', icon:'ti-tool'},
     {id:'controlli', label:'Controlli periodici', icon:'ti-clipboard-check'},
     {id:'spese', label:'Spese & Guadagno', icon:'ti-wallet'},
-    {id:'messaggi', label:'Messaggi', icon:'ti-message-circle'}
+    {id:'messaggi', label:'Messaggi', icon:'ti-message-circle'},
+    {id:'documenti', label:'Documenti', icon:'ti-files'},
+    {id:'disponibilita', label:'Uso personale', icon:'ti-calendar-off'},
+    {id:'profilo', label:'I miei dati', icon:'ti-user-circle'}
   ];
   const ownerTab = OWNER_TABS.some(t=>t.id===state.ownerDossierTab) ? state.ownerDossierTab : 'panoramica';
   const ownerTabsHtml = OWNER_TABS.map(t=>`<button class="dossier-tab-btn ${ownerTab===t.id?'active':''}" data-owner-tab="${t.id}"><i class="ti ${t.icon}"></i>${t.label}</button>`).join('');
@@ -3934,7 +3947,13 @@ function renderProprietariView(){
       ${g.saldoInSospeso>0 ? `<p style="font-size:12.5px;color:var(--terracotta);margin:-10px 0 20px 0;">Hai un saldo da ricevere dall'agenzia.</p>` : ''}
     `;
   } else if(ownerTab==='messaggi'){
-    ownerTabContent = renderMessages(p, 'proprietario');
+    ownerTabContent = '<div class="vpm-owner-section-intro"><i class="ti ti-messages"></i><div><strong>Parla con ViverePM</strong><small>Messaggi diretti tra te e il gestore.</small></div></div>'+renderMessages(p, 'proprietario');
+  } else if(ownerTab==='documenti'){
+    ownerTabContent = '<div class="vpm-owner-section-intro blue"><i class="ti ti-files"></i><div><strong>Documenti dell’immobile</strong><small>Consulta i documenti o aggiungine uno.</small></div></div>'+vpmOwnerDocList(p)+'<button class="vpm-owner-action" data-owner-upload-doc><i class="ti ti-cloud-upload"></i> Carica un documento</button>';
+  } else if(ownerTab==='disponibilita'){
+    ownerTabContent = '<div class="vpm-owner-section-intro orange"><i class="ti ti-calendar-off"></i><div><strong>Uso personale</strong><small>Blocca un periodo per non renderlo prenotabile.</small></div></div><form id="vpmOwnerBlockForm" class="vpm-owner-form"><div class="field-row"><div class="field"><label>Dal giorno</label><input type="date" name="dal" required></div><div class="field"><label>Al giorno (partenza)</label><input type="date" name="al" required></div></div><div class="field"><label>Nota (facoltativa)</label><input name="nota" maxlength="180" placeholder="Es. soggiorno personale"></div><button type="submit" class="btn-primary"><i class="ti ti-calendar-plus"></i> Blocca periodo</button></form><p class="vpm-owner-hint">Il giorno di partenza torna disponibile. Non puoi bloccare date già prenotate o richieste.</p><h3 class="vpm-owner-subheading">Periodi bloccati</h3>'+vpmOwnerBlockList(p);
+  } else if(ownerTab==='profilo'){
+    ownerTabContent = '<div class="vpm-owner-section-intro purple"><i class="ti ti-user-circle"></i><div><strong>I tuoi dati</strong><small>Aggiorna recapiti e indirizzo di residenza.</small></div></div><form id="vpmOwnerProfileForm" class="vpm-owner-form"><div class="field"><label>Nome e cognome</label><input name="nome" required maxlength="150" value="'+vpmOwnerEscape(clienteLoggato.nome)+'"></div><div class="field-row"><div class="field"><label>Telefono</label><input name="telefono" type="tel" maxlength="50" value="'+vpmOwnerEscape(clienteLoggato.telefono)+'"></div><div class="field"><label>Email di accesso</label><input type="email" value="'+vpmOwnerEscape(clienteLoggato.email)+'" disabled></div></div><div class="field"><label>Indirizzo di residenza</label><input name="indirizzo" maxlength="250" value="'+vpmOwnerEscape(clienteLoggato.indirizzo)+'"></div><p class="vpm-owner-hint">Per cambiare l’email di accesso contatta il gestore.</p><button type="submit" class="btn-primary"><i class="ti ti-check"></i> Salva i miei dati</button></form>';
   }
 
   return `<div class="portal-shell" style="max-width:760px;">

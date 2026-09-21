@@ -400,3 +400,20 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-finance-toolbar button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;border:1px solid #a6d7dc;border-radius:8px;background:#effbfb;color:#147e88;padding:0 15px;font-weight:600;cursor:pointer}
 .vpm-finance-note{display:flex;align-items:flex-start;gap:8px;margin:0 0 16px;font-size:11px;line-height:1.6;color:#6b8192}
 .vpm-finance-note i{font-size:16px;color:#168f99;flex-shrink:0}
+
+/* Unified communications inbox */
+.vpm-inbox-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}
+.vpm-inbox-toolbar>label{display:flex;align-items:center;gap:8px;flex:1;min-width:220px;border:1px solid #dce9f0;border-radius:8px;background:#fff;padding:0 12px;color:#168f99}
+.vpm-inbox-toolbar input{width:100%;height:42px;border:0;outline:0;background:transparent;font:inherit;font-size:12px;color:#233f53}
+.vpm-inbox-toolbar .vpm-portfolio-filters{flex-wrap:wrap}
+.vpm-inbox-list{display:grid;gap:10px}
+.vpm-inbox-row{display:flex;align-items:center;gap:15px;border:1px solid #e0edf5;border-radius:10px;background:#fcfeff;padding:17px}
+.vpm-inbox-row[hidden]{display:none!important}
+.vpm-inbox-main{flex:1;min-width:0}
+.vpm-inbox-main h3{font-size:14px;margin:0 0 5px;color:#243c50}
+.vpm-inbox-main p{font-size:11px;color:#71899c;margin:0 0 7px}
+.vpm-inbox-main small{display:block;font-size:12px;color:#546f83;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:600px}
+.vpm-inbox-badge{display:inline-block;vertical-align:middle;border-radius:99px;background:#e1f5ee;color:#327e60;padding:4px 8px;font:600 10px sans-serif;margin-left:7px}
+.vpm-inbox-row>button{border:1px solid #d6e8f0;border-radius:8px;background:#fff;color:#168b97;padding:11px 13px;cursor:pointer;white-space:nowrap;font-size:11px}
+.vpm-inbox-no-results{color:#70869a;font-size:12px}
+@media(max-width:650px){.vpm-inbox-row{flex-wrap:wrap}.vpm-inbox-row>button{width:100%}.vpm-inbox-main small{max-width:75vw}}

@@ -3262,7 +3262,6 @@ function renderDossier(p){
   const dossierPending = dossierBookings.filter(b=>b.stato==='richiesta').length;
   const dossierInterventi = (p.manutenzioni||[]).filter(m=>m.stato!=='completata').length;
   const dossierEntrate = (p.spese||[]).filter(e=>e.tipo==='entrata').reduce((n,e)=>n+(Number(e.importo)||0),0);
-  const dossierSafe = v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\'':'&#39;'}[c]));
 
   const TABS = [
     {id:'anagrafica', label:'Anagrafica', icon:'ti-file-text'},

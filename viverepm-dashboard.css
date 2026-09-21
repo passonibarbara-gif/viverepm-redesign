@@ -567,3 +567,51 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-modal-property .vpm-prop-booking .vpm-prop-section-icon{background:#dcecff;color:#3678b3}
 .vpm-modal-property .vpm-prop-fields .section-label{margin-top:10px!important}
 @media(max-width:580px){.vpm-modal-cliente .vpm-client-file{padding-right:78px!important}.vpm-modal-cliente .vpm-client-file-art{right:4px;transform:scale(.75)}.vpm-modal-property .vpm-prop-fields{padding:10px 11px 2px}}
+
+/* Property dialog v21: faithful composition of approved mockup; scoped to real property form */
+.overlay:has(>.vpm-modal-property){padding:14px!important;align-items:center!important}
+.vpm-modal-premium.vpm-modal-property{width:min(100%,980px)!important;max-width:980px!important;max-height:94dvh!important;padding:0 27px 19px!important;border-radius:20px!important;background:#fff!important}
+.vpm-modal-property .vpm-modal-head{position:sticky;top:0;margin:0 -27px 12px!important;padding:16px 27px 14px!important;background:linear-gradient(100deg,#fff 70%,#effdfb)!important;border-radius:20px 20px 0 0!important}
+.vpm-modal-property .vpm-modal-eyebrow{margin:0 170px 10px 0!important}
+.vpm-modal-property .vpm-modal-tagline{position:absolute;top:23px;right:79px;display:block;font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:#19525a;transform:rotate(-6deg);white-space:nowrap}
+.vpm-modal-property .vpm-modal-tagline i{color:#d59b39;font-size:18px}
+.vpm-modal-property .vpm-modal-title-row{gap:16px!important}
+.vpm-modal-property .vpm-modal-title-icon{width:63px!important;height:63px!important;border-radius:20px!important;background:#def5f4!important;color:#007a80!important;font-size:32px!important}
+.vpm-modal-property .vpm-modal-kicker{display:none!important}
+.vpm-modal-property .vpm-modal-title-row h2{font-size:34px!important}
+.vpm-modal-property .vpm-prop-intro{position:relative;margin:-40px 0 18px 80px;color:#637989;font-size:12px;line-height:1.4}
+.vpm-modal-property .vpm-prop-section{margin-bottom:12px!important;border:0!important;border-left:3px solid #48c2ce!important;border-radius:12px!important;overflow:hidden;background:linear-gradient(105deg,#f1fbfc 0%,#fff 56%,#fff8ef 100%)!important}
+.vpm-modal-property .vpm-prop-section-title{position:relative;display:flex!important;align-items:center;gap:13px;padding:12px 16px 6px!important;background:transparent!important;border:0!important;min-height:62px}
+.vpm-modal-property .vpm-prop-section-title strong{font-family:'IBM Plex Sans',sans-serif!important;font-size:13px!important;letter-spacing:.065em;font-weight:700!important}
+.vpm-modal-property .vpm-prop-section-title small{font-size:11px!important}
+.vpm-modal-property .vpm-prop-section-icon{width:45px!important;height:45px!important;border-radius:13px!important;background:#d7f4f7!important;color:#0c7d86!important;font-size:24px!important}
+.vpm-modal-property .vpm-prop-illustration{width:170px;height:66px;object-fit:cover;object-position:center;border-radius:10px;margin-left:auto;border:2px solid white;box-shadow:0 2px 8px #245e6d1f}
+.vpm-modal-property .vpm-prop-fields{padding:7px 16px 9px!important}
+.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{display:grid;grid-template-columns:1.05fr 1.05fr 1fr;column-gap:14px;align-items:end}
+.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field,.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row{margin:0 0 8px!important;min-width:0}
+.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row{grid-column:1/3;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:3;align-self:center}
+.vpm-modal-property .vpm-prop-fields .field>label{font-size:10px!important;letter-spacing:.035em!important;margin-bottom:5px!important}
+.vpm-modal-property .vpm-prop-fields .field>label i{color:#278c99;font-size:14px;margin-right:5px}
+.vpm-modal-property .vpm-prop-fields input:not([type=checkbox]),.vpm-modal-property .vpm-prop-fields select{min-height:38px!important;border-radius:9px!important;background:#fff!important;font-size:12px!important}
+.vpm-modal-property .vpm-prop-owner{border-left-color:#9e7ae2!important;background:linear-gradient(105deg,#f7f3ff,#fff 60%,#f5f2ff)!important}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-section-icon{background:#ece3ff!important;color:#7953b0!important}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-fields{display:grid;grid-template-columns:1fr 2fr;gap:0 14px;align-items:start}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-fields>#newClienteFields{min-width:0}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-fields>#newClienteFields .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-fields>#newClienteFields .field{min-width:0}
+.vpm-modal-property .vpm-prop-rental{border-left-color:#e8a64b!important;background:linear-gradient(105deg,#fff5e7,#fff 80%)!important}
+.vpm-modal-property .vpm-prop-rental .vpm-prop-section-icon{background:#ffe9c9!important;color:#c37a22!important}
+.vpm-modal-property .vpm-prop-booking{border-left-color:#67b5df!important;background:linear-gradient(105deg,#eef8ff,#fff 80%)!important}
+.vpm-modal-property .vpm-prop-booking .vpm-prop-section-icon{background:#dcefff!important;color:#307eb2!important}
+.vpm-modal-property .vpm-prop-photo-note{display:flex;align-items:center;gap:12px;margin:8px 0 3px;padding:10px 15px;border:1px dashed #b3d4e4;border-radius:10px;background:linear-gradient(95deg,#effaff,#fff9ef);color:#365a69}
+.vpm-modal-property .vpm-prop-photo-icon{display:flex;gap:3px;align-items:center;color:#088b91;font-size:24px}
+.vpm-modal-property .vpm-prop-photo-icon .ti-paperclip{color:#dc9b35;transform:rotate(-25deg)}
+.vpm-modal-property .vpm-prop-photo-note>div{display:grid;gap:2px}
+.vpm-modal-property .vpm-prop-photo-note strong{font-size:11px;letter-spacing:.06em}
+.vpm-modal-property .vpm-prop-photo-note small{font-size:11px;color:#5b7580}
+.vpm-modal-property .modal-actions{margin:11px -27px -19px!important;padding:13px 27px!important}
+.vpm-modal-property .modal-actions:before{content:"♧  Il tuo immobile. La nostra gestione.";font-family:'Fraunces',serif;font-style:italic;color:#217879;font-size:13px;margin-right:auto}
+.vpm-modal-property .modal-actions .btn-primary{background:linear-gradient(105deg,#00636c,#00948c)!important}
+@media(max-width:800px){.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{grid-template-columns:1fr 1fr}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row{grid-column:1/-1}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:1/-1}.vpm-modal-property .vpm-prop-owner .vpm-prop-fields{grid-template-columns:1fr}.vpm-modal-property .vpm-prop-intro{margin:-2px 0 12px}.vpm-modal-property .vpm-modal-tagline{display:none}}
+@media(max-width:580px){.vpm-modal-premium.vpm-modal-property{padding:0 15px 15px!important}.vpm-modal-property .vpm-modal-head{margin:0 -15px 12px!important;padding:15px!important}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{grid-template-columns:1fr}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row,.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:1}.vpm-modal-property .vpm-prop-illustration{width:95px;height:50px}.vpm-modal-property .vpm-prop-owner .vpm-prop-fields>#newClienteFields .field-row{grid-template-columns:1fr}.vpm-modal-property .modal-actions{margin:12px -15px -15px!important;padding:12px 15px!important}.vpm-modal-property .modal-actions:before{display:none}}

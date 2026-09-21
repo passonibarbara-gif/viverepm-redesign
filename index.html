@@ -2897,37 +2897,32 @@ function renderClienteCRM(c){
     </div>
   `).join('') : `<p style="font-size:12.5px;color:var(--ink-soft);">Nessuna attività registrata ancora.</p>`;
 
+  const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  const openInterventi=immobili.reduce((n,p)=>n+(p.manutenzioni||[]).filter(m=>m.stato!=='completata').length,0);
+  const pendingBookings=immobili.reduce((n,p)=>n+(p.prenotazioni||[]).filter(b=>b.stato==='richiesta').length,0);
+  const unreadMessages=immobili.reduce((n,p)=>n+(p.messaggi||[]).filter(m=>m.autore!=='gestore'&&!m.letto).length,0);
+  const foto=immobili.map(p=>({p,url:getCoverPhotoUrl(p)}));
+  const immobiliRiepilogo=foto.map(({p,url})=>`<article class="vpm-client-property">
+    <div class="vpm-client-property-photo">${url?`<img src="${safe(url)}" alt="" loading="lazy">`:'<i class="ti ti-home"></i>'}</div>
+    <div class="vpm-client-property-main"><h3>${safe(p.nome)}</h3><p>${safe(p.indirizzo||'Indirizzo da inserire')}</p><small>${safe(p.tipo||'Immobile')} · ${(p.prenotazioni||[]).filter(b=>b.stato==='richiesta').length} richieste da confermare</small></div>
+    <button data-nav="${safe(p.id)}">Apri immobile <i class="ti ti-arrow-up-right"></i></button>
+  </article>`).join('');
   return `
-    <div class="dossier-header">
-      <div>
-        <p class="prop-catasto" style="margin-bottom:4px;">CLIENTE</p>
-        <h1 class="page-title" style="margin-bottom:2px;">${c.nome||'(senza nome)'}</h1>
+    <div class="vpm-client-detail">
+      <button class="vpm-back-estates" data-nav="clienti"><i class="ti ti-arrow-left"></i> Tutti i clienti</button>
+      <header class="vpm-client-hero"><div><span>VIVEREPM · SCHEDA CLIENTE</span><h1>${safe(c.nome||'Cliente senza nome')}</h1><p>Contatti, immobili e attività in un unico spazio.</p></div><div class="vpm-client-hero-actions">${waButton(c.telefono,`Salve ${c.nome}, la contatto riguardo ai suoi immobili.`,'WhatsApp')}<button data-action="edit-cliente"><i class="ti ti-pencil"></i> Modifica dati</button><button class="vpm-client-delete" data-action="delete-cliente"><i class="ti ti-trash"></i> Elimina</button></div></header>
+      <div class="vpm-client-metrics"><div><i class="ti ti-home"></i><strong>${immobili.length}</strong><span>Immobili collegati</span></div><div><i class="ti ti-calendar-question"></i><strong>${pendingBookings}</strong><span>Prenotazioni da confermare</span></div><div><i class="ti ti-tool"></i><strong>${openInterventi}</strong><span>Interventi aperti</span></div><div><i class="ti ti-message-circle"></i><strong>${unreadMessages}</strong><span>Messaggi da leggere</span></div></div>
+      <div class="vpm-client-layout">
+        <div class="vpm-client-primary">
+          <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>01 · PORTAFOGLIO</span><h2>Immobili del cliente <small>${immobili.length}</small></h2></div><button data-action="new-immobile-cliente"><i class="ti ti-plus"></i> Aggiungi immobile</button></div><div class="vpm-client-properties">${immobiliRiepilogo||'<p class="vpm-client-empty">Nessun immobile collegato a questo cliente.</p>'}</div></section>
+          <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>02 · CRONOLOGIA</span><h2>Attività recenti</h2></div><small>Ultimi ${Math.min(eventi.length,40)} eventi</small></div><div class="vpm-client-timeline">${eventiHtml}</div></section>
+        </div>
+        <aside class="vpm-client-aside">
+          <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>ANAGRAFICA</span><h2>Contatti e dati</h2></div></div><dl class="vpm-client-contact"><dt><i class="ti ti-phone"></i> Telefono</dt><dd>${safe(c.telefono||'Non inserito')}</dd><dt><i class="ti ti-mail"></i> Email</dt><dd>${c.email?`<a href="mailto:${safe(c.email)}">${safe(c.email)}</a>`:'Non inserita'}</dd><dt><i class="ti ti-map-pin"></i> Indirizzo</dt><dd>${safe(c.indirizzo||'Non inserito')}</dd></dl></section>
+          <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>ARCHIVIO</span><h2>Documenti del cliente</h2></div></div>${c.documenti&&c.documenti.length?renderPhotoGallery(c.documenti):'<p class="vpm-client-empty">Nessun documento caricato.</p>'}</section>
+        </aside>
       </div>
-      <div class="dossier-actions">
-        ${waButton(c.telefono, `Salve ${c.nome}, la contatto riguardo ai suoi immobili.`, 'WhatsApp')}
-        <button class="icon-btn" data-action="edit-cliente">Modifica</button>
-        <button class="icon-btn danger" data-action="delete-cliente">Elimina</button>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:14px;flex-wrap:wrap;margin:16px 0 8px 0;">
-      <div class="stat-card" style="flex:1;min-width:170px;"><div class="stat-label">Telefono</div><div class="stat-value" style="font-size:15px;">${c.telefono||'—'}</div></div>
-      <div class="stat-card" style="flex:1;min-width:170px;"><div class="stat-label">Email</div><div class="stat-value" style="font-size:15px;overflow-wrap:anywhere;">${c.email||'—'}</div></div>
-      <div class="stat-card" style="flex:1;min-width:170px;"><div class="stat-label">Indirizzo</div><div class="stat-value" style="font-size:15px;">${c.indirizzo||'—'}</div></div>
-    </div>
-
-    ${(c.documenti && c.documenti.length) ? `
-      <p class="section-label" style="margin-top:20px;">Documento d'identità</p>
-      ${renderPhotoGallery(c.documenti)}
-    ` : ''}
-
-    <p class="section-label" style="margin-top:24px;">Immobili collegati (${immobili.length})</p>
-    <div class="prop-grid">${immobiliCards}</div>
-    <button class="add-inline" data-action="new-immobile-cliente">+ Aggiungi un immobile a questo cliente</button>
-
-    <p class="section-label">Attività recente su tutti gli immobili</p>
-    <div class="chart-card" style="max-height:420px;overflow-y:auto;">${eventiHtml}</div>
-  `;
+    </div>`;
 }
 
 function renderTuttePrenotazioni(){

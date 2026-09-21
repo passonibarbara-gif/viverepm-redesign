@@ -2854,12 +2854,31 @@ function renderAttivitaPortfolio(){
   const props=immobiliVisibili();
   const all=props.flatMap(p=>(p.manutenzioni||[]).map(m=>({p,m})));
   const open=all.filter(({m})=>m.stato!=='completata');
-  const late=props.filter(p=>calcProssimoControllo(p).inRitardo);
-  const today=new Date().toISOString().slice(0,10);
+  const today=(()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')})();
   const planned=open.filter(({m})=>m.dataProgrammazione&&m.dataProgrammazione>=today);
-  const rows=all.map(({p,m})=>`<article class="vpm-portfolio-row" data-portfolio-status="${m.stato==='completata'?'done':'open'}"><span class="vpm-portfolio-avatar"><i class="ti ti-tool"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(m.descrizione||m.titolo||'Intervento')}</h3><p>${vpmPortfolioSafe(p.nome)} · ${vpmPortfolioSafe(m.stato||'Da valutare')}</p><small>${m.dataProgrammazione?'Programmato: '+fmtDate(m.dataProgrammazione):'Nessuna data programmata'}</small></div><button data-vpm-open-tab="${vpmPortfolioSafe(p.id)}::interventi">Gestisci <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
-  const controls=late.map(p=>`<article class="vpm-portfolio-row"><span class="vpm-portfolio-avatar"><i class="ti ti-clipboard-check"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmPortfolioSafe(p.nome)}</h3><p>Controllo periodico da verificare</p><small>${calcProssimoControllo(p).data?fmtDate(calcProssimoControllo(p).data):'Nessun controllo registrato'}</small></div><button data-vpm-open-tab="${vpmPortfolioSafe(p.id)}::controlli">Apri controlli <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
-  return vpmPortfolioShell('OPERATIVITÀ','Interventi e controlli','Le attività registrate per tutti i tuoi immobili.',[['ti-tool',open.length,'Interventi aperti'],['ti-calendar-event',planned.length,'Interventi programmati'],['ti-clipboard-check',late.length,'Controlli da verificare'],['ti-check',all.length-open.length,'Interventi completati']],`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Interventi <small>${all.length}</small></h2></div><div class="vpm-portfolio-filters"><button class="active" data-portfolio-filter="all">Tutti</button><button data-portfolio-filter="open">Aperti</button><button data-portfolio-filter="done">Completati</button></div><div class="vpm-portfolio-list">${rows||'<p class="vpm-portfolio-empty">Nessun intervento registrato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun intervento per il filtro selezionato.</p></section>${haModulo('controlli')?`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Controlli da verificare <small>${late.length}</small></h2></div><div class="vpm-portfolio-list">${controls||'<p class="vpm-portfolio-empty">Nessun controllo in ritardo.</p>'}</div></section>`:''}`);
+  const overdue=open.filter(({m})=>m.dataProgrammazione&&m.dataProgrammazione<today);
+  const quotes=open.filter(({m})=>m.preventivo&&(m.preventivo.stato==='in-attesa'||m.preventivo.stato==='in_attesa'||m.preventivo.stato==='richiesto'||m.preventivo.stato==='rifiutato'||(m.preventivo.stato==='approvato'&&!m.dataProgrammazione)));
+  const controls=props.map(p=>({p,c:calcProssimoControllo(p)})).sort((a,b)=>String(a.c.data||'').localeCompare(String(b.c.data||'')));
+  const late=controls.filter(({c})=>c.inRitardo);
+  const upcoming=controls.filter(({c})=>!c.inRitardo&&c.data);
+  const safe=vpmPortfolioSafe;
+  const taskRow=({p,m})=>{
+    const done=m.stato==='completata',date=m.dataProgrammazione,lateTask=!done&&date&&date<today;
+    const quote=m.preventivo?.stato;
+    return `<article class="vpm-portfolio-row vpm-activity-row" data-portfolio-status="${done?'done':lateTask?'late':date?'planned':'open'}" data-activity-property="${safe(p.id)}"><span class="vpm-portfolio-avatar"><i class="ti ${done?'ti-check':'ti-tool'}"></i></span><div class="vpm-portfolio-row-main"><h3>${safe(m.descrizione||m.titolo||'Intervento')}</h3><p>${safe(p.nome)} · ${safe(m.stato||'Da valutare')}</p><small>${date?'Programmato: '+fmtDate(date):'Da programmare'}${quote?' · Preventivo: '+safe(quote):''}</small>${lateTask?'<span class="vpm-activity-flag">Data di intervento superata</span>':''}</div><button data-vpm-open-tab="${safe(p.id)}::interventi">Gestisci <i class="ti ti-arrow-up-right"></i></button></article>`;
+  };
+  const sorted=all.slice().sort((a,b)=>{
+    const rank=x=>x.m.stato==='completata'?3:x.m.dataProgrammazione&&x.m.dataProgrammazione<today?0:x.m.dataProgrammazione?1:2;
+    return rank(a)-rank(b)||String(a.m.dataProgrammazione||'').localeCompare(String(b.m.dataProgrammazione||''));
+  });
+  const controlRows=controls.map(({p,c})=>`<article class="vpm-portfolio-row vpm-activity-row" data-control-status="${c.inRitardo?'late':'upcoming'}" data-activity-property="${safe(p.id)}"><span class="vpm-portfolio-avatar"><i class="ti ti-clipboard-check"></i></span><div class="vpm-portfolio-row-main"><h3>${safe(p.nome)}</h3><p>${c.inRitardo?'Controllo da verificare':'Prossimo controllo programmato'}</p><small>${c.data?fmtDate(c.data):'Nessun controllo registrato'} · Ogni ${Number(p.periodicitaControlli)||2} mesi</small></div><button data-vpm-open-tab="${safe(p.id)}::controlli">Apri controlli <i class="ti ti-arrow-up-right"></i></button></article>`).join('');
+  const propertyOptions=props.map(p=>`<option value="${safe(p.id)}">${safe(p.nome)}</option>`).join('');
+  return vpmPortfolioShell('OPERATIVITÀ','Interventi e controlli','Scadenze, manutenzioni e controlli periodici di tutti i tuoi immobili.',[['ti-tool',open.length,'Interventi aperti'],['ti-calendar-event',planned.length,'Da eseguire'],['ti-alert-circle',late.length+overdue.length,'Scadenze da verificare'],['ti-file-invoice',quotes.length,'Preventivi da seguire']],`
+    <div class="vpm-activity-highlights"><div><i class="ti ti-calendar-clock"></i><strong>${overdue.length}</strong><span>Interventi con data superata</span></div><div><i class="ti ti-clipboard-check"></i><strong>${late.length}</strong><span>Controlli da verificare</span></div><div><i class="ti ti-calendar-event"></i><strong>${upcoming.length}</strong><span>Prossimi controlli</span></div><div><i class="ti ti-check"></i><strong>${all.length-open.length}</strong><span>Interventi completati</span></div></div>
+    <div class="vpm-activity-toolbar"><label><i class="ti ti-search"></i><input data-portfolio-search type="search" placeholder="Cerca intervento o immobile..."></label><select data-activity-property-filter aria-label="Filtra per immobile"><option value="all">Tutti gli immobili</option>${propertyOptions}</select></div>
+    <section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Interventi <small>${all.length}</small></h2><p>Apri la scheda immobile per programmare, aggiornare o completare un intervento.</p></div><div class="vpm-portfolio-filters vpm-activity-filters"><button class="active" data-portfolio-filter="all">Tutti</button><button data-portfolio-filter="open">Da programmare</button><button data-portfolio-filter="planned">Programmati</button><button data-portfolio-filter="late">Data superata</button><button data-portfolio-filter="done">Completati</button></div><div class="vpm-portfolio-list" data-activity-list="tasks">${sorted.map(taskRow).join('')||'<p class="vpm-portfolio-empty">Nessun intervento registrato.</p>'}</div><p class="vpm-portfolio-no-results" hidden>Nessun intervento corrisponde ai filtri.</p></section>
+    ${haModulo('controlli')?`<section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Controlli periodici <small>${controls.length}</small></h2><p>Scadenze calcolate dalla periodicità impostata nella scheda di ciascun immobile.</p></div><div class="vpm-portfolio-filters vpm-control-filters"><button class="active" data-control-filter="all">Tutti</button><button data-control-filter="late">Da verificare ${late.length}</button><button data-control-filter="upcoming">Prossimi ${upcoming.length}</button></div><div class="vpm-portfolio-list" data-activity-list="controls">${controlRows||'<p class="vpm-portfolio-empty">Nessun immobile da controllare.</p>'}</div><p class="vpm-control-no-results" hidden>Nessun controllo corrisponde ai filtri.</p></section>`:''}
+  `);
 }
 function renderContabilitaPortfolio(){
   const props=immobiliVisibili();
@@ -4672,17 +4691,39 @@ function attachHandlers(){
     render();
   }));
   const portfolioSearch=document.querySelector('[data-portfolio-search]');
-  if(portfolioSearch)portfolioSearch.addEventListener('input',()=>{
+  if(portfolioSearch && document.querySelector('.vpm-activity-toolbar'))portfolioSearch.addEventListener('input',applyActivityFilters);
+  else if(portfolioSearch)portfolioSearch.addEventListener('input',()=>{
     const term=portfolioSearch.value.trim().toLocaleLowerCase('it');let shown=0;
     document.querySelectorAll('.vpm-portfolio-list .vpm-portfolio-row').forEach(row=>{const ok=row.textContent.toLocaleLowerCase('it').includes(term);row.hidden=!ok;if(ok)shown++;});
     const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
   });
-  document.querySelectorAll('[data-portfolio-filter]').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('[data-portfolio-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-    const filter=btn.dataset.portfolioFilter;let shown=0;
-    document.querySelectorAll('.vpm-portfolio-list .vpm-portfolio-row[data-portfolio-status]').forEach(row=>{const ok=filter==='all'||row.dataset.portfolioStatus===filter;row.hidden=!ok;if(ok)shown++;});
-    const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
+  const applyActivityFilters=()=>{
+    const activity=document.querySelector('.vpm-activity-toolbar');
+    if(!activity)return;
+    const term=(document.querySelector('[data-portfolio-search]')?.value||'').trim().toLocaleLowerCase('it');
+    const prop=document.querySelector('[data-activity-property-filter]')?.value||'all';
+    const taskFilter=document.querySelector('[data-portfolio-filter].active')?.dataset.portfolioFilter||'all';
+    const controlFilter=document.querySelector('[data-control-filter].active')?.dataset.controlFilter||'all';
+    document.querySelectorAll('[data-activity-list]').forEach(list=>{
+      const controls=list.dataset.activityList==='controls';let shown=0;
+      list.querySelectorAll('.vpm-activity-row').forEach(row=>{
+        const status=controls?row.dataset.controlStatus:row.dataset.portfolioStatus;
+        const filter=controls?controlFilter:taskFilter;
+        const match=filter==='all'||status===filter;
+        const ok=match&&(prop==='all'||row.dataset.activityProperty===prop)&&row.textContent.toLocaleLowerCase('it').includes(term);
+        row.hidden=!ok;if(ok)shown++;
+      });
+      const empty=list.parentElement.querySelector(controls?'.vpm-control-no-results':'.vpm-portfolio-no-results');
+      if(empty)empty.hidden=shown!==0;
+    });
+  };
+  document.querySelectorAll('[data-portfolio-filter],[data-control-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+    const attr=btn.hasAttribute('data-control-filter')?'data-control-filter':'data-portfolio-filter';
+    document.querySelectorAll('['+attr+']').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');applyActivityFilters();
   }));
+  const activityPropertyFilter=document.querySelector('[data-activity-property-filter]');
+  if(activityPropertyFilter)activityPropertyFilter.addEventListener('change',applyActivityFilters);
   const clearErrorBtn = document.querySelector('[data-clear-error]');
   if(clearErrorBtn) clearErrorBtn.addEventListener('click', ()=>{ state.error = null; render(); });
 

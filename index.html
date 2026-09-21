@@ -2945,6 +2945,10 @@ function renderOverview(){
   const pending=bookings.filter(x=>x.b.stato==='richiesta');
   const revenue=props.reduce((n,p)=>n+(p.spese||[]).filter(x=>x.tipo==='entrata').reduce((a,x)=>a+(Number(x.importo)||0),0),0);
   const upcoming=bookings.filter(x=>x.b.checkin && x.b.checkin>=new Date().toISOString().slice(0,10)).length;
+  const recentMonths=Array.from({length:6},(_,i)=>{const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-5+i);return {key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('it-IT',{month:'short'})};});
+  const monthlyRevenue=recentMonths.map(m=>props.reduce((total,p)=>total+(p.spese||[]).filter(t=>t.tipo==='entrata'&&String(t.data||t.date||'').startsWith(m.key)).reduce((n,t)=>n+(Number(t.importo)||0),0),0));
+  const maxMonthlyRevenue=Math.max(1,...monthlyRevenue);
+
   const openMaintenance=props.reduce((n,p)=>n+(p.manutenzioni||[]).filter(m=>m.stato!=='completata').length,0);
   const futureEvents=raccogliEventiPortfolio();
   const today=new Date();
@@ -3005,9 +3009,9 @@ function renderOverview(){
         <div class="vpm-bottom">
           <section class="vpm-panel vpm-revenue"><h2 class="vpm-panel-title">Andamento entrate <small>Riepilogo registrato</small></h2>
             <div class="vpm-revenue-amount">${fmtCurrency(revenue)}</div>
-            <div class="vpm-chart-bars" aria-label="Riepilogo entrate registrate"><span style="height:28%"></span><span style="height:38%"></span><span style="height:49%"></span><span style="height:58%"></span><span style="height:69%"></span><span style="height:84%"></span></div>
-            <div class="vpm-chart-labels"><span>Gen</span><span>Feb</span><span>Mar</span><span>Apr</span><span>Mag</span><span>Giu</span></div>
-            <small class="vpm-chart-note">Barre illustrative · totale da movimenti registrati</small>
+            <div class="vpm-chart-bars" aria-label="Entrate registrate negli ultimi sei mesi">${monthlyRevenue.map((amount,i)=>`<span title="${recentMonths[i].label}: ${fmtCurrency(amount)}" style="height:${amount?Math.max(6,amount/maxMonthlyRevenue*100):0}%"></span>`).join('')}</div>
+            <div class="vpm-chart-labels">${recentMonths.map(m=>`<span>${m.label}</span>`).join('')}</div>
+            <small class="vpm-chart-note">Ultimi 6 mesi · movimenti con data registrata</small>
           </section>
           <section class="vpm-panel vpm-occupancy"><h2 class="vpm-panel-title">Occupazione immobili</h2>
             <div class="vpm-occupancy-body"><div class="vpm-donut" style="--occupied:${props.length?Math.round(props.filter(p=>rentInfo(p).rented).length/props.length*100):0}%"><strong>${props.length?Math.round(props.filter(p=>rentInfo(p).rented).length/props.length*100):0}%</strong></div>

@@ -372,3 +372,15 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-calendar-legend{display:flex;align-items:center;flex-wrap:wrap;gap:14px;color:#71889c;font-size:10px;margin-top:12px}.vpm-calendar-legend span{display:inline-flex;align-items:center;gap:5px}
 .vpm-calendar-agenda{border-top:1px solid #e3eef5;margin-top:13px;padding-top:13px}.vpm-calendar-agenda h3{font-size:13px;text-transform:capitalize;margin:0 0 10px;color:#1c344a}.vpm-calendar-agenda h3 small{font-weight:400;color:#70889c}.vpm-calendar-agenda button{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%;border:1px solid #e0edf5;border-radius:7px;background:#fcfeff;padding:10px;margin:6px 0;text-align:left;cursor:pointer}.vpm-calendar-agenda button strong{font-size:12px;color:#1d374d}.vpm-calendar-agenda button span,.vpm-calendar-agenda p{font-size:11px;color:#668399}
 @media(max-width:600px){.vpm-calendar-panel{padding:10px}.vpm-calendar-grid,.vpm-calendar-weekdays{gap:3px}.vpm-calendar-day{min-height:53px;padding:5px}.vpm-calendar-day b{font-size:11px}.vpm-calendar-day small{font-size:8px}.vpm-calendar-head h2{font-size:16px}}
+
+/* Manager activities overview */
+.vpm-activity-highlights{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:15px 0}
+.vpm-activity-highlights>div{display:flex;flex-direction:column;gap:5px;border:1px solid #dfebf2;background:#fff;border-radius:10px;padding:14px}
+.vpm-activity-highlights i{font-size:20px;color:#168f99}.vpm-activity-highlights strong{font-size:23px;color:#19394c}.vpm-activity-highlights span{font-size:11px;color:#70869a}
+.vpm-activity-toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.vpm-activity-toolbar label{display:flex;align-items:center;gap:7px;flex:1;min-width:190px;border:1px solid #dce9f0;border-radius:8px;background:#fff;padding:0 12px;color:#138d99}
+.vpm-activity-toolbar input{width:100%;min-height:40px;border:0;outline:0;background:transparent;color:#233f53;font:inherit;font-size:12px}
+.vpm-activity-toolbar select{min-height:40px;max-width:100%;border:1px solid #dce9f0;border-radius:8px;background:#fff;color:#233f53;padding:0 12px;font:inherit;font-size:12px}
+.vpm-activity-filters,.vpm-control-filters{flex-wrap:wrap}.vpm-activity-row .vpm-activity-flag{display:inline-block;color:#b66c33;font-size:10px;font-weight:700;margin-top:5px}
+.vpm-activity-row[hidden]{display:none!important}
+@media(max-width:700px){.vpm-activity-highlights{grid-template-columns:repeat(2,minmax(0,1fr))}.vpm-activity-toolbar select{width:100%}}

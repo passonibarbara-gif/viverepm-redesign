@@ -787,7 +787,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:650px){.overlay:has(>.vpm-modal-premium){padding:9px;align-items:center}.vpm-modal-premium{max-height:94dvh;padding:0 17px 17px;border-radius:15px}.vpm-modal-premium .vpm-modal-head{margin:0 -17px 18px;padding:16px 17px 17px;border-radius:15px 15px 0 0}.vpm-modal-premium .vpm-modal-head:after{left:17px}.vpm-modal-premium .vpm-modal-x{right:14px;top:13px}.vpm-modal-premium .vpm-modal-title-icon{width:42px;height:42px;font-size:20px}.vpm-modal-premium .vpm-modal-title-row h2{font-size:23px}.vpm-modal-premium .field-row{grid-template-columns:1fr;gap:0}.vpm-modal-premium .modal-actions{bottom:-17px;margin:20px -17px -17px;padding:13px 17px}.vpm-modal-premium .vpm-modal-category{font-size:8px}}
 
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-16">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-17">
 </head>
 <body>
 <div id="root"></div>
@@ -4494,19 +4494,10 @@ function renderModalRaw(){
       <div class="overlay" data-close-overlay><div class="modal" data-stop>
         <h2>${isOwner ? 'Segnala un problema' : (editing && editing.id ? 'Modifica intervento':'Nuovo intervento')}</h2>
         <form id="maintForm">
-          <div class="field-row">
-            <div class="field"><label>Tipologia</label>
-              <select name="tipologia">${TIPOLOGIE_INTERVENTO.map(t=>`<option ${m.tipologia===t?'selected':''}>${t}</option>`).join('')}</select>
-            </div>
-            <div class="field"><label>Urgenza</label>
-              <select name="urgenza">
-                <option value="Bassa" ${m.urgenza==='Bassa'?'selected':''}>Bassa</option>
-                <option value="Media" ${!m.urgenza||m.urgenza==='Media'?'selected':''}>Media</option>
-                <option value="Alta" ${m.urgenza==='Alta'?'selected':''}>Alta</option>
-              </select>
-            </div>
-          </div>
-          <div class="field"><label>Breve spiegazione</label><input name="descrizione" required value="${m.descrizione||''}" placeholder="es. Perdita dal rubinetto della cucina"></div>
+          <div class="vpm-maint-property"><i class="ti ti-home"></i><div><span>IMMOBILE SELEZIONATO</span><strong>${(state.properties.find(p=>p.id===propId)||state.properties.find(p=>p.id===state.selectedId)||{}).nome||'Immobile'}</strong></div></div>
+          <div class="field vpm-maint-category"><label>Tipologia intervento</label><div class="vpm-maint-options">${TIPOLOGIE_INTERVENTO.map((t,i)=>`<label class="vpm-maint-option vpm-maint-color-${i}"><input type="radio" name="tipologiaChoice" value="${t}" ${(m.tipologia||TIPOLOGIE_INTERVENTO[0])===t?'checked':''}><span class="vpm-maint-option-icon"><i class="ti ${['ti-droplet','ti-bolt','ti-hammer','ti-device-tv','ti-sparkles','ti-leaf','ti-dots'][i]}"></i></span><span>${t}</span></label>`).join('')}</div><select name="tipologia" class="vpm-maint-native-select" aria-label="Tipologia intervento">${TIPOLOGIE_INTERVENTO.map(t=>`<option ${m.tipologia===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="field"><label>Urgenza</label><select name="urgenza"><option value="Bassa" ${m.urgenza==='Bassa'?'selected':''}>Bassa</option><option value="Media" ${!m.urgenza||m.urgenza==='Media'?'selected':''}>Media</option><option value="Alta" ${m.urgenza==='Alta'?'selected':''}>Alta</option></select></div>
+          <div class="field"><label>Descrizione dell’intervento</label><input name="descrizione" required value="${m.descrizione||''}" placeholder="es. Perdita dal rubinetto della cucina"></div>
           <div class="field"><label>${isOwner?'Quando ti serve risolta (facoltativo)':'Scadenza'}</label><input type="date" name="scadenza" ${isOwner?'':'required'} value="${m.scadenza||''}"></div>
           <div class="field"><label>Foto del problema (facoltativo)</label><input type="file" name="foto" accept="image/*" multiple></div>
           <div class="field"><label>Descrizione delle foto (facoltativa)</label><input name="fotoDescrizione" placeholder="es. Vista del danno"></div>
@@ -5828,6 +5819,7 @@ function attachHandlers(){
     }, state.modal.editing ? state.modal.editing.id : null);
   });
 
+  document.querySelectorAll('.vpm-maint-option input').forEach(r=>r.addEventListener('change',()=>{const select=document.querySelector('#maintForm select[name="tipologia"]');if(select)select.value=r.value;}));
   const maintForm = document.getElementById('maintForm');
   if(maintForm) maintForm.addEventListener('submit', async ev=>{
     ev.preventDefault();

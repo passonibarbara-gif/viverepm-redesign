@@ -750,7 +750,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-13">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-14">
 </head>
 <body>
 <div id="root"></div>
@@ -1110,7 +1110,8 @@ async function signInGestore(email, password){
     }
     render();
   }catch(e){
-    alert('Accesso non riuscito: email o password non corrette.');
+    console.error('Errore accesso gestore:', e);
+    alert('Accesso non riuscito: ' + (e && e.message ? e.message : 'errore non identificato'));
   }
 }
 async function signUpOperatore(email, password){
@@ -1145,12 +1146,17 @@ async function signOutGestore(){
 }
 async function requestPasswordReset(email){
   try{
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] });
+    const redirectTo = window.location.origin + window.location.pathname;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo });
     if(error) throw error;
-    state.gestoreResetInviato = true;
-    render();
   }catch(e){
-    alert('Non sono riuscito a inviare l\'email di recupero: ' + (e && e.message ? e.message : 'riprova più tardi'));
+    alert('Richiesta di recupero non riuscita: ' + (e && e.message ? e.message : 'riprova più tardi'));
+    return;
+  }
+  state.gestoreResetInviato = true;
+  try{ render(); }catch(e){
+    console.error('Errore visualizzazione conferma recupero:', e);
+    alert('Supabase ha accettato la richiesta di recupero, ma la pagina non è riuscita ad aggiornarsi. Controlla la posta, anche Spam.');
   }
 }
 async function updatePasswordAfterRecovery(newPassword){

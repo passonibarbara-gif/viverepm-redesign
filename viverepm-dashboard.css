@@ -82,3 +82,44 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 @media(max-width:1200px){.vpm-workspace{grid-template-columns:1fr}.vpm-sidecol{grid-template-columns:1fr 1fr}.vpm-bottom{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:860px){.vpm-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.vpm-bottom{grid-template-columns:1fr 1fr}.vpm-next{grid-column:1/-1}.vpm-hero{grid-template-columns:1fr 1fr}.vpm-hero-quote{grid-column:2}.vpm-hero-second-quote{display:none}}
 @media(max-width:620px){.vpm-hero{height:120px;min-height:120px;margin:0 0 12px}.vpm-hero-copy{max-width:100%}.vpm-hero-copy h1{font-size:21px}.vpm-hero-copy p{font-size:12px}.vpm-hero-quote{display:none}.vpm-hero-photo{inset:0 0 0 35%;opacity:.25}.vpm-bottom,.vpm-sidecol{grid-template-columns:1fr}.vpm-next{grid-column:auto}.vpm-property-tools{grid-template-columns:1fr}.vpm-filterbar,.vpm-property-search{grid-column:auto;grid-row:auto}.vpm-property-search{max-width:none}.vpm-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Reference screenshot: header and first-fold pixel alignment. Keep this LAST. */
+@media(min-width:861px){
+  .topnav{height:68px;min-height:68px;z-index:8;position:relative;background:transparent;box-shadow:none;padding:10px 26px 10px 244px;pointer-events:none}
+  .topnav-brand,.topnav-tabs{pointer-events:auto}
+  .topnav-brand{z-index:2}
+  .vpm-global-search{background:#fff;border:0;box-shadow:0 1px 1px rgba(31,86,115,.06);width:min(480px,36vw);height:38px}
+  .topnav-tabs{height:68px;display:flex;align-items:center;gap:7px;margin:-10px -26px -10px auto;padding:0 24px 0 15px;background:rgba(255,255,255,.96);border-bottom-left-radius:9px}
+  .app{min-height:calc(100vh - 68px)}
+  .sidebar{margin-top:-68px;min-height:100vh}
+  main{margin-top:-68px;padding:0 16px 20px}
+  .vpm-dashboard{margin:0}
+  .vpm-hero{margin:0 -16px 10px;min-height:174px;height:174px;border-radius:0;padding:69px 22px 12px 32px;grid-template-columns:minmax(0,36%) minmax(0,27%) minmax(0,37%);align-items:center}
+  .vpm-hero-copy{grid-column:1;max-width:none;align-self:center}
+  .vpm-hero-copy h1{font-size:clamp(21px,2.08vw,31px);line-height:1.12;letter-spacing:-.9px;margin:0 0 6px}
+  .vpm-hero-copy p{font-size:clamp(11px,1vw,15px);line-height:1.35;white-space:normal}
+  .vpm-hero-photo{inset:0 12% 0 46%;background-image:linear-gradient(90deg,#ecf9ff 0%,rgba(236,249,255,.15) 18%,rgba(236,249,255,0) 36%,rgba(236,249,255,0) 77%,#eaf9ff 100%),url('https://images.pexels.com/photos/13418034/pexels-photo-13418034.jpeg?auto=compress&cs=tinysrgb&w=1600');background-position:center,center 66%;background-size:cover,cover}
+  .vpm-hero-quote{grid-column:2;margin-left:0;justify-self:center;max-width:190px;align-self:center;font-size:clamp(13px,1.25vw,19px);line-height:1.35;z-index:3;text-shadow:0 1px 9px #eaf9ff,0 0 16px #eaf9ff}
+  .vpm-hero-second-quote{grid-column:3;justify-self:end;max-width:150px;margin-right:1%;font-size:clamp(12px,1.15vw,17px);z-index:3}
+  .vpm-workspace{grid-template-columns:minmax(0,1fr) 300px}
+  .vpm-panel{margin-bottom:10px}
+  .vpm-metrics{margin-bottom:10px}
+  .vpm-properties .vpm-property-card{min-height:0}
+  .vpm-property-photo{height:112px}
+  .vpm-property-body{padding:8px 10px 7px}
+  .vpm-property-details{margin-top:4px}
+  .vpm-property-foot{margin-top:3px;padding-top:5px}
+  .vpm-bottom .vpm-panel{min-height:135px}
+  .vpm-footer{padding-top:4px}
+}
+@media(min-width:861px) and (max-width:1250px){
+  .vpm-hero{grid-template-columns:minmax(0,40%) minmax(0,23%) minmax(0,37%)}
+  .vpm-hero-photo{inset:0 12% 0 47%}
+  .vpm-hero-quote{font-size:13px}
+}
+@media(max-width:860px){
+  .vpm-hero{margin:0 0 12px;grid-template-columns:1fr;min-height:125px;height:auto;padding:20px}
+  .vpm-hero-copy{grid-column:1;max-width:100%}
+  .vpm-hero-quote,.vpm-hero-second-quote{display:none}
+  .vpm-hero-photo{inset:0 0 0 43%;opacity:.27}
+}

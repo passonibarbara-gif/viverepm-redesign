@@ -354,3 +354,21 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-quick-list{padding:2px 0 7px 12px}.vpm-quick-list .nav-item{padding:8px 9px;font-size:11px;margin:1px 0}.vpm-quick-list .nav-item .code{font-size:9px}
 .vpm-quick-empty{margin:3px 8px 8px;color:#9ebcc4;font-size:11px;line-height:1.5}
 .vpm-quick-create{display:grid;gap:7px;margin:9px 0 15px}.vpm-quick-create .btn-new{margin:0}
+
+/* Manager bookings: monthly calendar */
+.vpm-calendar-panel{background:#fff;border:1px solid #e0edf5;border-radius:10px;padding:18px;margin:13px 0}
+.vpm-calendar-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.vpm-calendar-head>div:first-child>span{color:#0b929d;font-size:10px;font-weight:700;letter-spacing:.12em}
+.vpm-calendar-head h2{font-size:18px;margin:5px 0;color:#1b3349}.vpm-calendar-head p{font-size:11px;color:#70879a;margin:4px 0}
+.vpm-calendar-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.vpm-calendar-controls strong{min-width:132px;text-align:center;text-transform:capitalize;color:#243d51;font-size:13px}
+.vpm-calendar-controls button{display:grid;place-items:center;min-width:30px;min-height:30px;border:1px solid #d7e8f0;border-radius:7px;background:#f7fcff;color:#087e8a;cursor:pointer;padding:5px 9px;font-size:11px}
+.vpm-calendar-weekdays,.vpm-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.vpm-calendar-weekdays span{text-align:center;font-size:10px;font-weight:700;color:#6e879b;padding:5px}
+.vpm-calendar-day{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:4px;min-height:69px;border:1px solid #e3eef5;border-radius:7px;background:#fcfeff;padding:8px;color:#284258;cursor:pointer;text-align:left}
+.vpm-calendar-day:hover{border-color:#7bc9d0;background:#f1fcfd}.vpm-calendar-day.today{border-color:#0c929d}.vpm-calendar-day.selected{background:#e2f7f5;border-color:#0b929d;box-shadow:inset 0 0 0 1px #0b929d}
+.vpm-calendar-day b{font-size:12px}.vpm-calendar-day small{font-size:10px;color:#70889c}.vpm-calendar-dots{display:flex;gap:4px;min-height:7px}
+.vpm-calendar-dots i,.vpm-calendar-legend i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#0b929d}.vpm-calendar-dots i.pending,.vpm-calendar-legend i.pending{background:#e4a34a}
+.vpm-calendar-legend{display:flex;align-items:center;flex-wrap:wrap;gap:14px;color:#71889c;font-size:10px;margin-top:12px}.vpm-calendar-legend span{display:inline-flex;align-items:center;gap:5px}
+.vpm-calendar-agenda{border-top:1px solid #e3eef5;margin-top:13px;padding-top:13px}.vpm-calendar-agenda h3{font-size:13px;text-transform:capitalize;margin:0 0 10px;color:#1c344a}.vpm-calendar-agenda h3 small{font-weight:400;color:#70889c}.vpm-calendar-agenda button{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%;border:1px solid #e0edf5;border-radius:7px;background:#fcfeff;padding:10px;margin:6px 0;text-align:left;cursor:pointer}.vpm-calendar-agenda button strong{font-size:12px;color:#1d374d}.vpm-calendar-agenda button span,.vpm-calendar-agenda p{font-size:11px;color:#668399}
+@media(max-width:600px){.vpm-calendar-panel{padding:10px}.vpm-calendar-grid,.vpm-calendar-weekdays{gap:3px}.vpm-calendar-day{min-height:53px;padding:5px}.vpm-calendar-day b{font-size:11px}.vpm-calendar-day small{font-size:8px}.vpm-calendar-head h2{font-size:16px}}

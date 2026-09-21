@@ -2898,16 +2898,21 @@ function renderTuttePrenotazioni(){
   });
   righe.sort((a,b)=>new Date(b.b.createdAt)-new Date(a.b.createdAt));
 
+  const today=new Date().toISOString().slice(0,10);
+  const confermate=righe.filter(({b})=>b.stato==='confermata'||b.stato==='confermato');
+  const pendenti=righe.filter(({b})=>b.stato==='richiesta');
+  const arrivi=confermate.filter(({b})=>b.checkin===today);
+  const partenze=confermate.filter(({b})=>b.checkout===today);
+  const prossimi=confermate.filter(({b})=>b.checkin>=today).sort((a,b)=>String(a.b.checkin).localeCompare(String(b.b.checkin))).slice(0,5);
+  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   if(!righe.length){
     return `
-      <h1 class="page-title">Tutte le prenotazioni</h1>
-      <p class="page-sub">Le richieste di prenotazione di tutti gli immobili, in un unico posto.</p>
-      <div class="empty-inline">Nessuna prenotazione ricevuta ancora, su nessun immobile.</div>
+      <div class="vpm-bookings-page"><div class="vpm-bookings-hero"><div><span>VIVEREPM · ORGANIZZAZIONE</span><h1>Prenotazioni</h1><p>Arrivi, partenze e richieste dei tuoi immobili.</p></div><i class="ti ti-calendar-event"></i></div><div class="vpm-booking-empty"><i class="ti ti-calendar-off"></i><h2>Nessuna prenotazione registrata</h2><p>Le richieste reali dei tuoi immobili compariranno qui.</p></div></div>
     `;
   }
 
   const cards = righe.map(({p, b})=>`
-    <div class="booking-row">
+    <div class="booking-row vpm-booking-row" data-booking-state="${safe(b.stato||'richiesta')}" data-booking-search="${safe([p.nome,b.nome,b.telefono,b.checkin,b.checkout].join(' ').toLocaleLowerCase('it'))}">
       ${stampMarkHtml('booking:'+b.id)}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
         <div>
@@ -2931,9 +2936,11 @@ function renderTuttePrenotazioni(){
   `).join('');
 
   return `
-    <h1 class="page-title">Tutte le prenotazioni</h1>
-    <p class="page-sub">Le richieste di prenotazione di tutti gli immobili, in un unico posto.</p>
-    ${cards}
+    <div class="vpm-bookings-page">
+      <div class="vpm-bookings-hero"><div><span>VIVEREPM · ORGANIZZAZIONE</span><h1>Prenotazioni</h1><p>Arrivi, partenze e richieste dei tuoi immobili, tutto sotto controllo.</p></div><i class="ti ti-calendar-event"></i></div>
+      <div class="vpm-booking-stats"><div><i class="ti ti-calendar-event"></i><strong>${righe.length}</strong><span>Prenotazioni totali</span></div><div><i class="ti ti-calendar-question"></i><strong>${pendenti.length}</strong><span>Da confermare</span></div><div><i class="ti ti-login"></i><strong>${arrivi.length}</strong><span>Arrivi oggi</span></div><div><i class="ti ti-logout"></i><strong>${partenze.length}</strong><span>Partenze oggi</span></div></div>
+      <div class="vpm-booking-layout"><section class="vpm-booking-list-panel"><div class="vpm-booking-toolbar"><div><h2>Tutte le prenotazioni <small>${righe.length}</small></h2><p>Gestisci le richieste e apri le schede degli immobili.</p></div><label><i class="ti ti-search"></i><input type="search" id="vpm-booking-search" placeholder="Cerca ospite o immobile..."></label></div><div class="vpm-booking-filters"><button class="active" data-booking-filter="all">Tutte ${righe.length}</button><button data-booking-filter="richiesta">Da confermare ${pendenti.length}</button><button data-booking-filter="confirmed">Confermate ${confermate.length}</button><button data-booking-filter="rifiutata">Rifiutate</button></div><div id="vpm-booking-list">${cards}</div><p id="vpm-booking-no-results" hidden>Nessuna prenotazione corrisponde alla ricerca.</p></section>
+      <aside class="vpm-booking-side"><section><h2>Oggi <small>${new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long'})}</small></h2><p>Arrivi <strong>${arrivi.length}</strong> · Partenze <strong>${partenze.length}</strong></p>${arrivi.map(({p,b})=>`<div class="vpm-booking-next"><b>Arrivo: ${safe(b.nome)}</b><span>${safe(p.nome)}</span></div>`).concat(partenze.map(({p,b})=>`<div class="vpm-booking-next"><b>Partenza: ${safe(b.nome)}</b><span>${safe(p.nome)}</span></div>`)).join('')||'<p>Nessun arrivo o partenza oggi.</p>'}</section><section><h2>Prossimi arrivi</h2>${prossimi.map(({p,b})=>`<button class="vpm-booking-next" data-vai-a-immobile="${safe(p.id)}"><b>${fmtDate(b.checkin)} · ${safe(b.nome)}</b><span>${safe(p.nome)} →</span></button>`).join('')||'<p>Nessun arrivo confermato in programma.</p>'}</section></aside></div></div>
   `;
 }
 
@@ -4566,6 +4573,22 @@ function attachHandlers(){
   const estatesSort=document.getElementById('vpm-estates-sort');
   if(estatesSort)estatesSort.addEventListener('change',()=>{const grid=document.getElementById('vpm-properties');if(!grid)return;const props=immobiliVisibili();const byId=new Map(props.map(p=>[String(p.id),p]));[...grid.querySelectorAll('[data-nav]')].sort((a,b)=>{const pa=byId.get(a.dataset.nav),pb=byId.get(b.dataset.nav);if(!pa||!pb)return 0;if(estatesSort.value==='status'){const d=Number(Boolean(rentInfo(pa).rented))-Number(Boolean(rentInfo(pb).rented));if(d)return d;}return String(pa.nome||'').localeCompare(String(pb.nome||''),'it');}).forEach(el=>grid.appendChild(el));});
 
+  const bookingSearch=document.getElementById('vpm-booking-search');
+  const bookingFilters=[...document.querySelectorAll('[data-booking-filter]')];
+  const applyBookingFilter=()=>{
+    const term=(bookingSearch?.value||'').trim().toLocaleLowerCase('it');
+    const filter=bookingFilters.find(b=>b.classList.contains('active'))?.dataset.bookingFilter||'all';
+    let shown=0;
+    document.querySelectorAll('#vpm-booking-list .vpm-booking-row').forEach(card=>{
+      const status=card.dataset.bookingState;
+      const match=filter==='all'||(filter==='confirmed'?(status==='confermata'||status==='confermato'):status===filter);
+      const visible=match&&card.dataset.bookingSearch.includes(term);
+      card.hidden=!visible;if(visible)shown++;
+    });
+    const empty=document.getElementById('vpm-booking-no-results');if(empty)empty.hidden=shown!==0;
+  };
+  if(bookingSearch)bookingSearch.addEventListener('input',applyBookingFilter);
+  bookingFilters.forEach(btn=>btn.addEventListener('click',()=>{bookingFilters.forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyBookingFilter();}));
   const clearErrorBtn = document.querySelector('[data-clear-error]');
   if(clearErrorBtn) clearErrorBtn.addEventListener('click', ()=>{ state.error = null; render(); });
 

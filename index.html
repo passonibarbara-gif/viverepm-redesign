@@ -750,7 +750,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-12">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-13">
 </head>
 <body>
 <div id="root"></div>
@@ -2816,7 +2816,7 @@ function renderSidebar(){
       ${haModulo('interventi') || haModulo('controlli') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='attivita'?'active':''}" data-nav="attivita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-tool"></i></span>Interventi e controlli</div></div>` : ''}
       ${haModulo('spese') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='contabilita'?'active':''}" data-nav="contabilita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-wallet"></i></span>Contabilità e report</div></div>` : ''}
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
-      ${haModulo('messaggi') || haModulo('prenotazioni') || isAdmin() ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='comunicazioni'?'active':''}" data-nav="comunicazioni"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-messages"></i></span>Comunicazioni proprietari${vpmOwnerStatusCounts().reply>0?`<span class="nav-badge">${vpmInboxThreads().reduce((n,t)=>n+t.unread,0)}</span>`:''}</div></div>` : ''}
+      ${haModulo('messaggi') || haModulo('prenotazioni') || isAdmin() ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='comunicazioni'?'active':''}" data-nav="comunicazioni"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-messages"></i></span>Comunicazioni proprietari${vpmOwnerStatusCounts().reply>0?`<span class="nav-badge">${vpmOwnerStatusCounts().reply}</span>`:''}</div></div>` : ''}
       <div class="vpm-sidebar-quick"><div class="nav-section-label">Accesso rapido</div>
       ${haModulo('clienti') || isAdmin() ? `<button class="vpm-quick-toggle" data-vpm-quick="clients" aria-expanded="${vpmQuickExpanded.clients}"><i class="ti ti-chevron-${vpmQuickExpanded.clients?'down':'right'}"></i> Clienti recenti <span>${recentClients.length}</span></button>
       ${vpmQuickExpanded.clients?`<div class="vpm-quick-list">${clientiItems||'<p class="vpm-quick-empty">Apri un cliente per trovarlo qui.</p>'}</div>`:''}` : ''}

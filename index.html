@@ -859,6 +859,49 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 .vpm-modal-cliente .modal-actions:before{content:"Il tuo immobile. La nostra gestione."!important;color:#236e71!important;font-size:12px!important}
 .vpm-modal-cliente .modal-actions .btn-primary{background:linear-gradient(105deg,#006b70,#008f89)!important}
 @media(max-width:650px){.vpm-modal-premium.vpm-modal-cliente{padding:0 15px 15px!important}.vpm-modal-cliente .vpm-modal-head{margin:0 -15px 13px!important;padding:16px 15px!important}.vpm-modal-cliente .vpm-modal-tagline{display:none}.vpm-modal-cliente .vpm-modal-eyebrow{margin-right:45px!important}.vpm-modal-cliente .vpm-client-grid{grid-template-columns:1fr!important}.vpm-modal-cliente .modal-actions{margin:12px -15px -15px!important;padding:12px 15px!important}.vpm-modal-cliente .modal-actions:before{display:none}}
+
+/* VIVEREPM visual correction: compact illustrated dialogs, functional color */
+.vpm-modal-premium.vpm-modal-cliente{max-width:680px!important}
+.vpm-modal-cliente .vpm-modal-title-row{gap:13px!important}
+.vpm-modal-cliente .vpm-modal-title-icon{width:49px!important;height:49px!important;background:#e9e4ff!important;color:#6853ad!important;border-radius:14px!important;font-size:25px!important}
+.vpm-modal-cliente .vpm-modal-title-row h2{font-size:27px!important}
+.vpm-modal-cliente .vpm-client-grid{gap:0 12px!important}
+.vpm-modal-cliente .vpm-client-grid .field{margin-bottom:9px!important}
+.vpm-modal-cliente .vpm-client-grid .field:first-child{grid-column:1/-1}
+.vpm-modal-cliente .vpm-client-grid .field:last-child{grid-column:1/-1}
+.vpm-modal-cliente .vpm-client-grid .field:nth-child(2) label i{color:#e08d30}
+.vpm-modal-cliente .vpm-client-grid .field:nth-child(3) label i{color:#6e5bbb}
+.vpm-modal-cliente .vpm-client-grid .field:nth-child(4) label i{color:#278ab2}
+.vpm-modal-cliente .vpm-client-email-note{margin:2px 0 11px!important;background:#e8f4ff!important;border-left:3px solid #4c9ac8;font-size:11px!important}
+.vpm-modal-cliente .vpm-client-doc-heading{display:flex;align-items:center;gap:8px;margin:2px 0 7px;font-size:10px;letter-spacing:.11em;font-weight:700;color:#365665}
+.vpm-modal-cliente .vpm-client-doc-heading-icon{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#fff0df;color:#d77c24;font-size:16px}
+.vpm-modal-cliente .vpm-client-document>label{display:none!important}
+.vpm-modal-cliente .vpm-client-file{min-height:69px!important;padding:10px 112px 10px 14px!important;overflow:hidden;border:1px dashed #a6cddc!important;background:linear-gradient(105deg,#f0faff,#fff9ef)!important}
+.vpm-modal-cliente .vpm-client-file>i{font-size:27px!important}
+.vpm-modal-cliente .vpm-client-file-art{position:absolute;right:17px;top:7px;width:79px;height:53px;pointer-events:none}
+.vpm-modal-cliente .vpm-client-file-art .ti-photo{position:absolute;left:8px;top:7px;display:grid;place-items:center;width:46px;height:41px;background:#fff;border:2px solid #fff;border-radius:5px;box-shadow:0 2px 8px #537f9d55;transform:rotate(-9deg);font-size:29px;color:#d49b44}
+.vpm-modal-cliente .vpm-client-file-art .ti-paperclip{position:absolute;right:0;top:0;color:#078d91;font-size:30px;transform:rotate(20deg)}
+.vpm-modal-cliente .modal-actions{margin-top:11px!important}
+.vpm-modal-premium.vpm-modal-property{max-width:740px!important}
+.vpm-modal-property .vpm-modal-head{margin-bottom:12px!important}
+.vpm-modal-property .vpm-prop-section{margin-bottom:12px;border:1px solid #e1ebed;border-radius:13px;overflow:hidden;background:#fff}
+.vpm-modal-property .vpm-prop-section-title{display:flex;align-items:center;gap:11px;padding:11px 14px;background:linear-gradient(95deg,#eaf9f7,#f5fbfa);border-bottom:1px solid #e2efed}
+.vpm-modal-property .vpm-prop-section-icon{display:grid;place-items:center;flex:none;width:39px;height:39px;border-radius:11px;background:#d6f1ee;color:#087e81;font-size:21px}
+.vpm-modal-property .vpm-prop-section-title>div{display:grid;gap:2px}
+.vpm-modal-property .vpm-prop-section-title strong{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:#23464b}
+.vpm-modal-property .vpm-prop-section-title small{font-size:10px;color:#607d86}
+.vpm-modal-property .vpm-prop-fields{padding:12px 14px 2px}
+.vpm-modal-property .vpm-prop-fields>.field,.vpm-modal-property .vpm-prop-fields>.field-row{margin-bottom:11px}
+.vpm-modal-property .vpm-prop-fields .field>label{font-size:10px!important;letter-spacing:.045em!important}
+.vpm-modal-property .vpm-prop-fields input:not([type=checkbox]),.vpm-modal-property .vpm-prop-fields select{min-height:39px!important;padding:8px 11px!important;font-size:12px!important}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-section-title{background:linear-gradient(95deg,#f0ecff,#fbfaff)}
+.vpm-modal-property .vpm-prop-owner .vpm-prop-section-icon{background:#e7dfff;color:#6951a5}
+.vpm-modal-property .vpm-prop-rental .vpm-prop-section-title{background:linear-gradient(95deg,#fff1df,#fffaf2)}
+.vpm-modal-property .vpm-prop-rental .vpm-prop-section-icon{background:#ffe5c4;color:#c77b24}
+.vpm-modal-property .vpm-prop-booking .vpm-prop-section-title{background:linear-gradient(95deg,#eaf3ff,#f8fbff)}
+.vpm-modal-property .vpm-prop-booking .vpm-prop-section-icon{background:#dcecff;color:#3678b3}
+.vpm-modal-property .vpm-prop-fields .section-label{margin-top:10px!important}
+@media(max-width:580px){.vpm-modal-cliente .vpm-client-file{padding-right:78px!important}.vpm-modal-cliente .vpm-client-file-art{right:4px;transform:scale(.75)}.vpm-modal-property .vpm-prop-fields{padding:10px 11px 2px}}
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-20">
 </head>

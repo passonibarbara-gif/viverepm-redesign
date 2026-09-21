@@ -335,3 +335,12 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-client-hero-actions{flex:0 1 auto;min-width:0}
 .vpm-portfolio-row-main,.vpm-client-property-main{min-width:0}
 @media(max-width:600px){.vpm-portfolio-heading{display:flex;flex-direction:column;align-items:stretch}.vpm-portfolio-heading>button{align-self:flex-start}.vpm-portfolio-search{max-width:100%}.vpm-client-hero{display:flex;flex-direction:column;align-items:stretch}.vpm-client-hero>div:first-child{flex-basis:auto}.vpm-client-hero-actions{width:100%}}
+
+/* Fix: the negative top offset is ONLY for the dashboard hero, not client/property pages.
+   Previously it placed client names beneath the global search bar. */
+@media (min-width:861px){
+  .app main{margin-top:0;min-width:0;padding-top:18px}
+  .app main:has(.vpm-dashboard){margin-top:-65px;padding-top:0}
+  .topnav{background:#fff;box-shadow:0 1px 0 #e8f1f8}
+  .topnav:has(+ .app main .vpm-dashboard){background:transparent;box-shadow:none}
+}

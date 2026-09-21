@@ -499,3 +499,28 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-modal-maintenance .vpm-maint-native-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;padding:0!important}
 .vpm-modal-maintenance .vpm-maint-upload input[type=file]{border-style:dashed!important;background:#f3fbfd!important}
 @media(max-width:580px){.vpm-modal-maintenance .vpm-maint-options{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Approved mockup language — actual owner form */
+.vpm-modal-premium.vpm-modal-cliente{max-width:680px}
+.vpm-modal-cliente .vpm-modal-head{padding-bottom:17px;margin-bottom:17px}
+.vpm-modal-cliente .vpm-modal-title-icon{background:#ece8ff;color:#6654a6}
+.vpm-modal-cliente .vpm-modal-head:before{content:"Valore ai tuoi spazi  ♡";position:absolute;right:80px;top:22px;font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:#356a6d;transform:rotate(-5deg)}
+.vpm-modal-cliente .vpm-client-intro{display:flex;align-items:center;gap:13px;background:linear-gradient(100deg,#f0fafa,#fff8ed);border-left:3px solid #dba24d;border-radius:12px;padding:13px 16px;margin-bottom:17px}
+.vpm-modal-cliente .vpm-client-intro-icon{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:12px;background:#e8e2ff;color:#6954b1;font-size:24px}
+.vpm-modal-cliente .vpm-client-intro>div{display:grid;gap:3px}
+.vpm-modal-cliente .vpm-client-intro strong{font-family:'Fraunces',serif;font-size:16px;color:#23464a}
+.vpm-modal-cliente .vpm-client-intro small{font-size:11px;color:#5d747c}
+.vpm-modal-cliente .vpm-client-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.vpm-modal-cliente .vpm-client-grid .field{margin-bottom:13px}
+.vpm-modal-cliente .vpm-client-grid .field:first-child,.vpm-modal-cliente .vpm-client-grid .field:last-child{grid-column:1/-1}
+.vpm-modal-cliente .vpm-client-email-note{display:flex;align-items:flex-start;gap:9px;margin:0 0 16px;padding:10px 12px;border-radius:10px;background:#eaf5ff;color:#315c7b;font-size:11px;line-height:1.5}
+.vpm-modal-cliente .vpm-client-email-note i{color:#2b7cbb;font-size:19px}
+.vpm-modal-cliente .vpm-client-document{margin-bottom:10px}
+.vpm-modal-cliente .vpm-client-file{position:relative;display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px dashed #a9d6d6;border-radius:11px;background:#f3fbfc;min-height:66px}
+.vpm-modal-cliente .vpm-client-file>i{font-size:28px;color:#078d90}
+.vpm-modal-cliente .vpm-client-file>div{display:grid;gap:3px}
+.vpm-modal-cliente .vpm-client-file strong{font-size:12px;color:#245460}
+.vpm-modal-cliente .vpm-client-file small{font-size:10px;color:#728b94}
+.vpm-modal-cliente .vpm-client-file input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.vpm-modal-cliente .modal-actions:before{content:"♧  Il tuo immobile. La nostra gestione.";font-family:'Fraunces',serif;font-style:italic;color:#357574;font-size:12px;margin-right:auto}
+@media(max-width:580px){.vpm-modal-cliente .vpm-client-grid{grid-template-columns:1fr}.vpm-modal-cliente .vpm-modal-head:before{display:none}.vpm-modal-cliente .modal-actions:before{display:none}}

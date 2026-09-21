@@ -3379,7 +3379,9 @@ function renderDossier(p){
   }
 
   return `
-    <div class="dossier-header">
+    <div class="vpm-dossier-page">
+    <button type="button" class="vpm-back-estates" data-nav="immobili"><i class="ti ti-arrow-left"></i> Tutti gli immobili</button>
+    <div class="dossier-header vpm-dossier-header">
       <div>
         <p class="prop-catasto" style="margin-bottom:4px;">${p.catasto}</p>
         <h1 class="page-title" style="margin-bottom:2px;">${propertyTypeIcon(p.tipo)}${p.nome}</h1>
@@ -3392,9 +3394,13 @@ function renderDossier(p){
         ` : ''}
       </div>
     </div>
-
+    <div class="vpm-dossier-cover">
+      ${getCoverPhotoUrl(p)?`<img src="${String(getCoverPhotoUrl(p)).replace(/"/g,'&quot;')}" alt="Foto immobile" loading="lazy">`:'<div class="vpm-dossier-cover-empty"><i class="ti ti-home"></i><span>Puoi aggiungere la foto dalla scheda Foto</span></div>'}
+      <div class="vpm-dossier-cover-caption"><span><i class="ti ti-map-pin"></i> ${p.indirizzo||'Indirizzo da inserire'}</span><span>${rentInfo(p).rented?'Occupato':'Disponibile'}</span></div>
+    </div>
     <div class="dossier-tabs">${tabsHtml}</div>
-    ${tabContent}
+    <div class="vpm-dossier-content">${tabContent}</div>
+    </div>
   `;
 }
 

@@ -749,8 +749,45 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:1180px){.vpm-overview{grid-template-columns:minmax(0,1fr)}.vpm-overview-side{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
+
+/* Critical modal styling bundled inline so stale external styles cannot break dialogs */
+/* ViverePM premium modal system — consistent across existing forms */
+.overlay:has(>.vpm-modal-premium){background:rgba(11,35,40,.57);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:18px;z-index:100}
+.vpm-modal-premium{position:relative;max-width:620px;width:100%;max-height:min(88dvh,900px);padding:0 27px 25px;background:#fff;border:1px solid #e1eeed;border-radius:19px;box-shadow:0 30px 90px rgba(5,38,45,.28),0 3px 14px rgba(5,38,45,.1);scrollbar-width:thin;scrollbar-color:#b8dcd9 transparent;color:#183c43}
+.vpm-modal-premium.vpm-modal-property,.vpm-modal-premium.vpm-modal-operatore,.vpm-modal-premium.vpm-modal-contrattoGestione{max-width:760px}
+.vpm-modal-premium .vpm-modal-head{position:sticky;top:0;z-index:3;margin:0 -27px 22px;padding:19px 27px 20px;background:linear-gradient(110deg,#fff 70%,#f1faf8);border-bottom:1px solid #e7f0ef;border-radius:19px 19px 0 0}
+.vpm-modal-premium .vpm-modal-head:after{content:"";position:absolute;bottom:-1px;left:27px;width:51px;height:3px;border-radius:5px;background:linear-gradient(90deg,#0abab5,#e4a744)}
+.vpm-modal-premium .vpm-modal-eyebrow{display:flex;align-items:center;gap:12px;margin:0 46px 15px 0}
+.vpm-modal-premium .vpm-modal-brand{font-family:'Fraunces',serif;letter-spacing:.19em;font-size:13px;font-weight:600;color:#153e43}
+.vpm-modal-premium .vpm-modal-brand span{color:#0abab5}
+.vpm-modal-premium .vpm-modal-category{font-size:9px;font-weight:700;letter-spacing:.17em;color:#78918e;border-left:1px solid #d5e5e3;padding-left:12px}
+.vpm-modal-premium .vpm-modal-x{position:absolute;top:16px;right:22px;display:grid;place-items:center;width:36px;height:36px;border:1px solid #d9e9e7;border-radius:50%;background:#fff;color:#365c62;cursor:pointer;font-size:18px;transition:background .2s,transform .2s}
+.vpm-modal-premium .vpm-modal-x:hover{background:#eaf8f6;transform:rotate(90deg)}
+.vpm-modal-premium .vpm-modal-title-row{display:flex;align-items:center;gap:14px}
+.vpm-modal-premium .vpm-modal-title-icon{display:grid;place-items:center;flex:none;width:49px;height:49px;border-radius:15px;background:#e4f7f6;color:#087d80;font-size:24px}
+.vpm-modal-premium.vpm-modal-maintenance .vpm-modal-title-icon,.vpm-modal-premium.vpm-modal-preventivo .vpm-modal-title-icon{background:#fff1df;color:#d67d23}
+.vpm-modal-premium.vpm-modal-cliente .vpm-modal-title-icon,.vpm-modal-premium.vpm-modal-operatore .vpm-modal-title-icon{background:#ede9ff;color:#6853ad}
+.vpm-modal-premium.vpm-modal-fotoImmobile .vpm-modal-title-icon,.vpm-modal-premium.vpm-modal-fotoIntervento .vpm-modal-title-icon{background:#e9f1ff;color:#356eae}
+.vpm-modal-premium .vpm-modal-kicker{display:block;margin-bottom:3px;color:#6c8586;font-size:9px;font-weight:700;letter-spacing:.15em}
+.vpm-modal-premium .vpm-modal-title-row h2{margin:0;color:#173d43;font-family:'Fraunces',serif;font-size:clamp(22px,3vw,29px);font-weight:600;line-height:1.16}
+.vpm-modal-premium .field{margin-bottom:16px}
+.vpm-modal-premium .field>label{font-family:'IBM Plex Sans',sans-serif;font-size:11px;letter-spacing:.075em;color:#35515b;font-weight:700}
+.vpm-modal-premium .field input:not([type=checkbox]):not([type=radio]),.vpm-modal-premium .field select,.vpm-modal-premium .field textarea{min-height:43px;border:1px solid #dce7eb;border-radius:10px;background:#fff;padding:11px 13px;color:#193e45;box-shadow:0 1px 2px rgba(15,55,65,.02)}
+.vpm-modal-premium .field textarea{min-height:90px;resize:vertical}
+.vpm-modal-premium .field input:focus,.vpm-modal-premium .field select:focus,.vpm-modal-premium .field textarea:focus{border-color:#0abab5;outline:3px solid rgba(10,186,181,.12)}
+.vpm-modal-premium .field input[type=checkbox]{accent-color:#0abab5}
+.vpm-modal-premium .section-label{color:#116c73;border-left:3px solid #0abab5;padding-left:10px;font-size:11px;letter-spacing:.09em}
+.vpm-modal-premium .form-subsection{background:#f2f9f8;border:1px solid #dcecea;border-radius:12px}
+.vpm-modal-premium .modal-actions{position:sticky;bottom:-25px;z-index:2;align-items:center;flex-wrap:wrap;gap:10px;margin:25px -27px -25px;padding:16px 27px;background:rgba(255,255,255,.97);border-top:1px solid #e8eeee;border-radius:0 0 19px 19px;backdrop-filter:blur(6px)}
+.vpm-modal-premium .modal-actions .btn-primary{border-radius:11px;background:linear-gradient(105deg,#075a62,#078c88);color:#fff;box-shadow:0 5px 15px rgba(4,115,112,.16);padding:12px 20px;min-height:42px;font-weight:700}
+.vpm-modal-premium .modal-actions .btn-primary:hover{background:linear-gradient(105deg,#064c54,#067a78)}
+.vpm-modal-premium .modal-actions .btn-secondary{border:1px solid #c9dfe0;border-radius:11px;background:#fff;color:#25505b;padding:11px 18px;min-height:42px}
+.vpm-modal-premium .modal-actions .danger{margin-right:auto}
+.vpm-modal-premium .amenity-chip{border-radius:10px}
+@media(max-width:650px){.overlay:has(>.vpm-modal-premium){padding:9px;align-items:center}.vpm-modal-premium{max-height:94dvh;padding:0 17px 17px;border-radius:15px}.vpm-modal-premium .vpm-modal-head{margin:0 -17px 18px;padding:16px 17px 17px;border-radius:15px 15px 0 0}.vpm-modal-premium .vpm-modal-head:after{left:17px}.vpm-modal-premium .vpm-modal-x{right:14px;top:13px}.vpm-modal-premium .vpm-modal-title-icon{width:42px;height:42px;font-size:20px}.vpm-modal-premium .vpm-modal-title-row h2{font-size:23px}.vpm-modal-premium .field-row{grid-template-columns:1fr;gap:0}.vpm-modal-premium .modal-actions{bottom:-17px;margin:20px -17px -17px;padding:13px 17px}.vpm-modal-premium .vpm-modal-category{font-size:8px}}
+
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-15">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-16">
 </head>
 <body>
 <div id="root"></div>

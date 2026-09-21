@@ -903,7 +903,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 .vpm-modal-property .vpm-prop-fields .section-label{margin-top:10px!important}
 @media(max-width:580px){.vpm-modal-cliente .vpm-client-file{padding-right:78px!important}.vpm-modal-cliente .vpm-client-file-art{right:4px;transform:scale(.75)}.vpm-modal-property .vpm-prop-fields{padding:10px 11px 2px}}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-20">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-21">
 </head>
 <body>
 <div id="root"></div>
@@ -4375,10 +4375,10 @@ function renderModalRaw(){
     return `
       <div class="overlay" data-close-overlay><div class="modal" data-stop>
         <h2>${editing && editing.id ?'Modifica immobile':'Nuovo immobile'}</h2>
-        <form id="propForm"><div class="vpm-prop-section vpm-prop-basics"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-home"></i></span><div><strong>La tua proprietà</strong><small>Informazioni essenziali sull’immobile</small></div></div><div class="vpm-prop-fields">
-          <div class="field"><label>Nome immobile</label><input name="nome" required value="${p.nome||''}" placeholder="es. Bilocale Via Roma"></div>
-          <div class="field"><label>Indirizzo</label><input name="indirizzo" value="${p.indirizzo||''}" placeholder="Via, città"></div>
-          <div class="field"><label>Tipo</label><select name="tipo">${TIPI_IMMOBILE.map(t=>`<option ${p.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div>
+        <form id="propForm"><p class="vpm-prop-intro">Inserisci le informazioni principali del tuo immobile.</p><div class="vpm-prop-section vpm-prop-basics"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-home"></i></span><div><strong>DATI IMMOBILE</strong><small>Le informazioni principali</small></div><img class="vpm-prop-illustration" src="assets/viverepm-terrace.svg" alt="Terrazza ViverePM"></div><div class="vpm-prop-fields">
+          <div class="field"><label><i class="ti ti-home"></i> Nome immobile</label><input name="nome" required value="${p.nome||''}" placeholder="es. Bilocale Via Roma"></div>
+          <div class="field"><label><i class="ti ti-map-pin"></i> Indirizzo</label><input name="indirizzo" value="${p.indirizzo||''}" placeholder="Via, città"></div>
+          <div class="field"><label><i class="ti ti-building"></i> Tipo immobile</label><select name="tipo">${TIPI_IMMOBILE.map(t=>`<option ${p.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div>
           <div class="field-row">
             <div class="field"><label>Ospiti massimi — adulti</label><input type="number" name="capacitaAdulti" min="0" value="${p.capacitaAdulti||''}" placeholder="es. 4"></div>
             <div class="field"><label>Ospiti massimi — bambini</label><input type="number" name="capacitaBambini" min="0" value="${p.capacitaBambini||''}" placeholder="es. 2"></div>
@@ -4434,10 +4434,10 @@ function renderModalRaw(){
             <div class="field"><label>Altro (facoltativo, uno per riga)</label><textarea name="caratteristicheAltro" rows="2" placeholder="Altre caratteristiche non in elenco">${righeAltro.join('\n')}</textarea></div>
             <p style="font-size:11px;color:var(--ink-soft);margin:-4px 0 14px 0;">Descrizione e punti di forza compaiono nella scheda dell'immobile quando l'ospite prenota.</p>
           </div>
-          <p style="font-size:11.5px;color:var(--ink-soft);margin:14px 0 14px 0;">Le foto si caricano dalla tab "Foto" della scheda immobile, dopo il salvataggio.</p>
+          <div class="vpm-prop-photo-note"><span class="vpm-prop-photo-icon"><i class="ti ti-photo"></i><i class="ti ti-paperclip"></i></span><div><strong>FOTO E DOCUMENTI</strong><small>Carica le fotografie e i documenti dalla scheda immobile, dopo il salvataggio.</small></div></div>
           </div></div><div class="modal-actions">
             <button type="button" class="btn-secondary" data-close>Annulla</button>
-            <button type="submit" class="btn-primary">Salva</button>
+            <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Salva immobile</button>
           </div>
         </form>
       </div></div>`;

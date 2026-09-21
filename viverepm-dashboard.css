@@ -324,3 +324,14 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-client-contact{margin:0}.vpm-client-contact dt{display:flex;align-items:center;gap:6px;color:#6c879b;font-size:11px;margin-top:13px}.vpm-client-contact dt:first-child{margin-top:0}.vpm-client-contact dd{font-size:12px;color:#21394e;margin:5px 0 0;overflow-wrap:anywhere}.vpm-client-contact a{color:#0b8994}.vpm-client-timeline{max-height:460px;overflow:auto}.vpm-client-empty{font-size:12px;color:#72889b;padding:10px 0}
 @media(max-width:1080px){.vpm-client-layout{grid-template-columns:1fr}.vpm-client-aside{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:750px){.vpm-client-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.vpm-client-aside{grid-template-columns:1fr}.vpm-client-hero{padding:20px}.vpm-client-property{flex-wrap:wrap}.vpm-client-property-main{flex-basis:calc(100% - 90px)}.vpm-client-property>button{margin-left:auto}}
+
+/* Prevent client names and search fields from overlapping on narrow screens */
+.vpm-portfolio-page,.vpm-portfolio-panel,.vpm-client-detail,.vpm-client-hero,.vpm-client-layout,.vpm-client-primary,.vpm-client-aside{min-width:0}
+.vpm-portfolio-heading,.vpm-client-hero{height:auto;min-height:0}
+.vpm-portfolio-heading h2,.vpm-client-hero h1,.vpm-client-property-main h3,.vpm-portfolio-row-main h3{max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:normal;white-space:normal;line-height:1.3}
+.vpm-portfolio-search{position:relative;clear:both;width:100%;max-width:410px;box-sizing:border-box;min-width:0}
+.vpm-portfolio-search input{flex:1;min-width:0;max-width:100%;box-sizing:border-box}
+.vpm-client-hero>div:first-child{flex:1 1 230px;min-width:0}
+.vpm-client-hero-actions{flex:0 1 auto;min-width:0}
+.vpm-portfolio-row-main,.vpm-client-property-main{min-width:0}
+@media(max-width:600px){.vpm-portfolio-heading{display:flex;flex-direction:column;align-items:stretch}.vpm-portfolio-heading>button{align-self:flex-start}.vpm-portfolio-search{max-width:100%}.vpm-client-hero{display:flex;flex-direction:column;align-items:stretch}.vpm-client-hero>div:first-child{flex-basis:auto}.vpm-client-hero-actions{width:100%}}

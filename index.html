@@ -834,7 +834,7 @@ let state = {
   guestWizardStep: 1,
   guestDates: {checkin:'', checkout:'', adulti:1, bambini:0, animali:0},
   guestBookingData: {nomeProprio:'', cognome:'', telefono:'', indirizzo:'', note:'', documento:null, adulti:1, bambini:0, animali:0},
-  vistaGestore: 'overview', // 'overview' | 'tutte-prenotazioni'
+  vistaGestore: 'overview', // 'overview' | 'immobili' | 'tutte-prenotazioni'
   gestoreRecuperoMode: false,
   ownerAuthMode: 'login', // 'login' | 'signup'
   selectedClienteId: null, // scheda cliente selezionata lato gestore (CRM)
@@ -2791,7 +2791,8 @@ function renderSidebar(){
     <div class="sidebar">
       <p class="brand"><i class="ti ti-home" style="font-size:26px;color:#37c6ce;margin-right:5px"></i>Vivere<span class="brand-accent">PM</span></p>
       <p class="brand-sub">Property management</p>
-      <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore!=='tutte-prenotazioni'?'active':''}" data-nav="overview"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-layout-dashboard"></i></span>Panoramica${alertPortfolio.totale>0?`<span class="nav-badge">${alertPortfolio.totale}</span>`:''}</div></div>
+      <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='overview'?'active':''}" data-nav="overview"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-layout-dashboard"></i></span>Panoramica${alertPortfolio.totale>0?`<span class="nav-badge">${alertPortfolio.totale}</span>`:''}</div></div>
+      <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='immobili'?'active':''}" data-nav="immobili"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-home"></i></span>Immobili <span class="vpm-nav-count">${propsVisibili.length}</span></div></div>
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
       ${haModulo('clienti') || isAdmin() ? `
         <div class="nav-section-label">Clienti (${clientiVisibili.length})</div>
@@ -2937,6 +2938,51 @@ function renderTuttePrenotazioni(){
 }
 
 
+
+function renderImmobili(){
+  const props=immobiliVisibili();
+  const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+  const occupied=props.filter(p=>Boolean(rentInfo(p).rented)).length;
+  const maintenance=props.filter(p=>(p.manutenzioni||[]).some(m=>m.stato!=='completata')).length;
+  const cards=props.map(p=>{
+    const url=getCoverPhotoUrl(p);
+    const isOccupied=Boolean(rentInfo(p).rented);
+    const needsMaintenance=(p.manutenzioni||[]).some(m=>m.stato!=='completata');
+    const cliente=getCliente(p);
+    const confirmed=(p.prenotazioni||[]).filter(b=>b.stato==='confermata'||b.stato==='confermato').length;
+    const statusLabel=needsMaintenance?'Interventi aperti':isOccupied?'Occupato':'Disponibile';
+    const statusClass=needsMaintenance?'maintenance':isOccupied?'occupied':'free';
+    return `<article class="vpm-estate-card" data-nav="${safe(p.id)}">
+      <div class="vpm-estate-cover">${url?`<img src="${safe(url)}" alt="Foto di ${safe(p.nome)}" loading="lazy">`:'<div class="vpm-estate-placeholder"><i class="ti ti-home"></i><span>Foto da aggiungere</span></div>'}
+        <span class="vpm-estate-badge ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="vpm-estate-body">
+        <div class="vpm-estate-name">${safe(p.nome||'Immobile senza nome')}</div>
+        <div class="vpm-estate-address"><i class="ti ti-map-pin"></i>${safe(p.indirizzo||'Indirizzo da inserire')}</div>
+        <div class="vpm-estate-meta"><span><i class="ti ti-user"></i>${safe(cliente?.nome||'Proprietario da associare')}</span><span><i class="ti ti-calendar-event"></i>${confirmed} prenotazioni confermate</span></div>
+        <div class="vpm-estate-foot"><span>${p.prezzoNotte?`<strong>€ ${safe(p.prezzoNotte)}</strong> / notte`:'Apri scheda immobile'}</span><span class="vpm-estate-open">Apri <i class="ti ti-arrow-up-right"></i></span></div>
+      </div>
+    </article>`;
+  }).join('');
+  return `<div class="vpm-estates-page">
+    <div class="vpm-estates-heading"><div><span class="vpm-estates-eyebrow">VIVEREPM · PORTAFOGLIO</span><h1>Il tuo patrimonio immobiliare</h1><p>Tutti i tuoi immobili, le prenotazioni e le attività in un unico posto.</p></div>
+      ${isAdmin()?'<button class="vpm-estates-add" data-action="new-property"><i class="ti ti-plus"></i> Nuovo immobile</button>':''}</div>
+    <div class="vpm-estates-stats">
+      <div><i class="ti ti-home"></i><strong>${props.length}</strong><span>Immobili gestiti</span></div>
+      <div><i class="ti ti-key"></i><strong>${occupied}</strong><span>Occupati</span></div>
+      <div><i class="ti ti-sun"></i><strong>${props.length-occupied}</strong><span>Disponibili</span></div>
+      <div><i class="ti ti-tool"></i><strong>${maintenance}</strong><span>Con interventi aperti</span></div>
+    </div>
+    <section class="vpm-estates-panel">
+      <div class="vpm-estates-toolbar"><div><h2>I tuoi immobili <small>${props.length}</small></h2><p>Seleziona un immobile per aprire la sua scheda completa.</p></div><div class="vpm-estates-controls"><label class="vpm-estates-search"><i class="ti ti-search"></i><input id="vpm-property-search" type="search" placeholder="Cerca per nome, indirizzo, proprietario..."></label><select id="vpm-estates-sort" aria-label="Ordina immobili"><option value="name">Ordina per nome</option><option value="status">Ordina per stato</option></select></div></div>
+      <div class="vpm-filterbar vpm-estates-filters"><button class="active" type="button" data-vpm-filter="all">Tutti <b>${props.length}</b></button><button type="button" data-vpm-filter="occupied">Occupati <b>${occupied}</b></button><button type="button" data-vpm-filter="free">Disponibili <b>${props.length-occupied}</b></button><button type="button" data-vpm-filter="maintenance">Con interventi <b>${maintenance}</b></button></div>
+      <div class="vpm-estates-grid" id="vpm-properties">${cards||'<div class="vpm-estates-empty"><i class="ti ti-home-plus"></i><h3>Nessun immobile ancora</h3><p>Aggiungi il primo immobile dalla barra laterale.</p></div>'}</div>
+      <p class="vpm-estates-no-results" id="vpm-estates-no-results" hidden>Nessun immobile corrisponde ai filtri selezionati.</p>
+    </section>
+    <footer class="vpm-footer"><div><i class="ti ti-plant-2"></i><span>Tecnologia, persone e valore<br>per far crescere i tuoi immobili.</span></div><strong>ViverePM</strong><small>PEOPLE · PLACES · POSSIBILITIES</small></footer>
+  </div>`;
+}
+
 function renderOverview(){
   const props=immobiliVisibili();
   const alert=calcolaAlertPortfolio();
@@ -3003,7 +3049,7 @@ function renderOverview(){
           ${metric('ti-tool',openMaintenance,'Interventi aperti')}
         </div>
         <section class="vpm-panel">
-          <div class="vpm-property-tools"><h2 class="vpm-panel-title" style="margin:0">I tuoi immobili <small>${props.length}</small></h2><div class="vpm-filterbar"><button class="active" type="button" data-vpm-filter="all">Tutti ${props.length}</button><button type="button" data-vpm-filter="occupied">Occupati</button><button type="button" data-vpm-filter="free">Disponibili</button><button type="button" data-vpm-filter="maintenance">In manutenzione</button></div><input class="vpm-property-search" id="vpm-property-search" type="search" placeholder="⌕ Cerca immobile..."></div>
+          <div class="vpm-property-tools"><h2 class="vpm-panel-title" style="margin:0"><button type="button" class="vpm-heading-link" data-nav="immobili">I tuoi immobili <small>${props.length}</small> <i class="ti ti-arrow-right"></i></button></h2><div class="vpm-filterbar"><button class="active" type="button" data-vpm-filter="all">Tutti ${props.length}</button><button type="button" data-vpm-filter="occupied">Occupati</button><button type="button" data-vpm-filter="free">Disponibili</button><button type="button" data-vpm-filter="maintenance">In manutenzione</button></div><input class="vpm-property-search" id="vpm-property-search" type="search" placeholder="⌕ Cerca immobile..."></div>
           <div class="vpm-properties" id="vpm-properties">${propCards||'<p class="vpm-empty">Non ci sono ancora immobili. Aggiungi il primo dalla barra laterale.</p>'}</div>
         </section>
         <div class="vpm-bottom">
@@ -4446,6 +4492,7 @@ function render(){
     else if(selected) main = renderDossier(selected);
     else if(clienteSelezionato) main = renderClienteCRM(clienteSelezionato);
     else if(state.vistaGestore==='tutte-prenotazioni') main = renderTuttePrenotazioni();
+    else if(state.vistaGestore==='immobili') main = renderImmobili();
     else main = renderOverview();
     content = `<div class="app">${renderSidebar()}<main>${main}</main></div>`;
   }
@@ -4484,16 +4531,20 @@ function attachHandlers(){
     const term=(vpmSearch?.value||'').toLocaleLowerCase('it').trim();
     const filter=vpmFilterButtons.find(b=>b.classList.contains('active'))?.dataset.vpmFilter||'all';
     const visible=immobiliVisibili().filter(p=>{
-      const text=[p.nome,p.indirizzo,p.catasto].join(' ').toLocaleLowerCase('it');
+      const text=[p.nome,p.indirizzo,p.catasto,getCliente(p)?.nome].join(' ').toLocaleLowerCase('it');
       const occupied=Boolean(rentInfo(p).rented);
       const maintenance=(p.manutenzioni||[]).some(m=>m.stato!=='completata');
       return text.includes(term)&&(filter==='all'||(filter==='occupied'?occupied:filter==='free'?!occupied:maintenance));
     });
     const ids=new Set(visible.map(p=>String(p.id)));
-    document.querySelectorAll('#vpm-properties .prop-card').forEach(el=>{el.style.display=ids.has(el.getAttribute('data-nav'))?'':'none';});
+    document.querySelectorAll('#vpm-properties [data-nav]').forEach(el=>{el.style.display=ids.has(el.getAttribute('data-nav'))?'':'none';});
+    const noResults=document.getElementById('vpm-estates-no-results');
+    if(noResults)noResults.hidden=visible.length!==0 || immobiliVisibili().length===0;
   };
   if(vpmSearch)vpmSearch.addEventListener('input',vpmApplyFilter);
   vpmFilterButtons.forEach(btn=>btn.addEventListener('click',()=>{vpmFilterButtons.forEach(b=>b.classList.remove('active'));btn.classList.add('active');vpmApplyFilter();}));
+  const estatesSort=document.getElementById('vpm-estates-sort');
+  if(estatesSort)estatesSort.addEventListener('change',()=>{const grid=document.getElementById('vpm-properties');if(!grid)return;const props=immobiliVisibili();const byId=new Map(props.map(p=>[String(p.id),p]));[...grid.querySelectorAll('[data-nav]')].sort((a,b)=>{const pa=byId.get(a.dataset.nav),pb=byId.get(b.dataset.nav);if(!pa||!pb)return 0;if(estatesSort.value==='status'){const d=Number(Boolean(rentInfo(pa).rented))-Number(Boolean(rentInfo(pb).rented));if(d)return d;}return String(pa.nome||'').localeCompare(String(pb.nome||''),'it');}).forEach(el=>grid.appendChild(el));});
 
   const clearErrorBtn = document.querySelector('[data-clear-error]');
   if(clearErrorBtn) clearErrorBtn.addEventListener('click', ()=>{ state.error = null; render(); });
@@ -4668,9 +4719,9 @@ function attachHandlers(){
   document.querySelectorAll('[data-nav]').forEach(node=>{
     node.addEventListener('click', ()=>{
       const id = node.getAttribute('data-nav');
-      state.selectedId = id==='overview' ? null : id;
+      state.selectedId = (id==='overview'||id==='immobili') ? null : id;
       state.selectedClienteId = null;
-      state.vistaGestore = 'overview';
+      state.vistaGestore = id==='immobili' ? 'immobili' : 'overview';
       state.calendarOffset = 0;
       state.priceCalendarOffset = 0;
       if(state.selectedId){

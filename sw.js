@@ -1,4 +1,4 @@
-const CACHE_NAME = 'viverepm-redesign-v20260921-15';
+const CACHE_NAME = 'viverepm-redesign-v20260921-16';
 const CORE_ASSETS = [
   './index.html',
   './manifest.webmanifest',
@@ -38,6 +38,6 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone)).catch(()=>{});
         return res;
       })
-      .catch(() => caches.match(req).then((cached) => cached || caches.match('./index.html')))
+      .catch(() => caches.match(req).then((cached) => cached || (req.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
   );
 });

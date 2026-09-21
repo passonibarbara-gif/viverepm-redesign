@@ -808,7 +808,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 .vpm-modal-maintenance .vpm-maint-upload input[type=file]{border-style:dashed!important;background:#f3fbfd!important}
 @media(max-width:580px){.vpm-modal-maintenance .vpm-maint-options{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-17">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-18">
 </head>
 <body>
 <div id="root"></div>
@@ -4144,13 +4144,13 @@ function renderModalRaw(){
     return `
       <div class="overlay" data-close-overlay><div class="modal" data-stop>
         <h2>${editing && editing.id ? 'Modifica cliente' : 'Nuovo cliente'}</h2>
-        <form id="clienteForm">
+        <form id="clienteForm"><div class="vpm-client-intro"><span class="vpm-client-intro-icon"><i class="ti ti-user-heart"></i></span><div><strong>Un nuovo proprietario, una nuova relazione.</strong><small>Raccogli i contatti e prepara il suo accesso a ViverePM.</small></div></div><div class="vpm-client-grid">
           <div class="field"><label>Nome</label><input name="nome" required value="${c.nome||''}" placeholder="Nome e cognome"></div>
           <div class="field"><label>Telefono</label><input name="telefono" required value="${c.telefono||''}" placeholder="+39..."></div>
           <div class="field"><label>Email</label><input type="email" name="email" required value="${c.email||''}" placeholder="nome@esempio.it"></div>
           <div class="field"><label>Indirizzo di residenza (facoltativo)</label><input name="indirizzo" value="${c.indirizzo||''}" placeholder="Via, città"></div>
-          <p style="font-size:11px;color:var(--ink-soft);margin:-6px 0 14px 0;">Il proprietario userà questa email per crearsi da solo un accesso (dal login dell'area proprietari, "Non hai ancora un accesso?").</p>
-          <div class="field"><label>Documento d'identità (facoltativo)</label><input type="file" name="documenti" accept="image/*" multiple></div>
+          </div><p class="vpm-client-email-note"><i class="ti ti-mail-check"></i> Il proprietario userà questa email per creare autonomamente il suo accesso dall’Area Proprietari.</p>
+          <div class="field vpm-client-document"><label>Documento d’identità (facoltativo)</label><div class="vpm-client-file"><i class="ti ti-cloud-upload"></i><div><strong>Carica un documento</strong><small>Immagini del documento di identità</small></div><input type="file" name="documenti" accept="image/*" multiple></div></div>
           ${(c.documenti && c.documenti.length) ? `<div class="photo-strip" style="margin-bottom:14px;">${c.documenti.map((f,i)=>`
             <span class="photo-thumb-wrap">
               <img class="photo-thumb" src="${f}">
@@ -4159,7 +4159,7 @@ function renderModalRaw(){
           `).join('')}</div>` : ''}
           <div class="modal-actions">
             <button type="button" class="btn-secondary" data-close>Annulla</button>
-            <button type="submit" class="btn-primary">Salva</button>
+            <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Salva proprietario</button>
           </div>
         </form>
       </div></div>`;

@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Portfolio Immobiliare</title>
+<title>ViverePM | Gestione immobili</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12302C">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Portfolio Imm.">
+<meta name="apple-mobile-web-app-title" content="ViverePM">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,600;1,9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -687,6 +687,68 @@
   }
   .send-btn:hover{transform:translateY(-1px) scale(1.03);}
   .send-btn:active{transform:scale(.92) rotate(-6deg);}
+
+/* ViverePM Tiffany / petrol redesign */
+:root{--ink:#193832;--ink-soft:#73847e;--paper:#f4f8f6;--paper-raised:#fff;--brass:#0ABAB5;--brass-soft:#e0f7f4;--brass-deep:#078d89;--line:#dce9e4;--line-soft:#e8f0ed;--surface-dark:#10332f;--surface-dark-2:#17463f;--text-on-dark:#f2fffc;--text-on-dark-soft:#add3cb;--tiffany:#0ABAB5;--brand-gradient:linear-gradient(115deg,#0ABAB5,#49d7c8)}
+body{background:var(--paper)}
+.topnav{background:#fff;border-bottom:1px solid var(--line);padding:14px 30px;min-height:72px}
+.topnav-brand{color:var(--surface-dark);font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:700;letter-spacing:.02em;text-transform:none}
+.topnav-brand:before{content:'VIVERE PM  /  ';color:var(--brass-deep);letter-spacing:.12em}
+.tab-btn{color:#53716a;border-color:var(--line);background:#f7faf9;border-radius:11px;font-weight:600}
+.tab-btn:hover{color:var(--brass-deep);border-color:var(--brass)}
+.tab-btn.active{color:#fff;background:var(--brass-deep);border-color:var(--brass-deep)}
+.notif-btn{color:var(--surface-dark);border-color:var(--line)}
+.app{grid-template-columns:252px minmax(0,1fr);min-height:calc(100vh - 72px)}
+.sidebar{padding:28px 14px;background:linear-gradient(165deg,#10332f,#17463f);border-right:0}
+.sidebar::before{height:4px}
+.brand{font-family:'IBM Plex Sans',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.06em;color:#fff}
+.brand .brand-accent{color:#31d2c8}
+.brand-sub{font-size:10px;letter-spacing:.18em;margin-bottom:30px}
+.nav-item{padding:11px 12px;border-radius:12px;font-size:13px}
+.nav-item.active{background:#0ABAB5;color:#073b38;box-shadow:0 8px 20px rgba(0,0,0,.13)}
+.nav-item.active .code,.nav-item.active .nav-icon{color:#073b38}
+.nav-item.active .nav-badge{background:#fff;color:#0d514b}
+.nav-section-label{margin-top:24px}
+.btn-new{border-radius:11px;letter-spacing:.02em;text-transform:none;font-size:12px}
+main{padding:32px clamp(18px,3vw,46px);max-width:none;min-width:0}
+h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spacing:-.045em;font-weight:700;color:#173b34}
+.page-sub{margin-bottom:25px}
+.section-label{font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.02em;text-transform:none;color:#1b4039;border:0;margin-bottom:14px}
+.bento-row{gap:14px;margin-bottom:24px}
+.bento-tile,.stat-card,.chart-card,.dashboard-section-card,.prop-card,.alert-banner{background:#fff;border:1px solid var(--line-soft);border-radius:17px;box-shadow:0 4px 24px rgba(23,70,63,.045)}
+.bento-tile{padding:21px;min-height:126px}
+.bento-label,.stat-label{font-family:'IBM Plex Sans',sans-serif;font-size:12px;text-transform:none;letter-spacing:0;font-weight:600}
+.bento-value{font-family:'IBM Plex Sans',sans-serif;font-size:32px;letter-spacing:-.05em;background:none;color:#153f38;-webkit-text-fill-color:currentColor}
+.bento-value.terracotta{color:var(--terracotta)}
+.stat-value{font-family:'IBM Plex Sans',sans-serif;font-weight:700}
+.prop-grid{grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:15px}
+.prop-card{padding:16px;border-radius:17px;overflow:hidden}
+.prop-cover{height:168px;margin:-16px -16px 16px;width:calc(100% + 32px);border-radius:17px 17px 0 0}
+.prop-name{font-family:'IBM Plex Sans',sans-serif;font-size:16px;letter-spacing:-.025em}
+.prop-card-head{flex-wrap:wrap}
+.prop-card-main{min-width:0}
+.prop-card-foot{margin-top:15px}
+.status-seal{font-family:'IBM Plex Sans',sans-serif;font-size:10px;font-weight:600;background:#f1faf7;border-color:transparent}
+.alert-banner{padding:18px;margin-bottom:20px;background:#fffaf8;border-color:#f3ddd6}
+.alert-banner-title{font-family:'IBM Plex Sans',sans-serif;font-weight:700}
+.vpm-overview{display:grid;grid-template-columns:minmax(0,1fr) 272px;gap:22px;align-items:start}
+.vpm-overview-main{min-width:0}
+.vpm-overview-side{position:sticky;top:20px;display:flex;flex-direction:column;gap:16px}
+.vpm-side-card{background:#fff;border:1px solid var(--line-soft);border-radius:17px;padding:20px;box-shadow:0 4px 24px rgba(23,70,63,.045)}
+.vpm-side-head{font-size:15px;font-weight:700;color:#173b34;margin:0 0 16px;display:flex;align-items:center;justify-content:space-between}
+.vpm-side-head i{color:var(--brass-deep);font-size:19px}
+.vpm-alert-link{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line-soft);cursor:pointer;font-size:12px;color:#365b52;line-height:1.4}
+.vpm-alert-link i{font-size:18px;color:var(--brass-deep)}
+.vpm-alert-link strong{color:#143d35}
+.vpm-alert-link:hover strong{text-decoration:underline}
+.vpm-empty-alert{font-size:12px;color:var(--ink-soft);line-height:1.5}
+.vpm-quick-btn{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#f7fbf9;color:#214b42;font:600 12px 'IBM Plex Sans',sans-serif;cursor:pointer;margin-top:9px;text-align:left}
+.vpm-quick-btn i{font-size:18px;color:var(--brass-deep)}
+.vpm-quick-btn:hover{background:var(--brass-soft);border-color:var(--brass)}
+.vpm-overview .dashboard-section-card{padding:18px}
+@media(max-width:1180px){.vpm-overview{grid-template-columns:minmax(0,1fr)}.vpm-overview-side{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
+
 </style>
 </head>
 <body>
@@ -2726,8 +2788,8 @@ function renderSidebar(){
 
   return `
     <div class="sidebar">
-      <p class="brand">Portfolio Immobiliare</p>
-      <p class="brand-sub">Schedario proprietà</p>
+      <p class="brand">vivere<span class="brand-accent">pm.</span></p>
+      <p class="brand-sub">Property management</p>
       <div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore!=='tutte-prenotazioni'?'active':''}" data-nav="overview"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-layout-dashboard"></i></span>Panoramica${alertPortfolio.totale>0?`<span class="nav-badge">${alertPortfolio.totale}</span>`:''}</div></div>
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
       ${haModulo('clienti') || isAdmin() ? `
@@ -2951,8 +3013,9 @@ function renderOverview(){
   ` : '';
 
   return `
-    <h1 class="page-title">Panoramica</h1>
-    <p class="page-sub">Il tuo portfolio immobiliare, in un colpo d'occhio.</p>
+    <div class="vpm-overview"><div class="vpm-overview-main">
+    <h1 class="page-title">Buongiorno, benvenuta in ViverePM</h1>
+    <p class="page-sub">Tutti i tuoi immobili e le attività da gestire, in un unico posto.</p>
     ${alertBanner}
     <div class="bento-row">
       <div class="bento-tile ${manutenzioniUrgenti>0?'alert':''}"><div class="bento-label">Manutenzioni entro 30gg</div><div class="bento-value ${manutenzioniUrgenti>0?'terracotta':''}" data-count="${manutenzioniUrgenti}">0</div></div>
@@ -2966,6 +3029,23 @@ function renderOverview(){
 
     <p class="section-label" style="margin-top:32px;">Immobili</p>
     <div class="prop-grid">${cards}</div>
+    </div>
+    <aside class="vpm-overview-side" aria-label="Avvisi e azioni rapide">
+      <div class="vpm-side-card"><h2 class="vpm-side-head">Da tenere d'occhio <i class="ti ti-bell"></i></h2>
+        ${alertPortfolio.prenotazioniPendenti ? '<div class="vpm-alert-link" data-goto-alert="prenotazioni"><i class="ti ti-calendar-event"></i><span><strong>Richieste prenotazione</strong><br>In attesa di risposta</span></div>' : ''}
+        ${alertPortfolio.interventiDaTriage ? '<div class="vpm-alert-link" data-goto-alert="interventi-nuovi"><i class="ti ti-tool"></i><span><strong>Interventi da gestire</strong><br>Nuove manutenzioni</span></div>' : ''}
+        ${alertPortfolio.spesePagare ? '<div class="vpm-alert-link" data-goto-alert="spese"><i class="ti ti-receipt"></i><span><strong>Spese da pagare</strong><br>Spese già approvate</span></div>' : ''}
+        ${alertPortfolio.controlliRitardo ? '<div class="vpm-alert-link" data-goto-alert="controlli"><i class="ti ti-clipboard-check"></i><span><strong>Controlli in ritardo</strong><br>Controlli periodici</span></div>' : ''}
+        ${alertPortfolio.messaggiProprietario ? '<div class="vpm-alert-link" data-goto-alert="messaggi"><i class="ti ti-message-circle"></i><span><strong>Messaggi da leggere</strong><br>Dai proprietari</span></div>' : ''}
+        ${alertPortfolio.messaggiOspiti ? '<div class="vpm-alert-link" data-goto-alert="messaggi-ospiti"><i class="ti ti-message-circle"></i><span><strong>Messaggi ospiti</strong><br>Da leggere</span></div>' : ''}
+        ${alertPortfolio.totale===0 ? '<p class="vpm-empty-alert">Tutto sotto controllo. Non ci sono avvisi da gestire al momento.</p>' : ''}
+      </div>
+      <div class="vpm-side-card"><h2 class="vpm-side-head">Azioni rapide <i class="ti ti-bolt"></i></h2>
+        ${isAdmin() ? '<button class="vpm-quick-btn" data-action="new-property"><i class="ti ti-home-plus"></i> Aggiungi immobile</button>' : ''}
+        ${isAdmin() ? '<button class="vpm-quick-btn" data-action="new-cliente"><i class="ti ti-user-plus"></i> Nuovo cliente</button>' : ''}
+        ${haModulo('prenotazioni') ? '<button class="vpm-quick-btn" data-nav-prenotazioni><i class="ti ti-calendar"></i> Gestisci prenotazioni</button>' : ''}
+      </div>
+    </aside></div>
   `;
 }
 

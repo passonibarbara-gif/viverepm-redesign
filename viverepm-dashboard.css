@@ -285,3 +285,27 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 #vpm-booking-no-results[hidden]{display:none}
 @media(max-width:1180px){.vpm-booking-layout{grid-template-columns:1fr}.vpm-booking-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:740px){.vpm-booking-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.vpm-booking-toolbar{align-items:flex-start;flex-direction:column}.vpm-booking-toolbar label,.vpm-booking-toolbar input{width:100%}.vpm-booking-side{grid-template-columns:1fr}.vpm-bookings-hero{padding:20px}.vpm-bookings-hero h1{font-size:25px}}
+
+/* Shared portfolio workspace: CRM, operations, accounting */
+.vpm-portfolio-page{max-width:1700px;margin:0 auto;color:#1a3046}
+.vpm-portfolio-hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:130px;padding:23px 28px;border-radius:11px;background:linear-gradient(105deg,#e8f9ff,#e1f5f9 65%,#eaf8ff);overflow:hidden}
+.vpm-portfolio-hero:before{content:'';position:absolute;inset:0 9% 0 46%;background:linear-gradient(90deg,#e8f9ff,rgba(232,249,255,.13) 28%,#e8f9ff),url('./assets/viverepm-terrace.svg') center/auto 100% no-repeat;opacity:.66;pointer-events:none}
+.vpm-portfolio-hero>div,.vpm-portfolio-hero>i{position:relative;z-index:1}.vpm-portfolio-hero>i{font-size:42px;color:#0a9da5}
+.vpm-portfolio-hero span{font-size:10px;letter-spacing:.16em;font-weight:700;color:#0b8f9b}.vpm-portfolio-hero h1{font-size:clamp(23px,2.3vw,32px);margin:8px 0 6px;color:#162b43;letter-spacing:-.6px}.vpm-portfolio-hero p{font-size:12px;color:#607d94;margin:0}
+.vpm-portfolio-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:13px 0}
+.vpm-portfolio-metric{display:grid;grid-template-columns:39px 1fr;grid-template-rows:auto auto;align-content:center;column-gap:9px;min-width:0;min-height:102px;padding:14px;border:1px solid #e0edf5;border-radius:9px;background:white}
+.vpm-portfolio-metric i{grid-row:1/3;display:grid;place-items:center;align-self:start;width:36px;height:36px;border-radius:9px;background:#def8f4;color:#078f9c;font-size:20px}.vpm-portfolio-metric:nth-child(2) i{background:#e3efff;color:#3273b9}.vpm-portfolio-metric:nth-child(4) i{background:#fff0e0;color:#bc8034}
+.vpm-portfolio-metric strong{font-size:clamp(17px,2vw,25px);line-height:1.2;overflow-wrap:anywhere;color:#1a3046}.vpm-portfolio-metric span{font-size:11px;color:#668198}
+.vpm-portfolio-panel{border:1px solid #e0edf5;border-radius:10px;background:white;padding:17px;margin-bottom:13px}
+.vpm-portfolio-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}.vpm-portfolio-heading h2{font-size:17px;color:#1b3046;margin:0}.vpm-portfolio-heading small{font-size:12px;color:#69859b;font-weight:400}
+.vpm-portfolio-add{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:7px;background:#0e929e;color:white;padding:10px 13px;font-size:12px;cursor:pointer}.vpm-portfolio-add:hover{background:#087b88}
+.vpm-portfolio-search{display:flex;align-items:center;gap:8px;max-width:410px;border:1px solid #dbeaf4;border-radius:7px;padding:10px 12px;margin-bottom:13px;color:#678398}
+.vpm-portfolio-search input{width:100%;border:0;outline:0;background:none;color:#19334a;font-size:12px}
+.vpm-portfolio-filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}.vpm-portfolio-filters button{border:1px solid #deebf4;border-radius:7px;padding:8px 13px;background:white;color:#5e7b91;font-size:11px;cursor:pointer}.vpm-portfolio-filters button.active{background:#0d929d;border-color:#0d929d;color:white}
+.vpm-portfolio-list{display:grid;gap:9px}.vpm-portfolio-row{display:flex;align-items:center;gap:12px;min-width:0;padding:13px;border:1px solid #e2eef5;border-radius:9px;background:#fcfeff}.vpm-portfolio-row[hidden],.vpm-portfolio-no-results[hidden]{display:none!important}
+.vpm-portfolio-avatar{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:9px;background:#e1f8f4;color:#0b919a;font-size:20px}
+.vpm-portfolio-row-main{flex:1;min-width:0}.vpm-portfolio-row-main h3{margin:0 0 5px;font-size:13px;color:#1c3046;overflow-wrap:anywhere}.vpm-portfolio-row-main p{margin:0 0 5px;color:#648098;font-size:11px;overflow-wrap:anywhere}.vpm-portfolio-row-main small{color:#0b919a;font-size:10px}
+.vpm-portfolio-row>button{display:inline-flex;align-items:center;gap:5px;border:1px solid #d2e9ee;border-radius:7px;padding:9px 12px;background:white;color:#078a96;font-size:11px;cursor:pointer;white-space:nowrap}.vpm-portfolio-row>button:hover{background:#e7f9f8}
+.vpm-portfolio-amount{font-size:13px;color:#20374b;white-space:nowrap}.vpm-portfolio-empty,.vpm-portfolio-no-results{text-align:center;color:#6c8499;padding:22px;font-size:12px}
+@media(max-width:900px){.vpm-portfolio-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.vpm-portfolio-hero{padding:20px}.vpm-portfolio-row{flex-wrap:wrap}.vpm-portfolio-row-main{flex-basis:calc(100% - 55px)}.vpm-portfolio-row>button{margin-left:auto}.vpm-portfolio-metric{padding:10px;grid-template-columns:30px 1fr}.vpm-portfolio-metric i{width:28px;height:28px;font-size:16px}.vpm-portfolio-metric strong{font-size:18px}}

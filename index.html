@@ -860,7 +860,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 .vpm-modal-cliente .modal-actions .btn-primary{background:linear-gradient(105deg,#006b70,#008f89)!important}
 @media(max-width:650px){.vpm-modal-premium.vpm-modal-cliente{padding:0 15px 15px!important}.vpm-modal-cliente .vpm-modal-head{margin:0 -15px 13px!important;padding:16px 15px!important}.vpm-modal-cliente .vpm-modal-tagline{display:none}.vpm-modal-cliente .vpm-modal-eyebrow{margin-right:45px!important}.vpm-modal-cliente .vpm-client-grid{grid-template-columns:1fr!important}.vpm-modal-cliente .modal-actions{margin:12px -15px -15px!important;padding:12px 15px!important}.vpm-modal-cliente .modal-actions:before{display:none}}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-19">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-20">
 </head>
 <body>
 <div id="root"></div>
@@ -4202,7 +4202,7 @@ function renderModalRaw(){
           <div class="field"><label><i class="ti ti-mail"></i> Email</label><input type="email" name="email" required value="${c.email||''}" placeholder="nome@esempio.it"></div>
           <div class="field"><label><i class="ti ti-map-pin"></i> Indirizzo di residenza (facoltativo)</label><input name="indirizzo" value="${c.indirizzo||''}" placeholder="Via, città"></div>
           </div><p class="vpm-client-email-note"><i class="ti ti-mail-check"></i> Il proprietario userà questa email per creare autonomamente il suo accesso dall’Area Proprietari.</p>
-          <div class="field vpm-client-document"><label><i class="ti ti-id"></i> Documento d’identità (facoltativo)</label><div class="vpm-client-file"><i class="ti ti-cloud-upload"></i><div><strong>Carica un documento</strong><small>Foto o immagini del documento</small></div><input type="file" name="documenti" accept="image/*" multiple></div></div>
+          <div class="vpm-client-doc-heading"><span class="vpm-client-doc-heading-icon"><i class="ti ti-id"></i></span><span>DOCUMENTI E IDENTITÀ</span></div><div class="field vpm-client-document"><label><i class="ti ti-id"></i> Documento d’identità (facoltativo)</label><div class="vpm-client-file"><i class="ti ti-cloud-upload"></i><div><strong>Carica un documento</strong><small>Foto o immagini del documento</small></div><span class="vpm-client-file-art" aria-hidden="true"><i class="ti ti-photo"></i><i class="ti ti-paperclip"></i></span><input type="file" name="documenti" accept="image/*" multiple></div></div>
           ${(c.documenti && c.documenti.length) ? `<div class="photo-strip" style="margin-bottom:14px;">${c.documenti.map((f,i)=>`
             <span class="photo-thumb-wrap">
               <img class="photo-thumb" src="${f}">
@@ -4332,7 +4332,7 @@ function renderModalRaw(){
     return `
       <div class="overlay" data-close-overlay><div class="modal" data-stop>
         <h2>${editing && editing.id ?'Modifica immobile':'Nuovo immobile'}</h2>
-        <form id="propForm">
+        <form id="propForm"><div class="vpm-prop-section vpm-prop-basics"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-home"></i></span><div><strong>La tua proprietà</strong><small>Informazioni essenziali sull’immobile</small></div></div><div class="vpm-prop-fields">
           <div class="field"><label>Nome immobile</label><input name="nome" required value="${p.nome||''}" placeholder="es. Bilocale Via Roma"></div>
           <div class="field"><label>Indirizzo</label><input name="indirizzo" value="${p.indirizzo||''}" placeholder="Via, città"></div>
           <div class="field"><label>Tipo</label><select name="tipo">${TIPI_IMMOBILE.map(t=>`<option ${p.tipo===t?'selected':''}>${t}</option>`).join('')}</select></div>
@@ -4344,7 +4344,7 @@ function renderModalRaw(){
             <input type="checkbox" name="animaliAmmessi" id="animaliCheck" ${p.animaliAmmessi?'checked':''}>
             <label for="animaliCheck" style="margin:0;text-transform:none;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink);">Animali domestici ammessi</label>
           </div>
-          <div class="field"><label>Cliente</label>
+          </div></div><div class="vpm-prop-section vpm-prop-owner"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-user-heart"></i></span><div><strong>Proprietario</strong><small>Associa o registra il proprietario dell’immobile</small></div></div><div class="vpm-prop-fields"><div class="field"><label>Cliente</label>
             <select name="clienteId" id="clienteSelect">
               <option value="">+ Nuovo cliente</option>
               ${state.clienti.map(c=>`<option value="${c.id}" ${p.clienteId===c.id?'selected':''}>${c.nome} — ${c.telefono}</option>`).join('')}
@@ -4361,7 +4361,7 @@ function renderModalRaw(){
             </div>
             <p style="font-size:11px;color:var(--ink-soft);margin:-4px 0 14px 0;">Il proprietario userà questa email per crearsi da solo un accesso (dal login dell'area proprietari, "Non hai ancora un accesso?").</p>
           </div>
-          <p class="section-label" style="margin-top:22px;">Locazione a lungo termine</p>
+          </div></div><div class="vpm-prop-section vpm-prop-rental"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-key"></i></span><div><strong>Locazione a lungo termine</strong><small>Contratto e canone, se applicabili</small></div></div><div class="vpm-prop-fields">
           <div class="field" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" name="locazioneAttiva" id="locCheck" ${(p.locazione&&p.locazione.attivo)?'checked':''}>
             <label for="locCheck" style="margin:0;text-transform:none;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink);">Immobile locato (in affitto a lungo termine)</label>
@@ -4374,7 +4374,7 @@ function renderModalRaw(){
             <div class="field"><label>Canone mensile (€)</label><input type="number" name="locazioneCanone" min="0" value="${(p.locazione&&p.locazione.canone)||''}" placeholder="0"></div>
           </div>
 
-          <p class="section-label" style="margin-top:22px;">Prenotazioni brevi (portale ospiti)</p>
+          </div></div><div class="vpm-prop-section vpm-prop-booking"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-calendar-event"></i></span><div><strong>Prenotazioni brevi</strong><small>Annuncio e disponibilità sul portale ospiti</small></div></div><div class="vpm-prop-fields">
           <div class="field" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" name="disponibilePrenotazioni" id="dispCheck" ${p.disponibilePrenotazioni?'checked':''}>
             <label for="dispCheck" style="margin:0;text-transform:none;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink);">Disponibile per prenotazioni (portale ospiti)</label>
@@ -4392,7 +4392,7 @@ function renderModalRaw(){
             <p style="font-size:11px;color:var(--ink-soft);margin:-4px 0 14px 0;">Descrizione e punti di forza compaiono nella scheda dell'immobile quando l'ospite prenota.</p>
           </div>
           <p style="font-size:11.5px;color:var(--ink-soft);margin:14px 0 14px 0;">Le foto si caricano dalla tab "Foto" della scheda immobile, dopo il salvataggio.</p>
-          <div class="modal-actions">
+          </div></div><div class="modal-actions">
             <button type="button" class="btn-secondary" data-close>Annulla</button>
             <button type="submit" class="btn-primary">Salva</button>
           </div>

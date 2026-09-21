@@ -392,3 +392,11 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-activity-actions>button{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
 .vpm-activity-actions>button i{font-size:15px}
 @media(max-width:620px){.vpm-activity-actions{align-items:flex-start;margin-left:0;width:100%}.vpm-activity-actions>button{width:100%}}
+
+/* Manager accounting filters and export */
+.vpm-finance-toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;margin:17px 0}
+.vpm-finance-toolbar label{display:flex;flex:1;min-width:165px;flex-direction:column;gap:5px;font-size:11px;font-weight:600;color:#617d91}
+.vpm-finance-toolbar select{height:41px;width:100%;padding:0 12px;border:1px solid #dce9f0;border-radius:8px;background:#fff;color:#233f53;font:inherit;font-size:12px}
+.vpm-finance-toolbar button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;border:1px solid #a6d7dc;border-radius:8px;background:#effbfb;color:#147e88;padding:0 15px;font-weight:600;cursor:pointer}
+.vpm-finance-note{display:flex;align-items:flex-start;gap:8px;margin:0 0 16px;font-size:11px;line-height:1.6;color:#6b8192}
+.vpm-finance-note i{font-size:16px;color:#168f99;flex-shrink:0}

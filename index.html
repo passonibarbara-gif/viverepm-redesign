@@ -3256,6 +3256,13 @@ function renderGuadagnoSection(p, editable){
 function renderDossier(p){
   const totaleSpese = (p.spese||[]).reduce((s,e)=>s+Number(e.importo||0),0);
   const cliente = getCliente(p);
+  const dossierAlert = calcolaAlertImmobile(p);
+  const dossierBookings = (p.prenotazioni||[]).filter(b=>b.stato!=='rifiutata');
+  const dossierConfirmed = dossierBookings.filter(b=>b.stato==='confermata'||b.stato==='confermato').length;
+  const dossierPending = dossierBookings.filter(b=>b.stato==='richiesta').length;
+  const dossierInterventi = (p.manutenzioni||[]).filter(m=>m.stato!=='completata').length;
+  const dossierEntrate = (p.spese||[]).filter(e=>e.tipo==='entrata').reduce((n,e)=>n+(Number(e.importo)||0),0);
+  const dossierSafe = v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\'':'&#39;'}[c]));
 
   const TABS = [
     {id:'anagrafica', label:'Anagrafica', icon:'ti-file-text'},
@@ -3398,6 +3405,14 @@ function renderDossier(p){
       ${getCoverPhotoUrl(p)?`<img src="${String(getCoverPhotoUrl(p)).replace(/"/g,'&quot;')}" alt="Foto immobile" loading="lazy">`:'<div class="vpm-dossier-cover-empty"><i class="ti ti-home"></i><span>Puoi aggiungere la foto dalla scheda Foto</span></div>'}
       <div class="vpm-dossier-cover-caption"><span><i class="ti ti-map-pin"></i> ${p.indirizzo||'Indirizzo da inserire'}</span><span>${rentInfo(p).rented?'Occupato':'Disponibile'}</span></div>
     </div>
+    <div class="vpm-dossier-summary" aria-label="Riepilogo immobile">
+      <div class="vpm-dossier-stat"><i class="ti ti-calendar-check"></i><span>Prenotazioni confermate</span><strong>${dossierConfirmed}</strong></div>
+      <div class="vpm-dossier-stat ${dossierPending?'vpm-dossier-stat-attention':''}"><i class="ti ti-calendar-question"></i><span>Da confermare</span><strong>${dossierPending}</strong></div>
+      <div class="vpm-dossier-stat ${dossierInterventi?'vpm-dossier-stat-attention':''}"><i class="ti ti-tool"></i><span>Interventi aperti</span><strong>${dossierInterventi}</strong></div>
+      <div class="vpm-dossier-stat"><i class="ti ti-wallet"></i><span>Entrate registrate</span><strong>${fmtCurrency(dossierEntrate)}</strong></div>
+    </div>
+    ${dossierAlert.totale? `<div class="vpm-dossier-notices"><i class="ti ti-bell-ringing"></i><span><strong>${dossierAlert.totale} attività da verificare</strong> in questo immobile</span><div class="vpm-dossier-notice-actions">${dossierPending&&haModulo('prenotazioni')?`<button data-dossier-tab="prenotazioni">Prenotazioni (${dossierPending})</button>`:''}${dossierInterventi&&haModulo('interventi')?`<button data-dossier-tab="interventi">Interventi (${dossierInterventi})</button>`:''}${dossierAlert.controlloInRitardo&&haModulo('controlli')?`<button data-dossier-tab="controlli">Controlli</button>`:''}</div></div>`:''}
+    <div class="vpm-dossier-shortcuts"><span>Accesso rapido</span>${haModulo('foto')?`<button data-dossier-tab="foto"><i class="ti ti-photo"></i> Foto</button>`:''}${haModulo('prenotazioni')?`<button data-dossier-tab="prenotazioni"><i class="ti ti-calendar-event"></i> Prenotazioni</button>`:''}${haModulo('interventi')?`<button data-dossier-tab="interventi"><i class="ti ti-tool"></i> Interventi</button>`:''}${haModulo('spese')?`<button data-dossier-tab="spese"><i class="ti ti-wallet"></i> Spese e guadagno</button>`:''}</div>
     <div class="dossier-tabs">${tabsHtml}</div>
     <div class="vpm-dossier-content">${tabContent}</div>
     </div>

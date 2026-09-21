@@ -195,3 +195,46 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
   background-size:100% 100%,auto 100%;background-position:center;background-repeat:no-repeat
  }
 }
+
+/* Immobili portfolio — matches approved ViverePM dashboard */
+.vpm-nav-count{margin-left:auto;font-size:10px;background:rgba(255,255,255,.13);border-radius:10px;padding:2px 7px}
+.vpm-heading-link{display:inline-flex;gap:7px;align-items:center;border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}.vpm-heading-link i{color:#0b9ba5;font-size:16px}.vpm-heading-link:hover{color:#078b97}
+.vpm-estates-page{max-width:1700px;margin:0 auto;padding:8px 0 0;color:#182b43}
+.vpm-estates-heading{min-height:152px;border-radius:12px;background:linear-gradient(90deg,#e9f9ff 0%,#e8f9ff 52%,rgba(231,248,255,.65) 72%,#eaf9ff 100%);position:relative;overflow:hidden;padding:27px 30px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.vpm-estates-heading:before{content:'';position:absolute;inset:0 11% 0 47%;background:linear-gradient(90deg,#eaf9ff,rgba(234,249,255,.13) 23%,rgba(234,249,255,.13) 70%,#eaf9ff),url('./assets/viverepm-terrace.svg') center/auto 100% no-repeat;opacity:.76;pointer-events:none}
+.vpm-estates-heading>div,.vpm-estates-heading>button{position:relative;z-index:1}
+.vpm-estates-eyebrow{font:600 10px 'IBM Plex Sans',sans-serif;letter-spacing:.17em;color:#0a8e9c}
+.vpm-estates-heading h1{font:700 clamp(22px,2.1vw,31px)/1.15 'IBM Plex Sans',sans-serif;margin:9px 0 7px;letter-spacing:-.6px;color:#14263f}
+.vpm-estates-heading p{font-size:13px;color:#57728b;margin:0}
+.vpm-estates-add{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;border:0;border-radius:7px;background:#1294a1;color:white;font:600 12px 'IBM Plex Sans',sans-serif;padding:12px 17px;cursor:pointer}.vpm-estates-add:hover{background:#0b7885}
+.vpm-estates-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:13px 0}
+.vpm-estates-stats>div{background:white;border:1px solid #e2eef5;border-radius:9px;padding:15px 17px;min-height:107px;display:grid;grid-template-columns:40px 1fr;grid-template-rows:auto auto;column-gap:9px;align-content:center}
+.vpm-estates-stats i{grid-row:1/3;display:grid;place-items:center;align-self:start;width:36px;height:36px;border-radius:9px;background:#d9f7f2;color:#088e91;font-size:21px}
+.vpm-estates-stats>div:nth-child(2) i{background:#e2efff;color:#2267c7}.vpm-estates-stats>div:nth-child(4) i{background:#ffeded;color:#d74b55}
+.vpm-estates-stats strong{font-size:25px;line-height:1.2}.vpm-estates-stats span{font-size:11px;color:#617993}
+.vpm-estates-panel{background:white;border:1px solid #e0edf5;border-radius:10px;padding:17px 16px 18px}
+.vpm-estates-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+.vpm-estates-toolbar h2{font:700 17px 'IBM Plex Sans',sans-serif;margin:0 0 4px;color:#182a43}.vpm-estates-toolbar h2 small{font-size:12px;color:#7390a5;font-weight:400;margin-left:5px}.vpm-estates-toolbar p{font-size:11px;color:#688198;margin:0}
+.vpm-estates-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.vpm-estates-search{display:flex;align-items:center;gap:7px;width:285px;height:39px;border:1px solid #dceaf5;border-radius:7px;padding:0 11px;color:#65839a;background:white}
+.vpm-estates-search input{border:0;outline:0;background:transparent;width:100%;min-width:0;font:12px 'IBM Plex Sans',sans-serif;color:#1b314b}
+.vpm-estates-controls select{height:39px;border:1px solid #dceaf5;border-radius:7px;background:white;color:#4b6680;padding:0 10px;font:12px 'IBM Plex Sans',sans-serif}
+.vpm-estates-filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 15px}.vpm-estates-filters button{font-size:11px;padding:8px 12px}.vpm-estates-filters b{font-size:10px;font-weight:600}
+.vpm-estates-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.vpm-estate-card{min-width:0;border:1px solid #dceaf4;border-radius:9px;overflow:hidden;cursor:pointer;background:#fff;transition:transform .15s,box-shadow .15s}
+.vpm-estate-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,73,92,.13)}
+.vpm-estate-cover{height:153px;position:relative;overflow:hidden;background:#e7f7ff}.vpm-estate-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.vpm-estate-placeholder{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:7px;color:#138998;background:linear-gradient(135deg,#e1faff,#eaf2ff)}
+.vpm-estate-placeholder i{font-size:37px}.vpm-estate-placeholder span{font-size:10px;color:#66879b}
+.vpm-estate-badge{position:absolute;left:9px;bottom:9px;padding:5px 9px;border-radius:6px;font-size:10px;font-weight:600;background:#e3faf2;color:#0a7563}
+.vpm-estate-badge.occupied{background:#d9f7f3;color:#087d75}.vpm-estate-badge.maintenance{background:#ffeded;color:#b73b47}
+.vpm-estate-body{padding:12px}.vpm-estate-name{font-size:14px;font-weight:700;color:#14253c;margin-bottom:5px;overflow-wrap:anywhere}
+.vpm-estate-address{font-size:11px;color:#657e96;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vpm-estate-address i{margin-right:4px;color:#4b809b}
+.vpm-estate-meta{display:flex;flex-direction:column;gap:5px;margin:12px 0;min-height:40px;color:#5d7690;font-size:10px}.vpm-estate-meta i{margin-right:5px;color:#288c99}.vpm-estate-meta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vpm-estate-foot{display:flex;align-items:center;justify-content:space-between;gap:5px;border-top:1px solid #e7f0f6;padding-top:10px;color:#6a8199;font-size:11px}.vpm-estate-foot strong{color:#15263e;font-size:13px}
+.vpm-estate-open{display:inline-flex;align-items:center;gap:3px;color:#098f9b;font-weight:600;white-space:nowrap}
+.vpm-estates-empty{text-align:center;grid-column:1/-1;padding:38px;color:#6c8398}.vpm-estates-empty i{font-size:36px;color:#0b9ca6}.vpm-estates-empty h3{color:#213b50}.vpm-estates-no-results{text-align:center;padding:22px;color:#67849a;font-size:12px}
+.vpm-estates-page .vpm-footer{margin-top:11px}
+@media(max-width:1300px){.vpm-estates-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.vpm-estates-toolbar{align-items:flex-start;flex-direction:column}.vpm-estates-controls{width:100%}.vpm-estates-search{flex:1;min-width:190px}}
+@media(max-width:940px){.vpm-estates-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vpm-estates-heading{padding:22px}.vpm-estates-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.vpm-estates-heading{min-height:140px;padding:20px;flex-direction:column;align-items:flex-start}.vpm-estates-heading:before{opacity:.25}.vpm-estates-grid{grid-template-columns:1fr}.vpm-estates-stats{gap:8px}.vpm-estates-stats>div{padding:11px;grid-template-columns:30px 1fr;column-gap:7px}.vpm-estates-stats i{width:28px;height:28px;font-size:17px}.vpm-estates-stats strong{font-size:20px}.vpm-estates-stats span{font-size:10px}.vpm-estates-controls{flex-direction:column;align-items:stretch}.vpm-estates-search{width:100%;flex:auto}.vpm-estates-controls select{width:100%}}

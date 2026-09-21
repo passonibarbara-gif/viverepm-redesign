@@ -750,7 +750,7 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:16px}.topnav{padding:13px 18px}.topnav-brand:before{content:'VIVERE PM'}.topnav-brand{font-size:12px}main{padding:24px 16px}.vpm-overview-side{grid-template-columns:1fr}.bento-row{grid-template-columns:repeat(2,minmax(0,1fr))}.prop-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr))}}
 
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-14">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260921-15">
 </head>
 <body>
 <div id="root"></div>
@@ -4077,7 +4077,7 @@ function renderTopNav(){
 }
 
 // ---------- Modali ----------
-function renderModal(){
+function renderModalRaw(){
   if(!state.modal) return '';
   const {type, editing, propId, context} = state.modal;
 
@@ -4567,6 +4567,30 @@ function renderModal(){
   }
 
   return '';
+}
+
+
+function renderModal(){
+  const html=renderModalRaw();
+  if(!html || !state.modal)return html;
+  const type=state.modal.type||'';
+  const icons={
+    cliente:'ti-user-plus',operatore:'ti-user-shield',servizio:'ti-sparkles',
+    fotoImmobile:'ti-photo-plus',documentoImmobile:'ti-file-upload',
+    property:'ti-home-plus',expense:'ti-receipt',pagaSpesa:'ti-circle-check',
+    pagamentoBooking:'ti-credit-card',contrattoGestione:'ti-file-certificate',
+    payment:'ti-wallet',voceListino:'ti-tags',versamento:'ti-cash',
+    controllo:'ti-clipboard-check',maintenance:'ti-tools',
+    programmaIntervento:'ti-calendar-event',fotoIntervento:'ti-camera',
+    preventivo:'ti-file-invoice',completaIntervento:'ti-circle-check',
+    settings:'ti-settings'
+  };
+  const titleMatch=html.match(/<h2>([\s\S]*?)<\/h2>/);
+  if(!titleMatch)return html;
+  const icon=icons[type]||'ti-sparkles';
+  const heading='<header class="vpm-modal-head"><div class="vpm-modal-eyebrow"><span class="vpm-modal-brand">VIVERE<span>PM</span></span><span class="vpm-modal-category">GESTIONE IMMOBILI</span></div><button type="button" class="vpm-modal-x" data-close aria-label="Chiudi finestra"><i class="ti ti-x"></i></button><div class="vpm-modal-title-row"><span class="vpm-modal-title-icon"><i class="ti '+icon+'"></i></span><div><span class="vpm-modal-kicker">VIVEREPM · '+(type==='property'?'IMMOBILI':type==='cliente'?'PROPRIETARI':type==='maintenance'||type==='programmaIntervento'||type==='completaIntervento'?'INTERVENTI':'GESTIONE')+'</span><h2>'+titleMatch[1]+'</h2></div></div></header>';
+  return html.replace('<div class="modal" data-stop>','<div class="modal vpm-modal-premium vpm-modal-'+type+'" data-stop role="dialog" aria-modal="true">')
+    .replace(titleMatch[0],heading);
 }
 
 // ---------- Render principale ----------

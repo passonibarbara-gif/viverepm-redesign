@@ -2758,11 +2758,28 @@ function renderPrenotazioni(p){
   return rows;
 }
 
+
+// Accessi rapidi locali per singolo gestore: soltanto ID e solo record ancora autorizzati.
+const vpmQuickExpanded={clients:false,properties:false};
+function vpmRecentKey(kind){return 'viverepm-recent-'+kind+'-'+String(state.gestoreAuthUser||'gestore').toLowerCase();}
+function vpmRecentIds(kind){
+  try{const data=JSON.parse(localStorage.getItem(vpmRecentKey(kind))||'[]');return Array.isArray(data)?data.filter(x=>typeof x==='string').slice(0,3):[];}catch(_){return [];}
+}
+function vpmRememberRecent(kind,id){
+  if(!id||!state.gestoreUnlocked)return;
+  try{localStorage.setItem(vpmRecentKey(kind),JSON.stringify([id,...vpmRecentIds(kind).filter(x=>x!==id)].slice(0,3)));}catch(_){}
+}
+function vpmRecentVisible(kind,available){
+  const ids=vpmRecentIds(kind);
+  return ids.map(id=>available.find(item=>item.id===id)).filter(Boolean);
+}
+
 // ---------- Vista Gestore ----------
 function renderSidebar(){
   const alertPortfolio = calcolaAlertPortfolio();
   const propsVisibili = immobiliVisibili();
-  const items = propsVisibili.map(p=>{
+  const recentProps=vpmRecentVisible('properties',propsVisibili);
+  const items = recentProps.map(p=>{
     const status = propertyStatus(p);
     const color = status==='ok' ? 'var(--sage)' : status==='prog' ? 'var(--brass)' : 'var(--terracotta)';
     const alertImmobile = calcolaAlertImmobile(p);
@@ -2774,7 +2791,8 @@ function renderSidebar(){
 
   const clientiVisibiliIds = new Set(propsVisibili.map(p=>p.clienteId));
   const clientiVisibili = isAdmin() ? state.clienti : state.clienti.filter(c=>clientiVisibiliIds.has(c.id));
-  const clientiItems = clientiVisibili.map(c=>{
+  const recentClients=vpmRecentVisible('clients',clientiVisibili);
+  const clientiItems = recentClients.map(c=>{
     const nImmobili = state.properties.filter(p=>p.clienteId===c.id).length;
     return `<div class="nav-item ${state.selectedClienteId===c.id?'active':''}" data-nav-cliente="${c.id}">
       <div><div>${c.nome||'(senza nome)'}</div><div class="code">${nImmobili} immobil${nImmobili===1?'e':'i'}</div></div>
@@ -2797,14 +2815,13 @@ function renderSidebar(){
       ${haModulo('interventi') || haModulo('controlli') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='attivita'?'active':''}" data-nav="attivita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-tool"></i></span>Interventi e controlli</div></div>` : ''}
       ${haModulo('spese') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='contabilita'?'active':''}" data-nav="contabilita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-wallet"></i></span>Contabilità e report</div></div>` : ''}
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
-      ${haModulo('clienti') || isAdmin() ? `
-        <div class="nav-section-label">Clienti (${clientiVisibili.length})</div>
-        ${clientiItems || '<div style="font-size:12.5px;color:var(--ink-soft);padding:8px 12px;">Nessun cliente ancora.</div>'}
-        ${isAdmin() ? `<button class="btn-new" data-action="new-cliente">+ Nuovo cliente</button>` : ''}
-      ` : ''}
-      <div class="nav-section-label">Immobili (${propsVisibili.length})</div>
-      ${items || '<div style="font-size:12.5px;color:var(--ink-soft);padding:8px 12px;">Nessun immobile ancora.</div>'}
-      ${isAdmin() ? `<button class="btn-new" data-action="new-property">+ Nuovo immobile</button>` : ''}
+      <div class="vpm-sidebar-quick"><div class="nav-section-label">Accesso rapido</div>
+      ${haModulo('clienti') || isAdmin() ? `<button class="vpm-quick-toggle" data-vpm-quick="clients" aria-expanded="${vpmQuickExpanded.clients}"><i class="ti ti-chevron-${vpmQuickExpanded.clients?'down':'right'}"></i> Clienti recenti <span>${recentClients.length}</span></button>
+      ${vpmQuickExpanded.clients?`<div class="vpm-quick-list">${clientiItems||'<p class="vpm-quick-empty">Apri un cliente per trovarlo qui.</p>'}</div>`:''}` : ''}
+      <button class="vpm-quick-toggle" data-vpm-quick="properties" aria-expanded="${vpmQuickExpanded.properties}"><i class="ti ti-chevron-${vpmQuickExpanded.properties?'down':'right'}"></i> Immobili recenti <span>${recentProps.length}</span></button>
+      ${vpmQuickExpanded.properties?`<div class="vpm-quick-list">${items||'<p class="vpm-quick-empty">Apri un immobile per trovarlo qui.</p>'}</div>`:''}
+      </div>
+      ${isAdmin() ? `<div class="vpm-quick-create"><button class="btn-new" data-action="new-cliente">+ Nuovo cliente</button><button class="btn-new" data-action="new-property">+ Nuovo immobile</button></div>` : ''}
       ${isAdmin() ? `
         <div class="nav-section-label">Operatori (${state.operatori.length})</div>
         ${operatoriItems || '<div style="font-size:12.5px;color:var(--ink-soft);padding:8px 12px;">Nessun operatore ancora.</div>'}
@@ -4563,6 +4580,10 @@ function render(){
     content = `<div class="app">${renderSidebar()}<main>${main}</main></div>`;
   }
   const errorBanner = state.error ? `<div style="background:#F1DAD1;color:var(--terracotta);padding:10px 20px;font-size:13px;text-align:center;">${state.error} <button data-clear-error style="background:none;border:none;color:var(--terracotta);text-decoration:underline;cursor:pointer;margin-left:8px;">chiudi</button></div>` : '';
+  if(state.view==='gestore'&&state.gestoreUnlocked){
+    if(state.selectedId&&immobiliVisibili().some(p=>p.id===state.selectedId))vpmRememberRecent('properties',state.selectedId);
+    if(state.selectedClienteId&&state.clienti.some(c=>c.id===state.selectedClienteId))vpmRememberRecent('clients',state.selectedClienteId);
+  }
   root.innerHTML = renderTopNav() + errorBanner + content + renderModal();
   attachHandlers();
   animateBentoNumbers();
@@ -4816,10 +4837,14 @@ function attachHandlers(){
     });
   });
 
+  document.querySelectorAll('[data-vpm-quick]').forEach(btn=>btn.addEventListener('click',()=>{
+    const kind=btn.getAttribute('data-vpm-quick');vpmQuickExpanded[kind]=!vpmQuickExpanded[kind];render();
+  }));
   document.querySelectorAll('[data-nav]').forEach(node=>{
     node.addEventListener('click', ()=>{
       const id = node.getAttribute('data-nav');
       state.selectedId = ['overview','immobili','clienti','attivita','contabilita'].includes(id) ? null : id;
+      if(state.properties.some(p=>p.id===state.selectedId))vpmRememberRecent('properties',state.selectedId);
       state.selectedClienteId = null;
       state.vistaGestore = ['immobili','clienti','attivita','contabilita'].includes(id) ? id : 'overview';
       state.calendarOffset = 0;
@@ -4882,6 +4907,7 @@ function attachHandlers(){
   document.querySelectorAll('[data-nav-cliente]').forEach(node=>{
     node.addEventListener('click', ()=>{
       state.selectedClienteId = node.getAttribute('data-nav-cliente');
+      vpmRememberRecent('clients',state.selectedClienteId);
       state.selectedId = null;
       render();
     });

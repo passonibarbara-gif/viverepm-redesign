@@ -1838,6 +1838,16 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-manage-booking-placeholder i,.vpm-manage-detail-placeholder i{font-size:40px!important;color:#2d8987!important;text-shadow:none!important}
 .vpm-manage-booking-placeholder span,.vpm-manage-detail-placeholder span{font:500 12px/1.5 'IBM Plex Sans',sans-serif!important;color:#417a7a!important;text-shadow:none!important;max-width:180px;letter-spacing:0!important}
 
+
+/* FIX: never use the approved UI screenshot as a photograph. Property placeholders stay icon-only. */
+.vpm-manage-hero-image,.vpm-manage-inner-hero-photo,.vpm-manage-empty-photo{background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1800&q=85')!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.vpm-manage-hero-image{background-position:center 56%!important}
+.vpm-manage-inner-hero-photo{background-position:center 58%!important}
+.vpm-manage-booking-photo,.vpm-manage-detail-photo{background:#e6f3f0!important;background-image:none!important}
+.vpm-manage-booking-placeholder,.vpm-manage-detail-placeholder{background:#e6f3f0!important;background-image:none!important;color:#297c7c!important}
+.vpm-manage-booking-placeholder:before,.vpm-manage-detail-placeholder:before{content:none!important;background:none!important}
+.vpm-manage-booking-placeholder i,.vpm-manage-detail-placeholder i{display:block!important}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>

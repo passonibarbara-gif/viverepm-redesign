@@ -6192,6 +6192,11 @@ function attachHandlers(){
     const url = await readFileAsDataUrl(fileInput.files[0]);
     const target=state.modal&&state.modal.context==='owner'?vpmOwnerProperty():state.properties.find(p=>p.id===state.modal.propId);
     if(!target || target.id!==state.modal.propId)return;
+    const ownerUpload=state.modal?.context==='owner';
+    if(ownerUpload){
+      const filename=fileInput.files[0].name;
+      addNotifica(target, 'Nuovo documento caricato dal proprietario: '+filename, 'gestore', 'anagrafica');
+    }
     addDocumentoImmobile(target.id, { url, nome: fileInput.files[0].name, descrizione: fd.get('descrizione') });
   });
 

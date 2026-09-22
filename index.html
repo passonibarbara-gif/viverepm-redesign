@@ -1588,6 +1588,32 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-stay-confirm-placeholder{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;padding:18px;text-align:center;font:italic 17px 'Fraunces',Georgia,serif}
 @media(max-width:650px){.vpm-stay-result-photo{height:235px}.vpm-stay-results-head{padding-top:25px}}
 
+
+/* Shared approved VIVEREpm holiday-home booking identity */
+.vpm-booking-header{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;min-height:76px;padding:10px clamp(22px,5.7vw,90px);background:#fffdfb;border-bottom:1px solid #e5e9e5;color:#173e44}
+.vpm-booking-header-brand{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.vpm-booking-brand-icon{font-size:32px;color:#b28d55}
+.vpm-booking-header-brand strong{display:block;font:600 28px 'Fraunces',Georgia,serif;letter-spacing:-.035em;color:#163e44;line-height:1}
+.vpm-booking-header-brand strong span{font-size:19px;font-style:italic;color:#258d8b}
+.vpm-booking-header-brand small{display:block;margin-top:5px;color:#6b7774;font-size:10px;letter-spacing:.025em}
+.vpm-booking-header-nav{display:flex;justify-content:center;gap:clamp(15px,3vw,45px);flex-wrap:wrap}
+.vpm-booking-header-nav button{border:0;background:transparent;color:#23434a;font:500 13px 'IBM Plex Sans',sans-serif;padding:9px 3px;cursor:pointer}
+.vpm-booking-header-nav button:hover{color:#0c9a97}
+.vpm-booking-header-cta{display:inline-flex;align-items:center;gap:8px;justify-content:center;background:#b29462;border:0;border-radius:99px;color:white;padding:13px 24px;font:600 12px 'IBM Plex Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.vpm-booking-header-cta:hover{background:#927444}
+.vpm-stay-results-head{background:linear-gradient(110deg,#e6f6f5 0%,#f9fcf9 55%,#f8efe1 100%)}
+.vpm-stay-results-head:after{width:270px;height:270px;right:-95px;top:-125px;border-color:#d7c4a76b;box-shadow:0 0 0 35px #d6c3a526,0 0 0 80px #d6c3a51b}
+.vpm-stay-next-page:before{height:360px;background:linear-gradient(108deg,#e5f6f5,#f8fcfa 55%,#faf1e5)}
+.vpm-stay-next-page:after{content:'';position:absolute;right:clamp(8px,4vw,65px);top:12px;width:115px;height:170px;pointer-events:none;opacity:.58;background:linear-gradient(155deg,transparent 49%,#c7af86 49.5%,#c7af86 50.5%,transparent 51%) center/60% 100% no-repeat;clip-path:ellipse(49% 50% at 50% 50%);z-index:-1}
+.vpm-stay-next-title{position:relative}
+.vpm-stay-next-title:after{content:'❧';position:absolute;right:0;top:-26px;color:#d1bd9c;font:100px Georgia,serif;opacity:.65;pointer-events:none}
+.vpm-stay-detail-media{border:1px solid #e4ece9}
+.vpm-stay-data-form,.vpm-stay-confirm-card,.vpm-stay-detail-summary{background:#fff;border:1px solid #e4ece9}
+.vpm-stay-data-form .field label{color:#244a52}
+.vpm-stay-data-form .field input:focus{border-color:#1d9e9b}
+.vpm-stay-results-footer{background:#fffdf9}
+@media(max-width:700px){.vpm-booking-header{gap:10px;min-height:65px;padding:10px 16px}.vpm-booking-header-brand strong{font-size:22px}.vpm-booking-header-brand strong span{font-size:16px}.vpm-booking-brand-icon{font-size:24px}.vpm-booking-header-brand small{font-size:8px}.vpm-booking-header-nav{display:none}.vpm-booking-header-cta{padding:11px 16px}.vpm-stay-next-title:after{font-size:55px;top:-15px;opacity:.35}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -5033,6 +5059,18 @@ function renderTopNav(){
   </div>`;
 }
 
+/* Navigazione pubblica uniforme per tutti i passaggi di prenotazione */
+function renderVpmGuestHeader(){
+  return `<header class="vpm-booking-header">
+    <div class="vpm-booking-header-brand"><span class="vpm-booking-brand-icon"><i class="ti ti-home-heart"></i></span><span><strong>VIVERE<span>pm</span></strong><small>Property Management &amp; Holiday Homes</small></span></div>
+    <nav class="vpm-booking-header-nav" aria-label="Navigazione soggiorni">
+      <button type="button" data-guest-wizard-back="1">Trova un soggiorno</button>
+      <button type="button" data-guest-goto-manage>Gestisci prenotazione</button>
+    </nav>
+    <button type="button" class="vpm-booking-header-cta" data-guest-wizard-back="1">Prenota <i class="ti ti-arrow-right"></i></button>
+  </header>`;
+}
+
 // ---------- Modali ----------
 function renderModalRaw(){
   if(!state.modal) return '';
@@ -5649,7 +5687,7 @@ function render(){
     if(state.selectedId&&immobiliVisibili().some(p=>p.id===state.selectedId))vpmRememberRecent('properties',state.selectedId);
     if(state.selectedClienteId&&state.clienti.some(c=>c.id===state.selectedClienteId))vpmRememberRecent('clients',state.selectedClienteId);
   }
-  root.innerHTML = renderTopNav() + errorBanner + content + renderModal();
+  root.innerHTML = (state.view==='ospiti' ? renderVpmGuestHeader() : renderTopNav()) + errorBanner + content + renderModal();
   attachHandlers();
   animateBentoNumbers();
 }

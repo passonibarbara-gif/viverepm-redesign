@@ -1323,6 +1323,44 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:850px){.vpm-owner-estate-feature{grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr)}.vpm-owner-shell .vpm-owner-tile-grid-primary,.vpm-owner-shell .vpm-owner-tile-grid-secondary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.vpm-owner-estate-feature{grid-template-columns:1fr}.vpm-owner-estate-photo,.vpm-owner-estate-photo img{min-height:190px;max-height:260px}.vpm-owner-estate-caption{padding:23px}.vpm-owner-estate-caption h2{margin:11px 0 7px}.vpm-owner-estate-tag{margin:13px 0}.vpm-owner-shell .vpm-owner-tile-grid-primary,.vpm-owner-shell .vpm-owner-tile-grid-secondary{gap:9px}.vpm-owner-shell .vpm-owner-tile{min-height:125px}}
 
+
+/* Prenota un soggiorno: vetrina mediterranea, solo primo step del wizard */
+.vpm-guest-landing.portal-shell{max-width:none!important;width:100%;padding:0!important;background:#fff;color:#183f47}
+.vpm-guest-topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:16px clamp(20px,5vw,85px);background:#fff}
+.vpm-guest-logo{display:flex;align-items:center;gap:9px;color:#173d45;font-family:'Fraunces',Georgia,serif;font-size:26px;font-weight:700;line-height:1}
+.vpm-guest-logo>i{font-size:35px;color:#b3945e}.vpm-guest-logo em{font-size:22px;font-weight:500;font-style:normal}
+.vpm-guest-logo small{display:block;margin-top:4px;font:10px 'IBM Plex Sans',sans-serif;letter-spacing:.03em;color:#557079}
+.vpm-guest-manage{border:1px solid #d9e7e5;border-radius:30px;padding:12px 19px;background:#fff;color:#21575c;font-size:12px;cursor:pointer}.vpm-guest-manage strong{color:#137d7e}
+.vpm-guest-stage{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(380px,.88fr);position:relative;min-height:610px;background:#e8f5f3}
+.vpm-guest-scene{position:relative;min-height:610px;background:#b4dce5 url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1800&q=85') center center/cover no-repeat}
+.vpm-guest-scene:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#e8f7f9b8 0%,#e9f8f865 57%,#ffffff00 100%)}
+.vpm-guest-scene-copy{position:relative;z-index:1;padding:clamp(45px,6vw,95px) clamp(26px,5vw,90px);max-width:780px}
+.vpm-guest-scene h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(37px,4vw,64px);font-weight:600;line-height:1.08;letter-spacing:-.025em;color:#163c43;margin:0 0 18px}
+.vpm-guest-scene p{font-size:clamp(15px,1.4vw,21px);line-height:1.48;color:#1e4850;margin:0}
+.vpm-guest-script{font-family:'Brush Script MT','Segoe Script',cursive;font-size:clamp(26px,2.8vw,42px);font-style:italic;color:#aa8246;transform:rotate(-4deg);margin-top:40px;line-height:1.2}
+.vpm-guest-booking-card{position:relative;align-self:center;z-index:2;background:#fff;border-radius:23px;box-shadow:0 18px 55px #133c4026;padding:clamp(25px,3vw,48px);margin:28px clamp(22px,4vw,65px) 28px -30px;min-width:0;overflow:hidden}
+.vpm-guest-booking-card h2{font-family:'Fraunces',Georgia,serif;color:#163c43;font-size:clamp(28px,2.5vw,40px);line-height:1.15;margin:0 0 10px;position:relative}
+.vpm-guest-booking-card .vpm-guest-intro{font-size:15px;line-height:1.55;color:#506875;max-width:440px;margin:0 0 24px;position:relative}
+.vpm-guest-olive{position:absolute;right:16px;top:-20px;font:140px Georgia,serif;color:#d7c39c75;pointer-events:none}
+.vpm-guest-booking-card .field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.vpm-guest-booking-card .field{margin-bottom:16px;min-width:0}
+.vpm-guest-booking-card .field label{font:500 12px 'IBM Plex Sans',sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#274c54;margin-bottom:8px}
+.vpm-guest-booking-card .field input{width:100%;min-width:0;height:55px;background:#fff;border:1px solid #dce7e9;border-radius:12px;color:#163c43;padding:12px 14px;font-size:15px;box-sizing:border-box}
+.vpm-guest-booking-card .field input:focus{outline:2px solid #28a9a7;outline-offset:1px}
+.vpm-guest-booking-card .vpm-guest-search{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:55px;border-radius:13px;margin-top:2px;background:linear-gradient(105deg,#1b7c82,#25a9a8);color:#fff;font-weight:700}
+.vpm-guest-secure{text-align:center;font-size:12px;color:#42616b;margin-top:17px}.vpm-guest-secure i{margin-right:5px}
+.vpm-guest-how{background:#fff;padding:32px clamp(20px,5vw,80px) 34px;text-align:center}
+.vpm-guest-how h2{font-family:'Fraunces',Georgia,serif;font-size:25px;color:#173d45;margin:0 0 25px}
+.vpm-guest-how-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:15px}
+.vpm-guest-how-grid>div{display:flex;flex-direction:column;align-items:center;gap:8px;color:#23434b}
+.vpm-guest-how-grid i{display:grid;place-items:center;width:60px;height:60px;border-radius:50%;background:#e1f6f3;color:#188487;font-size:28px;margin-bottom:4px}
+.vpm-guest-how-grid>div:nth-child(3) i,.vpm-guest-how-grid>div:nth-child(5) i{background:#f4eddf;color:#aa8246}
+.vpm-guest-how-grid strong{font-family:'Fraunces',Georgia,serif;font-size:17px}
+.vpm-guest-how-grid span{font-size:12px;color:#59717b;line-height:1.55}
+.vpm-guest-how>p{font-size:10px;letter-spacing:.32em;color:#294f56;margin:37px 0 0}
+@media(max-width:950px){.vpm-guest-stage{grid-template-columns:1fr}.vpm-guest-scene{min-height:380px}.vpm-guest-scene-copy{padding:48px 35px}.vpm-guest-booking-card{margin:-42px 25px 30px}.vpm-guest-how-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.vpm-guest-topbar{padding:15px}.vpm-guest-logo{font-size:21px}.vpm-guest-logo small{font-size:8px}.vpm-guest-manage{font-size:10px;padding:9px}.vpm-guest-manage strong{display:block}.vpm-guest-scene{min-height:350px}.vpm-guest-scene-copy{padding:43px 22px}.vpm-guest-scene h1{font-size:36px}.vpm-guest-booking-card{margin:-30px 12px 20px;padding:24px 18px}.vpm-guest-booking-card .field-row{gap:10px}.vpm-guest-booking-card .field input{font-size:13px;padding:8px}.vpm-guest-how-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 12px}.vpm-guest-how h2{font-size:23px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4493,26 +4531,49 @@ function renderOspitiView(){
 
   // ---- Step 1: scelta periodo ----
   if(step===1){
-    return `<div class="portal-shell" style="max-width:760px;">
-      <div class="guest-hero">
-        <div class="guest-hero-brand">${state.settings.nomeAgenzia || 'Property Manager'}</div>
-        <h1>Trova il tuo prossimo soggiorno</h1>
-        <p>Scegli le date, controlla la disponibilità in tempo reale e prenota in pochi minuti.</p>
+    return `<div class="portal-shell vpm-guest-landing">
+      <div class="vpm-guest-topbar">
+        <div class="vpm-guest-logo"><i class="ti ti-home-heart"></i><span>VIVERE<em>pm</em><small>Property Management & Holiday Homes</small></span></div>
+        <button type="button" class="vpm-guest-manage" data-guest-goto-manage>Hai già prenotato? <strong>Gestisci la prenotazione →</strong></button>
       </div>
-      <button class="link-btn" data-guest-goto-manage style="margin-bottom:20px;display:block;">Hai già prenotato? Gestisci la tua prenotazione →</button>
-      ${renderWizardSteps(1)}
-      <form id="guestDatesForm" style="max-width:420px;">
-        <div class="field-row">
-          <div class="field"><label>Check-in</label><input type="date" name="checkin" required value="${state.guestDates.checkin}"></div>
-          <div class="field"><label>Check-out</label><input type="date" name="checkout" required value="${state.guestDates.checkout}"></div>
+      <div class="vpm-guest-stage">
+        <div class="vpm-guest-scene">
+          <div class="vpm-guest-scene-copy">
+            <h1>La tua prossima<br>vacanza comincia qui</h1>
+            <p>Case esclusive, esperienze autentiche,<br>tutto il fascino dell'Italia.</p>
+            <div class="vpm-guest-script">Più di un soggiorno,<br>un modo di vivere.</div>
+          </div>
         </div>
-        <div class="field-row">
-          <div class="field"><label>Adulti</label><input type="number" name="adulti" min="1" required value="${state.guestDates.adulti||1}"></div>
-          <div class="field"><label>Bambini</label><input type="number" name="bambini" min="0" value="${state.guestDates.bambini||0}"></div>
+        <div class="vpm-guest-booking-card">
+          <div class="vpm-guest-olive" aria-hidden="true">❧</div>
+          <h2>Trova il tuo soggiorno</h2>
+          <p class="vpm-guest-intro">Scegli le date, controlla la disponibilità in tempo reale e prenota in pochi minuti.</p>
+          <form id="guestDatesForm">
+            <div class="field-row">
+              <div class="field"><label>Check-in</label><input type="date" name="checkin" required value="${state.guestDates.checkin}"></div>
+              <div class="field"><label>Check-out</label><input type="date" name="checkout" required value="${state.guestDates.checkout}"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Adulti</label><input type="number" name="adulti" min="1" required value="${state.guestDates.adulti||1}"></div>
+              <div class="field"><label>Bambini</label><input type="number" name="bambini" min="0" value="${state.guestDates.bambini||0}"></div>
+            </div>
+            <div class="field"><label>Animali domestici al seguito</label><input type="number" name="animali" min="0" value="${state.guestDates.animali||0}"></div>
+            <button type="submit" class="btn-primary vpm-guest-search">Cerca immobili disponibili <i class="ti ti-arrow-right"></i></button>
+          </form>
+          <div class="vpm-guest-secure"><i class="ti ti-lock"></i> Prenotazione sicura e protetta</div>
         </div>
-        <div class="field"><label>Animali domestici al seguito</label><input type="number" name="animali" min="0" value="${state.guestDates.animali||0}"></div>
-        <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">Cerca immobili disponibili</button>
-      </form>
+      </div>
+      <section class="vpm-guest-how">
+        <h2>Come funziona la prenotazione</h2>
+        <div class="vpm-guest-how-grid">
+          <div><i class="ti ti-calendar-event"></i><strong>1. Scegli le date</strong><span>Indica il periodo<br>del tuo soggiorno</span></div>
+          <div><i class="ti ti-search"></i><strong>2. Trova la tua casa</strong><span>Scopri gli immobili<br>disponibili</span></div>
+          <div><i class="ti ti-file-text"></i><strong>3. Inserisci i dettagli</strong><span>Completa la prenotazione<br>in pochi minuti</span></div>
+          <div><i class="ti ti-credit-card"></i><strong>4. Conferma</strong><span>Ricevi la conferma<br>via email</span></div>
+          <div><i class="ti ti-luggage"></i><strong>5. Buon viaggio!</strong><span>Noi siamo qui per te</span></div>
+        </div>
+        <p>IL TUO SOGGIORNO. LA NOSTRA CURA.</p>
+      </section>
     </div>`;
   }
 

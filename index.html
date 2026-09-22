@@ -1141,6 +1141,45 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
   }
   .topnav.vpm-topnav-workspace{padding-right:16px!important}
 }
+
+/* ViverePM · Proprietari · private residence visual language */
+body:has(.vpm-owner-shell){background:linear-gradient(145deg,#f0f7f5 0%,#faf9f5 52%,#eef7f5 100%)}
+.vpm-owner-shell{--owner-deep:#103f45;--owner-teal:#087e7d;--owner-gold:#b99156;max-width:1120px!important;padding:26px clamp(16px,3vw,38px) 60px!important}
+.vpm-owner-shell .vpm-owner-topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.vpm-owner-shell .vpm-owner-signature{font-family:'Fraunces',serif;font-size:22px;color:#12474a;letter-spacing:-.035em}
+.vpm-owner-shell .vpm-owner-signature span{color:#b48b50}
+.vpm-owner-shell .vpm-owner-topline .link-btn{border:1px solid #cfe4de;background:#fff;border-radius:999px;padding:10px 16px;color:#23555a;text-decoration:none}
+.vpm-owner-shell .vpm-owner-topline .link-btn:hover{background:#e5f5f0;border-color:#8fc8be}
+.vpm-owner-shell .vpm-owner-property-head{position:relative;overflow:hidden;background:linear-gradient(112deg,#103e44,#17686a 73%,#299b91);padding:27px 32px;border-radius:22px;color:#fff;margin-bottom:21px;box-shadow:0 15px 36px #0a484422}
+.vpm-owner-shell .vpm-owner-property-head:after{content:"";position:absolute;width:210px;height:210px;border:1px solid #ffffff25;border-radius:50%;right:-56px;top:-95px;box-shadow:0 0 0 34px #ffffff0a,0 0 0 68px #ffffff09;pointer-events:none}
+.vpm-owner-shell .vpm-owner-property-head .page-title{color:#fff;margin:7px 0 5px;font-size:clamp(25px,3vw,38px);position:relative;z-index:1}
+.vpm-owner-shell .vpm-owner-property-head .page-sub{color:#d5eae6;margin:0;position:relative;z-index:1}
+.vpm-owner-shell .vpm-owner-property-eyebrow{color:#dfc49b;font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+.vpm-owner-shell .dossier-tabs{background:#fff;border:1px solid #e2ece8;border-radius:17px;padding:9px!important;box-shadow:0 5px 22px #194b4410;margin-bottom:24px;gap:5px}
+.vpm-owner-shell .dossier-tab-btn{border-radius:11px!important;color:#58747a;transition:background .18s,color .18s,transform .18s}
+.vpm-owner-shell .dossier-tab-btn:hover{background:#e8f6f2;color:#116d6d}
+.vpm-owner-shell .dossier-tab-btn.active{background:#126e70!important;color:#fff!important;box-shadow:0 4px 12px #0c706d28}
+.vpm-owner-shell .vpm-owner-hero{border-radius:23px;min-height:205px;padding:30px 34px;background:linear-gradient(110deg,#103e43 0%,#136b69 64%,#3eaea0 100%);box-shadow:0 18px 35px #104c4629}
+.vpm-owner-shell .vpm-owner-hero h2{font-size:clamp(29px,4vw,43px)}
+.vpm-owner-shell .vpm-owner-hero img{height:158px;border-radius:17px;border:3px solid #ffffff9c}
+.vpm-owner-shell .vpm-owner-hero-label{color:#e6cba2}
+.vpm-owner-shell .vpm-owner-tile-grid{gap:15px;margin:22px 0 27px}
+.vpm-owner-shell .vpm-owner-tile{min-height:155px;padding:19px;border-radius:18px;border-color:#d7e8e2;box-shadow:0 5px 15px #174d4510}
+.vpm-owner-shell .vpm-owner-tile:hover{transform:translateY(-3px);box-shadow:0 13px 25px #174d4520}
+.vpm-owner-shell .vpm-owner-tile strong{font-family:'Fraunces',serif;font-size:19px;font-weight:600}
+.vpm-owner-shell .vpm-owner-tile-icon{width:43px;height:43px;border-radius:13px;font-size:23px}
+.vpm-owner-shell .dash-hero,.vpm-owner-shell .vpm-owner-form,.vpm-owner-shell .vpm-owner-doc,.vpm-owner-shell .vpm-owner-block{border-radius:18px;box-shadow:0 6px 20px #174d450e}
+.vpm-owner-shell .vpm-owner-section-intro{border-radius:17px;padding:19px 21px}
+.vpm-owner-shell .stat-card{border-radius:16px}
+.vpm-owner-shell .vpm-owner-action,.vpm-owner-shell .btn-primary{background:#107e7b;border-radius:11px}
+.vpm-owner-shell :is(input,select,textarea):focus{outline:2px solid #70c8ba;outline-offset:1px}
+.modal.vpm-owner-modal{border:1px solid #d9e9e2;box-shadow:0 25px 70px #0b34394d}
+.modal.vpm-owner-modal .vpm-modal-head{background:linear-gradient(115deg,#10444a,#187e78);color:#fff}
+.modal.vpm-owner-modal .vpm-modal-head :is(h2,.vpm-modal-brand,.vpm-modal-kicker,.vpm-modal-category,.vpm-modal-tagline){color:#fff}
+.modal.vpm-owner-modal .vpm-modal-title-icon{background:#e3f6ee!important;color:#0c746f!important}
+.modal.vpm-owner-modal .vpm-modal-x{color:#fff}
+@media(max-width:600px){.vpm-owner-shell{padding:15px 12px 42px!important}.vpm-owner-shell .vpm-owner-property-head{padding:22px 19px;border-radius:17px}.vpm-owner-shell .vpm-owner-hero{padding:23px 19px;min-height:165px}.vpm-owner-shell .vpm-owner-tile{min-height:135px;padding:13px}.vpm-owner-shell .vpm-owner-tile strong{font-size:17px}.vpm-owner-shell .dossier-tabs{border-radius:12px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4163,13 +4202,19 @@ function renderProprietariView(){
     ownerTabContent = '<div class="vpm-owner-section-intro purple"><i class="ti ti-user-circle"></i><div><strong>I tuoi dati</strong><small>Aggiorna recapiti e indirizzo di residenza.</small></div></div><form id="vpmOwnerProfileForm" class="vpm-owner-form"><div class="field"><label>Nome e cognome</label><input name="nome" required maxlength="150" value="'+vpmOwnerEscape(clienteLoggato.nome)+'"></div><div class="field-row"><div class="field"><label>Telefono</label><input name="telefono" type="tel" maxlength="50" value="'+vpmOwnerEscape(clienteLoggato.telefono)+'"></div><div class="field"><label>Email di accesso</label><input type="email" value="'+vpmOwnerEscape(clienteLoggato.email)+'" disabled></div></div><div class="field"><label>Indirizzo di residenza</label><input name="indirizzo" maxlength="250" value="'+vpmOwnerEscape(clienteLoggato.indirizzo)+'"></div><p class="vpm-owner-hint">Per cambiare l’email di accesso contatta il gestore.</p><button type="submit" class="btn-primary"><i class="ti ti-check"></i> Salva i miei dati</button></form>';
   }
 
-  return `<div class="portal-shell vpm-owner-shell" style="max-width:1060px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-      ${mieiImmobili.length>1 ? `<button class="link-btn" data-owner-back>← I miei immobili</button>` : `<span></span>`}
-      <button class="link-btn" data-owner-logout>Esci</button>
+  return `<div class="portal-shell vpm-owner-shell" style="max-width:1120px;">
+    <div class="vpm-owner-topline">
+      <span class="vpm-owner-signature">VIVERE<span>PM</span></span>
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+        ${mieiImmobili.length>1 ? `<button class="link-btn" data-owner-back>← I miei immobili</button>` : ''}
+        <button class="link-btn" data-owner-logout>Esci <i class="ti ti-logout"></i></button>
+      </div>
     </div>
-    <h1 class="page-title">${propertyTypeIcon(p.tipo)}${p.nome}</h1>
-    <p class="page-sub">${p.indirizzo||'—'} · ${p.tipo}</p>
+    <div class="vpm-owner-property-head">
+      <span class="vpm-owner-property-eyebrow">IL TUO PATRIMONIO · AREA RISERVATA</span>
+      <h1 class="page-title">${propertyTypeIcon(p.tipo)}${p.nome}</h1>
+      <p class="page-sub">${p.indirizzo||'—'} · ${p.tipo}</p>
+    </div>
 
     <div class="dossier-tabs">${ownerTabsHtml}</div>
     ${ownerTabContent}
@@ -5006,7 +5051,7 @@ function renderModal(){
   if(!titleMatch)return html;
   const icon=icons[type]||'ti-sparkles';
   const heading='<header class="vpm-modal-head"><div class="vpm-modal-eyebrow"><span class="vpm-modal-brand">VIVERE<span>PM</span></span><span class="vpm-modal-category">GESTIONE IMMOBILI</span></div><span class="vpm-modal-tagline">Valore ai tuoi spazi <i class="ti ti-heart"></i></span><button type="button" class="vpm-modal-x" data-close aria-label="Chiudi finestra"><i class="ti ti-x"></i></button><div class="vpm-modal-title-row"><span class="vpm-modal-title-icon"><i class="ti '+icon+'"></i></span><div><span class="vpm-modal-kicker">VIVEREPM · '+(type==='property'?'IMMOBILI':type==='cliente'?'PROPRIETARI':type==='maintenance'||type==='programmaIntervento'||type==='completaIntervento'?'INTERVENTI':'GESTIONE')+'</span><h2>'+titleMatch[1]+'</h2>'+(type==='cliente'?'<p class="vpm-modal-subtitle">Registra i dati del proprietario e prepara il suo accesso.</p>':'')+'</div></div></header>';
-  return html.replace('<div class="modal" data-stop>','<div class="modal vpm-modal-premium vpm-modal-'+type+'" data-stop role="dialog" aria-modal="true">')
+  return html.replace('<div class="modal-overlay"','<div class="modal-overlay"')
     .replace(titleMatch[0],heading);
 }
 

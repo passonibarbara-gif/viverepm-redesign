@@ -1720,6 +1720,43 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-stay-confirm-page .vpm-stay-confirm-actions .vpm-stay-next-button{margin:0;max-width:none}
 @media(max-width:800px){.vpm-stay-confirm-page .vpm-stay-confirm-card{grid-template-columns:1fr;gap:0}.vpm-stay-confirm-page .vpm-stay-confirm-info{grid-column:1;grid-row:1;padding:20px 12px}.vpm-stay-confirm-visual{grid-column:1;grid-row:2;min-height:260px}.vpm-stay-confirm-page .vpm-stay-confirm-photo,.vpm-stay-confirm-visual-generic{min-height:260px;height:260px}.vpm-stay-confirm-page .vpm-stay-confirm-total{grid-row:3}}
 
+
+/* Guest reservation management: same Mediterranean editorial identity as the booking flow */
+.vpm-manage-page{min-height:calc(100vh - 80px);background:#fffdfa;color:#1d4549}
+.vpm-manage-hero{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);min-height:400px;background:#eef8f6;overflow:hidden}
+.vpm-manage-hero-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:0;padding:clamp(34px,4.4vw,75px) clamp(26px,5.8vw,94px);background:linear-gradient(110deg,#eaf8f7 0%,#f8fbf8 76%,#fffaf2 100%)}
+.vpm-manage-eyebrow{font-size:10px;font-weight:700;letter-spacing:.17em;color:#547075;margin-bottom:39px}
+.vpm-manage-eyebrow:first-letter{font-size:16px}
+.vpm-manage-eyebrow span{font-style:italic;color:#278d8e;letter-spacing:0}
+.vpm-manage-kicker{font-size:10px;font-weight:700;letter-spacing:.2em;color:#a98452;margin-bottom:14px}
+.vpm-manage-hero-copy h1{font:600 clamp(39px,4.3vw,66px)/1.12 'Fraunces',Georgia,serif;color:#1d4549;margin:0 0 16px;letter-spacing:-.025em}
+.vpm-manage-hero-copy>p{font-size:15px;line-height:1.7;max-width:460px;color:#516971;margin:0}
+.vpm-manage-script{font:italic 400 clamp(27px,2.6vw,40px)/1.12 'Cormorant Garamond',Georgia,serif;color:#a7814d;transform:rotate(-6deg);margin:27px 0 0 20px}
+.vpm-manage-hero-image{position:relative;min-height:400px;background:#d6eae7 url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1800') center 53%/cover no-repeat}
+.vpm-manage-hero-image:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#f8fbf840,transparent 38%),linear-gradient(0deg,#153f4445,transparent 30%)}
+.vpm-manage-image-tag{position:absolute;bottom:27px;right:30px;z-index:1;font-size:10px;letter-spacing:.2em;font-weight:600;color:white;text-shadow:0 1px 8px #183c44}
+.vpm-manage-main{max-width:1250px;margin:0 auto;padding:29px clamp(22px,4vw,55px) 65px}
+.vpm-manage-back{display:inline-flex;align-items:center;gap:8px;background:transparent;border:0;padding:8px 0;color:#36656a;font-size:13px;cursor:pointer;margin-bottom:23px}
+.vpm-manage-back:hover{text-decoration:underline}
+.vpm-manage-card{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:clamp(22px,4vw,66px);border:1px solid #e6eae5;border-radius:23px;background:#fff;box-shadow:0 14px 45px #153f4510;padding:clamp(24px,3.7vw,55px)}
+.vpm-manage-card-heading>span{font-size:10px;font-weight:700;letter-spacing:.2em;color:#a98452}
+.vpm-manage-card-heading h2{font:600 clamp(27px,2.8vw,40px)/1.16 'Fraunces',Georgia,serif;margin:12px 0 12px;color:#1d4549}
+.vpm-manage-card-heading p{color:#60757a;font-size:14px;line-height:1.6;max-width:340px;margin:0}
+.vpm-manage-form{display:flex;flex-direction:column;gap:17px}
+.vpm-manage-form .field{margin:0}
+.vpm-manage-form .field label{display:block;font-size:11px;letter-spacing:.1em;font-weight:700;margin-bottom:10px;color:#1d4549}
+.vpm-manage-phone-wrap{position:relative}
+.vpm-manage-phone-wrap>i{position:absolute;top:50%;left:16px;transform:translateY(-50%);color:#268688;font-size:20px;pointer-events:none}
+.vpm-manage-phone-wrap input{width:100%;box-sizing:border-box;height:58px;border:1px solid #d9e6e5;border-radius:12px;padding:0 17px 0 48px;background:#fff;color:#1d4549;font-size:15px}
+.vpm-manage-phone-wrap input:focus{outline:2px solid #2b99985c;border-color:#278b8b}
+.vpm-manage-form .vpm-manage-submit{width:100%;min-height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:700}
+.vpm-manage-card-foot{grid-column:2;display:flex;align-items:center;gap:8px;color:#65787b;font-size:12px;margin-top:-20px}
+.vpm-manage-card-foot i{color:#24888a}
+.vpm-manage-support{display:flex;align-items:center;justify-content:center;gap:10px;margin:32px auto 0;color:#597477;font-size:13px;text-align:center}
+.vpm-manage-support i{color:#b08b55;font-size:20px}
+@media(max-width:850px){.vpm-manage-hero{grid-template-columns:1fr}.vpm-manage-hero-copy{padding:38px 25px}.vpm-manage-eyebrow{margin-bottom:24px}.vpm-manage-hero-image{min-height:240px}.vpm-manage-card{grid-template-columns:1fr;gap:22px}.vpm-manage-card-foot{grid-column:1;margin-top:-8px}}
+@media(max-width:500px){.vpm-manage-hero-copy h1{font-size:38px}.vpm-manage-hero-image{min-height:205px}.vpm-manage-card{padding:22px 18px}.vpm-manage-support{align-items:flex-start}.vpm-manage-main{padding-bottom:40px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4793,14 +4830,36 @@ function renderProprietariView(){
 // ---------- Vista Prenota un soggiorno ----------
 function renderGestisciPrenotazione(){
   if(!state.guestManagePhone){
-    return `<div class="portal-shell" style="max-width:760px;">
-      <button class="link-btn" data-guest-manage-exit style="margin-bottom:16px;">← Torna alla prenotazione</button>
-      <h1 class="page-title">Gestisci la tua prenotazione</h1>
-      <p class="page-sub">Inserisci il numero di telefono che hai usato per prenotare.</p>
-      <form id="guestLookupForm" style="max-width:320px;">
-        <div class="field"><label>Telefono</label><input name="telefono" required placeholder="+39..."></div>
-        <button type="submit" class="btn-primary" style="width:100%;">Cerca</button>
-      </form>
+    return `<div class="vpm-manage-page">
+      <section class="vpm-manage-hero">
+        <div class="vpm-manage-hero-copy">
+          <span class="vpm-manage-eyebrow">VIVERE<span>pm</span> &nbsp;·&nbsp; IL TUO SOGGIORNO, LA NOSTRA CURA</span>
+          <span class="vpm-manage-kicker">LA TUA VACANZA, SEMPRE A PORTATA DI MANO</span>
+          <h1>Ogni dettaglio<br>del tuo soggiorno.</h1>
+          <p>Ritrova la tua prenotazione e resta in contatto con noi, prima e durante la vacanza.</p>
+          <div class="vpm-manage-script">Ci prendiamo cura<br>dei tuoi momenti speciali.</div>
+        </div>
+        <div class="vpm-manage-hero-image" role="img" aria-label="Terrazza mediterranea affacciata sul mare">
+          <div class="vpm-manage-image-tag">VIVEREpm · HOLIDAY HOMES</div>
+        </div>
+      </section>
+      <div class="vpm-manage-main">
+        <button class="vpm-manage-back" data-guest-manage-exit><i class="ti ti-arrow-left"></i> Torna a trova un soggiorno</button>
+        <section class="vpm-manage-card">
+          <div class="vpm-manage-card-heading">
+            <span>LA TUA PRENOTAZIONE</span>
+            <h2>Ritrova il tuo soggiorno</h2>
+            <p>Inserisci il numero di telefono utilizzato al momento della richiesta.</p>
+          </div>
+          <form id="guestLookupForm" class="vpm-manage-form">
+            <div class="field"><label for="vpmManagePhone">NUMERO DI TELEFONO</label><div class="vpm-manage-phone-wrap"><i class="ti ti-phone"></i><input id="vpmManagePhone" name="telefono" type="tel" autocomplete="tel" required placeholder="+39 333 123 4567"></div></div>
+            <button type="submit" class="btn-primary vpm-manage-submit">Cerca la mia prenotazione <i class="ti ti-arrow-right"></i></button>
+          </form>
+          <div class="vpm-manage-card-foot"><i class="ti ti-lock"></i> Usa lo stesso numero indicato quando hai prenotato.</div>
+        </section>
+        <div class="vpm-manage-support"><i class="ti ti-heart-handshake"></i><span>Hai bisogno di aiuto? Il team ViverePM è al tuo fianco per il tuo soggiorno.</span></div>
+      </div>
+      <footer class="vpm-stay-results-footer">IL TUO SOGGIORNO. LA NOSTRA CURA.</footer>
     </div>`;
   }
 

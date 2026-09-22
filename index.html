@@ -1057,8 +1057,28 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
  .topnav.vpm-topnav-workspace + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 60px)!important}
  .topnav.vpm-topnav-workspace + .app main{margin-top:0!important;padding-top:22px!important;min-width:0!important}
 }
+
+/* v27: Stable search header and sidebar label — no overlap with content */
+@media(min-width:861px){
+ .topnav.vpm-topnav-workspace{display:grid!important;grid-template-columns:minmax(240px,1fr) auto!important;align-items:center!important;justify-content:stretch!important;gap:18px!important;height:72px!important;min-height:72px!important;padding:0 25px!important;overflow:visible!important}
+ .topnav.vpm-topnav-workspace .topnav-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;min-width:0!important;width:auto!important;max-width:100%!important;z-index:1!important}
+ .topnav.vpm-topnav-workspace .vpm-global-search{display:flex!important;align-items:center!important;width:min(440px,100%)!important;max-width:100%!important;height:43px!important;margin:0!important;box-sizing:border-box!important}
+ .topnav.vpm-topnav-workspace .vpm-global-search input{min-width:0!important;width:100%!important}
+ .topnav.vpm-topnav-workspace .topnav-tabs{width:auto!important;max-width:100%!important;height:72px!important;margin:0!important;padding:0!important;justify-self:end!important}
+ .topnav.vpm-topnav-workspace + .app{min-height:calc(100vh - 72px)!important}
+ .topnav.vpm-topnav-workspace + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 72px)!important}
+ .topnav.vpm-topnav-workspace + .app main{margin-top:0!important;padding-top:22px!important}
+}
+@media(min-width:861px) and (max-width:1180px){
+ .topnav.vpm-topnav-workspace{grid-template-columns:minmax(170px,1fr) auto!important;gap:10px!important;padding:0 16px!important}
+ .topnav.vpm-topnav-workspace .vpm-global-search{width:min(300px,100%)!important}
+ .topnav.vpm-topnav-workspace .topnav-tabs{gap:3px!important}
+}
+.sidebar .nav-item[data-nav="comunicazioni"] .nav-item-main{display:flex;align-items:center;gap:0;min-width:0;font-size:clamp(12px,1.08vw,14px);letter-spacing:-.015em;white-space:nowrap}
+.sidebar .nav-item[data-nav="comunicazioni"] .nav-icon{flex:none}
+.sidebar .nav-item[data-nav="comunicazioni"] .nav-badge{flex:none;margin-left:auto}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-26">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-27">
 </head>
 <body>
 <div id="root"></div>
@@ -3130,7 +3150,7 @@ function renderSidebar(){
       ${haModulo('interventi') || haModulo('controlli') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='attivita'?'active':''}" data-nav="attivita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-tool"></i></span>Interventi e controlli</div></div>` : ''}
       ${haModulo('spese') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='contabilita'?'active':''}" data-nav="contabilita"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-wallet"></i></span>Contabilità e report</div></div>` : ''}
       ${haModulo('prenotazioni') ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='tutte-prenotazioni'?'active':''}" data-nav-prenotazioni><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-calendar-event"></i></span>Tutte le prenotazioni${alertPortfolio.prenotazioniPendenti>0?`<span class="nav-badge">${alertPortfolio.prenotazioniPendenti}</span>`:''}</div></div>` : ''}
-      ${haModulo('messaggi') || haModulo('prenotazioni') || isAdmin() ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='comunicazioni'?'active':''}" data-nav="comunicazioni"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-messages"></i></span>Comunicazioni proprietari${vpmOwnerStatusCounts().reply>0?`<span class="nav-badge">${vpmOwnerStatusCounts().reply}</span>`:''}</div></div>` : ''}
+      ${haModulo('messaggi') || haModulo('prenotazioni') || isAdmin() ? `<div class="nav-item ${state.selectedId===null && !state.selectedClienteId && state.vistaGestore==='comunicazioni'?'active':''}" data-nav="comunicazioni"><div class="nav-item-main"><span class="nav-icon"><i class="ti ti-messages"></i></span>Messaggi proprietari${vpmOwnerStatusCounts().reply>0?`<span class="nav-badge">${vpmOwnerStatusCounts().reply}</span>`:''}</div></div>` : ''}
       <div class="vpm-sidebar-quick"><div class="nav-section-label">Accesso rapido</div>
       ${haModulo('clienti') || isAdmin() ? `<button class="vpm-quick-toggle" data-vpm-quick="clients" aria-expanded="${vpmQuickExpanded.clients}"><i class="ti ti-chevron-${vpmQuickExpanded.clients?'down':'right'}"></i> Clienti recenti <span>${recentClients.length}</span></button>
       ${vpmQuickExpanded.clients?`<div class="vpm-quick-list">${clientiItems||'<p class="vpm-quick-empty">Apri un cliente per trovarlo qui.</p>'}</div>`:''}` : ''}

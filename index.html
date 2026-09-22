@@ -5051,7 +5051,7 @@ function renderModal(){
   if(!titleMatch)return html;
   const icon=icons[type]||'ti-sparkles';
   const heading='<header class="vpm-modal-head"><div class="vpm-modal-eyebrow"><span class="vpm-modal-brand">VIVERE<span>PM</span></span><span class="vpm-modal-category">GESTIONE IMMOBILI</span></div><span class="vpm-modal-tagline">Valore ai tuoi spazi <i class="ti ti-heart"></i></span><button type="button" class="vpm-modal-x" data-close aria-label="Chiudi finestra"><i class="ti ti-x"></i></button><div class="vpm-modal-title-row"><span class="vpm-modal-title-icon"><i class="ti '+icon+'"></i></span><div><span class="vpm-modal-kicker">VIVEREPM · '+(type==='property'?'IMMOBILI':type==='cliente'?'PROPRIETARI':type==='maintenance'||type==='programmaIntervento'||type==='completaIntervento'?'INTERVENTI':'GESTIONE')+'</span><h2>'+titleMatch[1]+'</h2>'+(type==='cliente'?'<p class="vpm-modal-subtitle">Registra i dati del proprietario e prepara il suo accesso.</p>':'')+'</div></div></header>';
-  return html.replace('<div class="modal-overlay"','<div class="modal-overlay"')
+  return html.replace('<div class="modal" data-stop>','<div class="modal vpm-modal-premium vpm-modal-'+type+(state.view==='proprietari'?' vpm-owner-modal':'')+'" data-stop role="dialog" aria-modal="true">')
     .replace(titleMatch[0],heading);
 }
 

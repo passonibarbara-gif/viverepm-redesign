@@ -1180,6 +1180,10 @@ body:has(.vpm-owner-shell){background:linear-gradient(145deg,#f0f7f5 0%,#faf9f5 
 .modal.vpm-owner-modal .vpm-modal-x{color:#fff}
 @media(max-width:600px){.vpm-owner-shell{padding:15px 12px 42px!important}.vpm-owner-shell .vpm-owner-property-head{padding:22px 19px;border-radius:17px}.vpm-owner-shell .vpm-owner-hero{padding:23px 19px;min-height:165px}.vpm-owner-shell .vpm-owner-tile{min-height:135px;padding:13px}.vpm-owner-shell .vpm-owner-tile strong{font-size:17px}.vpm-owner-shell .dossier-tabs{border-radius:12px}}
 
+
+.vpm-owner-profile-readonly .vpm-owner-readonly-value{min-height:51px;display:flex;align-items:center;padding:13px 16px;background:#f5faf8;border:1px solid #dceae5;border-radius:11px;color:#254d53;font-size:14px;overflow-wrap:anywhere}
+.vpm-owner-profile-readonly .field{min-width:0;margin-bottom:16px}
+.vpm-owner-profile-readonly .vpm-owner-action{margin-top:4px;background:linear-gradient(105deg,#0e6e70,#23a49b);box-shadow:0 7px 17px #0e777024}
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -2598,7 +2602,7 @@ function renderBookingChat(p, b, viewer){
   return `
     <div class="msg-thread" data-msg-thread>${bubbles}</div>
     <form class="msg-form-booking" data-booking-msg-form="${p.id}::${b.id}" data-autore="${viewer}">
-      <input type="text" name="testo" placeholder="Scrivi un messaggio..." required autocomplete="off">
+      <input type="text" name="testo" placeholder="Scrivi un messaggio..." required autocomplete="off" ${viewer==='proprietario'&&vpmOwnerProfileRequestDraft?'value="'+vpmOwnerEscape(vpmOwnerProfileRequestDraft)+'"':''}>
       <button type="submit" class="send-btn" aria-label="Invia messaggio">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 20 4 14 20 11 13 4 12Z"/></svg>
       </button>
@@ -2953,6 +2957,7 @@ function renderSpese(p, role){
   return html;
 }
 
+let vpmOwnerProfileRequestDraft='';
 function renderMessages(p, viewer){
   const list = [...(p.messaggi||[])].sort((a,b)=>new Date(a.data)-new Date(b.data));
   const bubbles = list.map(m=>`
@@ -4199,7 +4204,8 @@ function renderProprietariView(){
   } else if(ownerTab==='disponibilita'){
     ownerTabContent = '<div class="vpm-owner-section-intro orange"><i class="ti ti-calendar-off"></i><div><strong>Uso personale</strong><small>Blocca un periodo per non renderlo prenotabile.</small></div></div><form id="vpmOwnerBlockForm" class="vpm-owner-form"><div class="field-row"><div class="field"><label>Dal giorno</label><input type="date" name="dal" required></div><div class="field"><label>Al giorno (partenza)</label><input type="date" name="al" required></div></div><div class="field"><label>Nota (facoltativa)</label><input name="nota" maxlength="180" placeholder="Es. soggiorno personale"></div><button type="submit" class="btn-primary"><i class="ti ti-calendar-plus"></i> Blocca periodo</button></form><p class="vpm-owner-hint">Il giorno di partenza torna disponibile. Non puoi bloccare date già prenotate o richieste.</p><h3 class="vpm-owner-subheading">Periodi bloccati</h3>'+vpmOwnerBlockList(p);
   } else if(ownerTab==='profilo'){
-    ownerTabContent = '<div class="vpm-owner-section-intro purple"><i class="ti ti-user-circle"></i><div><strong>I tuoi dati</strong><small>Aggiorna recapiti e indirizzo di residenza.</small></div></div><form id="vpmOwnerProfileForm" class="vpm-owner-form"><div class="field"><label>Nome e cognome</label><input name="nome" required maxlength="150" value="'+vpmOwnerEscape(clienteLoggato.nome)+'"></div><div class="field-row"><div class="field"><label>Telefono</label><input name="telefono" type="tel" maxlength="50" value="'+vpmOwnerEscape(clienteLoggato.telefono)+'"></div><div class="field"><label>Email di accesso</label><input type="email" value="'+vpmOwnerEscape(clienteLoggato.email)+'" disabled></div></div><div class="field"><label>Indirizzo di residenza</label><input name="indirizzo" maxlength="250" value="'+vpmOwnerEscape(clienteLoggato.indirizzo)+'"></div><p class="vpm-owner-hint">Per cambiare l’email di accesso contatta il gestore.</p><button type="submit" class="btn-primary"><i class="ti ti-check"></i> Salva i miei dati</button></form>';
+    ownerTabContent = '<div class="vpm-owner-section-intro purple"><i class="ti ti-user-circle"></i><div><strong>I tuoi dati</strong><small>Consulta i tuoi recapiti e richiedi al gestore eventuali aggiornamenti.</small></div></div><div class="vpm-owner-form vpm-owner-profile-readonly"><div class="field"><label>Nome e cognome</label><div class="vpm-owner-readonly-value">'+vpmOwnerEscape(clienteLoggato.nome||'—')+'</div></div><div class="field-row"><div class="field"><label>Telefono</label><div class="vpm-owner-readonly-value">'+vpmOwnerEscape(clienteLoggato.telefono||'—')+'</div></div><div class="field"><label>Email di accesso</label><div class="vpm-owner-readonly-value">'+vpmOwnerEscape(clienteLoggato.email||'—')+'</div></div></div><div class="field"><label>Indirizzo di residenza</label><div class="vpm-owner-readonly-value">'+vpmOwnerEscape(clienteLoggato.indirizzo||'—')+'</div></div><p class="vpm-owner-hint">Per aggiornare i dati, invia una richiesta al tuo gestore.</p><button type="button" class="vpm-owner-action" data-owner-request-profile><i class="ti ti-message-circle"></i> Richiedi modifiche</button></div>';
+
   }
 
   return `<div class="portal-shell vpm-owner-shell" style="max-width:1120px;">
@@ -5899,14 +5905,12 @@ function attachHandlers(){
 
 
   // Azioni dell'area proprietari: ogni operazione controlla l'immobile collegato all'email autenticata.
-  const ownerProfileForm=document.getElementById('vpmOwnerProfileForm');
-  if(ownerProfileForm)ownerProfileForm.addEventListener('submit',async ev=>{
-    ev.preventDefault();
-    const c=vpmOwnerClient();if(!c)return;
-    const fd=new FormData(ownerProfileForm),nome=String(fd.get('nome')||'').trim();
-    if(!nome){alert('Inserisci il nome.');return;}
-    c.nome=nome;c.telefono=String(fd.get('telefono')||'').trim();c.indirizzo=String(fd.get('indirizzo')||'').trim();
-    await saveData();render();
+  const ownerProfileRequest=document.querySelector('[data-owner-request-profile]');
+  if(ownerProfileRequest)ownerProfileRequest.addEventListener('click',()=>{
+    vpmOwnerProfileRequestDraft='Buongiorno, vorrei richiedere una modifica ai miei dati personali: ';
+    state.ownerDossierTab='messaggi';
+    render();
+    document.querySelector('.msg-form[data-autore="proprietario"] input[name="testo"]')?.focus();
   });
   const ownerBlockForm=document.getElementById('vpmOwnerBlockForm');
   if(ownerBlockForm)ownerBlockForm.addEventListener('submit',async ev=>{
@@ -6054,6 +6058,7 @@ function attachHandlers(){
       const input = f.querySelector('[name=testo]');
       const testo = input.value.trim();
       if(!testo) return;
+      if(autore==='proprietario')vpmOwnerProfileRequestDraft='';
       sendMessage(propId, autore, testo);
     });
   });

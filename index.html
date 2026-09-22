@@ -6461,6 +6461,8 @@ function attachHandlers(){
   }));
   document.querySelectorAll('[data-guest-wizard-back]').forEach(b=>b.addEventListener('click', ()=>{
     state.guestWizardStep = Number(b.getAttribute('data-guest-wizard-back'));
+    if(state.guestSubmitted){state.guestSubmitted=false;state.lastBooking=null;}
+    if(state.guestManageMode)state.guestManageMode=false;
     render();
   }));
   document.querySelectorAll('[data-guest-wizard-next]').forEach(b=>b.addEventListener('click', ()=>{
@@ -6534,8 +6536,7 @@ function attachHandlers(){
     state.guestBookingData = {nomeProprio:'', cognome:'', telefono:'', indirizzo:'', note:'', documento:null};
   });
 
-  const guestGotoManage = document.querySelector('[data-guest-goto-manage]');
-  if(guestGotoManage) guestGotoManage.addEventListener('click', ()=>{ state.guestManageMode = true; render(); });
+  document.querySelectorAll('[data-guest-goto-manage]').forEach(guestGotoManage=>guestGotoManage.addEventListener('click', ()=>{ state.guestManageMode = true; render(); }));
   const guestManageExit = document.querySelector('[data-guest-manage-exit]');
   if(guestManageExit) guestManageExit.addEventListener('click', ()=>{ state.guestManageMode = false; state.guestManagePhone = null; state.guestManageSelected = null; render(); });
   const guestManageReset = document.querySelector('[data-guest-manage-reset]');

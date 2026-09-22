@@ -2270,13 +2270,18 @@ function statoControlloLabel(c, p){
 }
 
 function calcProssimoControllo(p){
-  const periodicita = p.periodicitaControlli || 2;
-  const lista = (p.controlli||[]).slice().sort((a,b)=>new Date(b.data)-new Date(a.data));
+  const periodicita = Number(p.periodicitaControlli) > 0 ? Number(p.periodicitaControlli) : 2;
+  const lista = (Array.isArray(p.controlli) ? p.controlli : [])
+    .filter(c => c && c.data && Number.isFinite(new Date(c.data).getTime()))
+    .sort((a,b) => new Date(b.data) - new Date(a.data));
   if(!lista.length) return { data: null, inRitardo: true };
   const ultimo = new Date(lista[0].data);
   const prossima = new Date(ultimo);
   prossima.setMonth(prossima.getMonth() + periodicita);
-  return { data: prossima.toISOString().slice(0,10), inRitardo: prossima < new Date() };
+  if(!Number.isFinite(prossima.getTime())) return { data: null, inRitardo: true };
+  const oggi = new Date();
+  oggi.setHours(0,0,0,0);
+  return { data: prossima.toISOString().slice(0,10), inRitardo: prossima < oggi };
 }
 
 // ---------- Centro avvisi ----------

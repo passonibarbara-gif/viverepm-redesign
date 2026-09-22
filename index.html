@@ -4960,7 +4960,7 @@ function renderOspitiView(){
           <div class="guest-prop-card-addr"><i class="ti ti-map-pin"></i> ${vpmOwnerEscape(p.indirizzo||'Località da confermare')}</div>
           ${caratteristiche ? `<div class="guest-prop-card-feat">${caratteristiche}</div>` : ''}
           <div class="guest-prop-card-foot">
-            <div><span class="vpm-stay-result-total">${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><span class="guest-prop-card-price">${calcolo.totale>0?fmtCurrency(calcolo.totale):'Prezzo su richiesta'}</span><span class="guest-prop-card-nights">${calcolo.notti} nott${calcolo.notti===1?'e':'i'}</span></div>
+            <div><span class="vpm-stay-result-total">${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><span class="guest-prop-card-price">${fmtCurrency(calcolo.totale)}</span><span class="guest-prop-card-nights">${calcolo.notti} nott${calcolo.notti===1?'e':'i'}</span></div>
             <span class="vpm-stay-result-cta">Scopri la casa <i class="ti ti-arrow-right"></i></span>
           </div>
         </div>
@@ -5021,7 +5021,7 @@ function renderOspitiView(){
           <div class="vpm-stay-detail-summary">
             <h3>Il tuo soggiorno</h3>
             <table><tbody><tr><td><i class="ti ti-calendar-event"></i> ${fmtDate(state.guestDates.checkin)} → ${fmtDate(state.guestDates.checkout)}<small>${calcolo.notti} nott${calcolo.notti===1?'e':'i'}</small></td><td class="cell-num">${fmtCurrency(calcolo.soggiornoBase)}</td></tr>${righeServizi}</tbody></table>
-            <div class="vpm-stay-detail-total"><span>${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><strong>${calcolo.totale>0?fmtCurrency(calcolo.totale):'Da confermare'}</strong></div>
+            <div class="vpm-stay-detail-total"><span>${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><strong>${fmtCurrency(calcolo.totale)}</strong></div>
           </div>
           <button class="btn-primary vpm-stay-next-button" data-guest-wizard-next="4">Prenota questo immobile <i class="ti ti-arrow-right"></i></button>
         </div>
@@ -5084,7 +5084,7 @@ function renderOspitiView(){
       <aside class="vpm-stay-confirm-visual">
         ${fotoConferma ? `<img class="vpm-stay-confirm-photo" src="${vpmOwnerEscape(fotoConferma)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-stay-confirm-visual-generic" role="img" aria-label="Panorama mediterraneo, immagine d'atmosfera ViverePM"><div class="vpm-stay-confirm-visual-label">UN ASSAGGIO DELLA TUA VACANZA</div><strong>La bellezza<br>di partire.</strong><small>VIVEREpm · HOLIDAY HOMES</small></div>`}
       </aside>
-      <div class="vpm-stay-confirm-total"><span>${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><strong>${calcolo.totale>0?fmtCurrency(calcolo.totale):'Da confermare'}</strong></div>
+      <div class="vpm-stay-confirm-total"><span>${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><strong>${fmtCurrency(calcolo.totale)}</strong></div>
     </section>
     <div class="vpm-stay-confirm-actions">
       ${haLinkPagamento ? `

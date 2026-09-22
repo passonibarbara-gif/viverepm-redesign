@@ -5145,6 +5145,42 @@ function animateBentoNumbers(){
 }
 
 function attachHandlers(){
+  // Delegated navigation is installed before page-specific handlers so an error
+  // in a dashboard widget cannot disable the sidebar after a re-render.
+  if(!window.__vpmSidebarNavigationBound){
+    window.__vpmSidebarNavigationBound=true;
+    document.addEventListener('click', event=>{
+      const node=event.target.closest('[data-nav]');
+      if(!node || !document.getElementById('root')?.contains(node))return;
+      event.preventDefault();
+      event.stopPropagation();
+        const id = node.getAttribute('data-nav');
+        state.selectedId = ['overview','immobili','clienti','attivita','contabilita','comunicazioni'].includes(id) ? null : id;
+        if(state.properties.some(p=>p.id===state.selectedId))vpmRememberRecent('properties',state.selectedId);
+        state.selectedClienteId = null;
+        state.vistaGestore = ['immobili','clienti','attivita','contabilita','comunicazioni'].includes(id) ? id : 'overview';
+        state.calendarOffset = 0;
+        state.priceCalendarOffset = 0;
+        if(state.selectedId){
+          const p = state.properties.find(x=>x.id===state.selectedId);
+          const a = p ? calcolaAlertImmobile(p) : null;
+          state.dossierTab = (a && a.prenotazioniPendenti>0) ? 'prenotazioni'
+            : (a && a.spesePagare>0) ? 'spese'
+            : (a && a.preventiviRisposti>0) ? 'interventi'
+            : (a && a.interventiDaTriage>0) ? 'interventi'
+            : (a && a.messaggiOspiti>0) ? 'prenotazioni'
+            : (a && a.messaggiProprietario>0) ? 'messaggi'
+            : (a && a.controlloInRitardo>0) ? 'controlli'
+            : 'anagrafica';
+          if(state.dossierTab==='messaggi'){ segnaMessaggiLetti(state.selectedId); segnaMessaggiBookingLetti(state.selectedId); }
+          if(state.dossierTab==='prenotazioni'){ segnaMessaggiBookingLetti(state.selectedId); }
+        } else {
+          state.dossierTab = 'anagrafica';
+        }
+        render();
+    },true);
+  }
+
   const globalSearch=document.getElementById('vpm-global-search');
   if(globalSearch)globalSearch.addEventListener('keydown',ev=>{if(ev.key!=='Enter')return;const q=globalSearch.value.trim().toLocaleLowerCase('it');if(!q)return;const p=immobiliVisibili().find(p=>[p.nome,p.indirizzo,p.catasto].some(v=>String(v||'').toLocaleLowerCase('it').includes(q)));if(p){state.selectedId=p.id;state.selectedClienteId=null;state.vistaGestore='overview';render();return;}const booking=immobiliVisibili().find(p=>(p.prenotazioni||[]).some(b=>String(b.nome||'').toLocaleLowerCase('it').includes(q)));if(booking){state.selectedId=booking.id;state.selectedClienteId=null;state.dossierTab='prenotazioni';render();return;}globalSearch.setCustomValidity('Nessun immobile o ospite trovato');globalSearch.reportValidity();globalSearch.setCustomValidity('');});
   const vpmSearch=document.getElementById('vpm-property-search');
@@ -5442,34 +5478,6 @@ function attachHandlers(){
   document.querySelectorAll('[data-vpm-quick]').forEach(btn=>btn.addEventListener('click',()=>{
     const kind=btn.getAttribute('data-vpm-quick');vpmQuickExpanded[kind]=!vpmQuickExpanded[kind];render();
   }));
-  document.querySelectorAll('[data-nav]').forEach(node=>{
-    node.addEventListener('click', ()=>{
-      const id = node.getAttribute('data-nav');
-      state.selectedId = ['overview','immobili','clienti','attivita','contabilita','comunicazioni'].includes(id) ? null : id;
-      if(state.properties.some(p=>p.id===state.selectedId))vpmRememberRecent('properties',state.selectedId);
-      state.selectedClienteId = null;
-      state.vistaGestore = ['immobili','clienti','attivita','contabilita','comunicazioni'].includes(id) ? id : 'overview';
-      state.calendarOffset = 0;
-      state.priceCalendarOffset = 0;
-      if(state.selectedId){
-        const p = state.properties.find(x=>x.id===state.selectedId);
-        const a = p ? calcolaAlertImmobile(p) : null;
-        state.dossierTab = (a && a.prenotazioniPendenti>0) ? 'prenotazioni'
-          : (a && a.spesePagare>0) ? 'spese'
-          : (a && a.preventiviRisposti>0) ? 'interventi'
-          : (a && a.interventiDaTriage>0) ? 'interventi'
-          : (a && a.messaggiOspiti>0) ? 'prenotazioni'
-          : (a && a.messaggiProprietario>0) ? 'messaggi'
-          : (a && a.controlloInRitardo>0) ? 'controlli'
-          : 'anagrafica';
-        if(state.dossierTab==='messaggi'){ segnaMessaggiLetti(state.selectedId); segnaMessaggiBookingLetti(state.selectedId); }
-        if(state.dossierTab==='prenotazioni'){ segnaMessaggiBookingLetti(state.selectedId); }
-      } else {
-        state.dossierTab = 'anagrafica';
-      }
-      render();
-    });
-  });
 
   document.querySelectorAll('[data-booking-month]').forEach(btn=>btn.addEventListener('click',()=>{
     vpmBookingMonthOffset+=Number(btn.getAttribute('data-booking-month'));vpmBookingSelectedDay='';render();

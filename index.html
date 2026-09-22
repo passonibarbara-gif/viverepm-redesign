@@ -1665,31 +1665,6 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:700px){.vpm-stay-results-head>.vpm-stay-gold-accent{right:15px;top:72px;opacity:.23;transform:scale(.7) rotate(-17deg);transform-origin:top right}.vpm-stay-results-head h1{font-size:37px}.vpm-stay-results-heading{align-items:flex-start}}
 
 
-/* Step 2 – matching approved photographic editorial composition */
-.vpm-stay-results-head{position:relative!important;isolation:isolate;min-height:365px!important;box-sizing:border-box;padding:32px clamp(24px,5vw,80px) 38px!important;background:#f7f7f1!important;overflow:hidden}
-.vpm-stay-results-head:before{content:'';position:absolute;inset:0;z-index:-2;background:url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1800') center 55%/cover no-repeat}
-.vpm-stay-results-head:after{content:''!important;display:block!important;position:absolute!important;inset:0!important;z-index:-1!important;width:auto!important;height:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:linear-gradient(90deg,#fffdfaf5 0%,#fffdfaea 31%,#fffdfabd 47%,#fffdfa28 72%,transparent 100%)!important;pointer-events:none}
-.vpm-stay-results-head>.vpm-stay-gold-accent{display:none!important}
-.vpm-stay-results-head>.vpm-stay-results-script{position:absolute;z-index:1;top:80px;left:55%;color:#a7814e;font:italic 400 clamp(26px,3.3vw,48px)/1.18 'Cormorant Garamond','Brush Script MT',Georgia,serif;letter-spacing:.01em;transform:rotate(-13deg);text-align:center;text-shadow:0 2px 8px #fffdfab0;pointer-events:none;white-space:nowrap}
-.vpm-stay-results-script span{display:inline-block;margin-left:35px}
-.vpm-stay-results-head>.vpm-stay-results-brand{position:relative;z-index:2}
-.vpm-stay-results-head>.vpm-stay-results-eyebrow{display:block;position:relative;z-index:2;margin-top:38px}
-.vpm-stay-results-head h1{position:relative;z-index:2;max-width:780px;font-size:clamp(38px,4vw,60px);line-height:1.12;margin:12px 0 14px}
-.vpm-stay-results-head>p{position:relative;z-index:2;max-width:570px;font-size:15px}
-.vpm-stay-results-criteria{position:relative;z-index:2;margin-top:24px}
-.vpm-stay-results-back{z-index:3}
-.vpm-stay-results-main{padding-top:27px;background:#fffdfb}
-.vpm-stay-results-heading{border-bottom:0;margin-top:26px}
-.vpm-stay-results-grid .vpm-stay-result-card{overflow:hidden;border-radius:18px;border:1px solid #e7ebe6;background:#fff;box-shadow:0 9px 27px #153f450d}
-.vpm-stay-results-grid .vpm-stay-result-photo{height:240px;background:#e8f5f3}
-.vpm-stay-results-grid .guest-prop-card-img{height:100%;width:100%;object-fit:cover}
-.vpm-stay-results-grid .guest-prop-card-img.placeholder{height:100%}
-.vpm-stay-results-grid .guest-prop-card-body{padding:19px 22px 22px}
-.vpm-stay-results-grid .guest-prop-card-name{font:600 27px 'Fraunces',Georgia,serif}
-.vpm-stay-results-grid .guest-prop-card-feat span{background:#eaf6f3;border-radius:99px;padding:7px 10px}
-@media(max-width:850px){.vpm-stay-results-head{min-height:360px!important}.vpm-stay-results-head:after{background:linear-gradient(90deg,#fffdfaf5,#fffdfac9 62%,#fffdfa55)!important}.vpm-stay-results-head>.vpm-stay-results-script{left:auto;right:20px;top:85px;font-size:27px;opacity:.5}}
-@media(max-width:600px){.vpm-stay-results-head{min-height:385px!important;padding:24px 22px 30px!important}.vpm-stay-results-head:after{background:linear-gradient(90deg,#fffdfaf2,#fffdfae5 70%,#fffdfa80)!important}.vpm-stay-results-head>.vpm-stay-results-script{right:15px;top:56px;font-size:21px;opacity:.33}.vpm-stay-results-head h1{font-size:38px}.vpm-stay-results-head>.vpm-stay-results-eyebrow{margin-top:43px}}
-
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4941,7 +4916,7 @@ function renderOspitiView(){
       <header class="vpm-stay-results-head">
         <div class="vpm-stay-results-brand">VIVERE<span>pm</span> <small>· IL TUO SOGGIORNO, LA NOSTRA CURA</small></div>
         <button class="vpm-stay-results-back" data-guest-wizard-back="1"><i class="ti ti-arrow-left"></i> Modifica la ricerca</button>
-        <div class="vpm-stay-results-script" aria-hidden="true">Vivi la Sicilia<br><span>a modo tuo.</span></div>
+        <div class="vpm-stay-gold-accent" aria-hidden="true"><i class="ti ti-leaf"></i><i class="ti ti-leaf"></i><i class="ti ti-leaf"></i></div>
         <span class="vpm-stay-results-eyebrow">LE TUE PROSSIME VACANZE</span>
         <h1>La tua casa lontano da casa.</h1>
         <p>Scopri gli immobili disponibili per il soggiorno che hai scelto.</p>

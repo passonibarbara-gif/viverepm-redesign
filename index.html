@@ -1522,6 +1522,53 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:900px){.vpm-stay-detail-layout{grid-template-columns:1fr}.vpm-stay-detail-media{max-width:700px}.vpm-stay-detail-info{max-width:700px}.vpm-stay-next-top{align-items:flex-start;flex-direction:column}}
 @media(max-width:600px){.vpm-stay-next-page{padding-top:23px}.vpm-stay-next-top{gap:16px;margin-bottom:25px}.vpm-stay-data-form .field-row{grid-template-columns:1fr;gap:0}.vpm-stay-data-form{padding:20px}.vpm-stay-confirm-card{grid-template-columns:1fr}.vpm-stay-confirm-photo{height:220px}.vpm-stay-confirm-total{grid-column:1}.vpm-stay-detail-summary{padding:19px}.vpm-stay-next-title h1{font-size:32px}}
 
+
+/* Booking screens 3–5: approved ViverePM Mediterranean visual system */
+.vpm-stay-next-page{position:relative;isolation:isolate;max-width:1600px;padding:0 0 0;background:#fffdf9!important;min-height:100vh}
+.vpm-stay-next-page:before{content:'';position:absolute;inset:0 0 auto;height:310px;background:linear-gradient(110deg,#d9f0f0 0%,#f2faf8 54%,#f7efe4 100%);z-index:-1}
+.vpm-stay-next-top{display:flex;flex-direction:column!important;align-items:stretch!important;gap:22px!important;padding:25px clamp(22px,6vw,90px) 0;margin:0!important}
+.vpm-stay-next-top .vpm-stay-results-back{align-self:flex-start;border:0;background:transparent;padding:9px 0;font-size:13px;color:#1a767b}
+.vpm-stay-next-top .wizard-steps{width:100%;max-width:980px;background:#ffffffd9;border:1px solid #e0ebe8;border-radius:16px;padding:15px 18px;box-shadow:0 5px 20px #1844480a;gap:clamp(8px,2vw,28px)}
+.vpm-stay-next-top .wizard-step{font-size:11px;letter-spacing:.06em;color:#456a6c}
+.vpm-stay-next-top .wizard-step .num{width:28px;height:28px;min-width:28px;border-radius:50%}
+.vpm-stay-next-title{padding:34px clamp(22px,6vw,90px) 0;margin:0 0 28px!important}
+.vpm-stay-next-title>span{color:#b08b57;font-size:11px}
+.vpm-stay-next-title h1{font-size:clamp(36px,4vw,57px);margin:12px 0 10px}
+.vpm-stay-next-title p{font-size:16px}
+.vpm-stay-detail-layout{padding:0 clamp(22px,6vw,90px);grid-template-columns:minmax(0,1.12fr) minmax(350px,.88fr);gap:clamp(22px,4vw,55px);margin:0}
+.vpm-stay-detail-media{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 13px 38px #153f4515;border:1px solid #e2eeea}
+.vpm-stay-detail-media .prop-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:7px;background:#fff}
+.vpm-stay-detail-media .prop-gallery img{display:block;object-fit:cover;width:100%;height:110px;border-radius:8px;cursor:pointer}
+.vpm-stay-detail-media .prop-gallery img:first-child{grid-column:1/-1;height:clamp(240px,31vw,410px);border-radius:16px}
+.vpm-stay-detail-media .prop-gallery img:nth-child(n+6){display:none}
+.vpm-stay-detail-media .prop-gallery img:only-child{height:clamp(270px,36vw,490px)}
+.vpm-stay-detail-description{padding:0 22px}
+.vpm-stay-detail-media>.prop-features,.vpm-stay-detail-media>.annuncio-caratteristiche{padding:15px 22px}
+.vpm-stay-detail-info{padding:0}
+.vpm-stay-detail-info h2{font-size:clamp(32px,3.3vw,48px)}
+.vpm-stay-detail-features{margin:20px 0}
+.vpm-stay-detail-summary{border-radius:22px;padding:26px;box-shadow:0 13px 38px #153f4512}
+.vpm-stay-detail-summary h3{font-size:27px}
+.vpm-stay-detail-total{background:#eaf5f1}
+.vpm-stay-detail-total strong,.vpm-stay-confirm-total strong{font-size:clamp(20px,2.4vw,31px);overflow-wrap:anywhere;text-align:right}
+.vpm-stay-data-page .vpm-stay-next-title,.vpm-stay-confirm-page .vpm-stay-next-title{max-width:1100px}
+.vpm-stay-data-form{margin:0 clamp(22px,6vw,90px);max-width:1050px;padding:clamp(24px,4vw,48px);border-radius:23px;box-shadow:0 14px 42px #153f4511}
+.vpm-stay-data-form .field input{border-radius:12px;min-height:55px}
+.vpm-stay-data-form .field-row{gap:18px}
+.vpm-stay-data-form .field input[type=file]{border:1px dashed #8bbcb8;background:#f7fcfa;padding:16px;cursor:pointer}
+.vpm-stay-data-guests{border:1px solid #cde9e2}
+.vpm-stay-confirm-card{margin:0 clamp(22px,6vw,90px);max-width:1080px;grid-template-columns:minmax(210px,35%) minmax(0,1fr);gap:25px;padding:23px;border-radius:23px}
+.vpm-stay-confirm-photo{height:100%;min-height:270px;max-height:430px;border-radius:16px}
+.vpm-stay-confirm-info{padding:10px 0}
+.vpm-stay-confirm-info h2{font-size:clamp(26px,3vw,38px);margin-bottom:17px}
+.vpm-stay-confirm-info p{font-size:14px;line-height:1.7;margin:11px 0}
+.vpm-stay-confirm-total{padding:19px 22px}
+.vpm-stay-confirm-actions{margin:0 clamp(22px,6vw,90px);max-width:1080px}
+.vpm-stay-confirm-actions p{font-size:14px}
+.vpm-stay-next-page>.vpm-stay-results-footer{margin:55px 0 0}
+@media(max-width:950px){.vpm-stay-detail-layout{grid-template-columns:1fr}.vpm-stay-detail-media,.vpm-stay-detail-info{max-width:none}.vpm-stay-confirm-card{grid-template-columns:1fr}.vpm-stay-confirm-photo{height:260px;min-height:260px}}
+@media(max-width:600px){.vpm-stay-next-top{padding-top:14px;gap:10px!important}.vpm-stay-next-top .wizard-steps{padding:10px;gap:7px}.vpm-stay-next-top .wizard-step{font-size:9px}.vpm-stay-next-title{padding-top:26px}.vpm-stay-next-title h1{font-size:35px}.vpm-stay-detail-media .prop-gallery img:first-child{height:255px}.vpm-stay-detail-media .prop-gallery img{height:75px}.vpm-stay-data-form .field-row{grid-template-columns:1fr;gap:0}.vpm-stay-confirm-card{padding:15px}.vpm-stay-confirm-total{grid-column:1/-1}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4798,7 +4845,7 @@ function renderOspitiView(){
   if(step===3){
     const righeServizi = calcolo.servizi.map(s=>`<tr><td>${vpmOwnerEscape(s.nome)}</td><td class="cell-num">${fmtCurrency(s.importo)}</td></tr>`).join('');
     const fotoDettaglio = fotoPubbliche(p);
-    const copertinaDettaglio = getCoverPhotoPubblicaUrl(p);
+    const copertinaDettaglio = getCoverPhotoUrl(p);
     const fotoDettaglioFinali = fotoDettaglio.length ? fotoDettaglio : (copertinaDettaglio ? [copertinaDettaglio] : []);
     return `<div class="vpm-stay-next-page">
       <div class="vpm-stay-next-top"><button class="vpm-stay-results-back" data-guest-wizard-back="2"><i class="ti ti-arrow-left"></i> Torna agli immobili</button>${renderWizardSteps(3)}</div>
@@ -4821,7 +4868,7 @@ function renderOspitiView(){
           <div class="vpm-stay-detail-summary">
             <h3>Il tuo soggiorno</h3>
             <table><tbody><tr><td><i class="ti ti-calendar-event"></i> ${fmtDate(state.guestDates.checkin)} → ${fmtDate(state.guestDates.checkout)}<small>${calcolo.notti} nott${calcolo.notti===1?'e':'i'}</small></td><td class="cell-num">${fmtCurrency(calcolo.soggiornoBase)}</td></tr>${righeServizi}</tbody></table>
-            <div class="vpm-stay-detail-total"><span>Totale soggiorno</span><strong>${fmtCurrency(calcolo.totale)}</strong></div>
+            <div class="vpm-stay-detail-total"><span>${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><strong>${calcolo.totale>0?fmtCurrency(calcolo.totale):'Da confermare'}</strong></div>
           </div>
           <button class="btn-primary vpm-stay-next-button" data-guest-wizard-next="4">Prenota questo immobile <i class="ti ti-arrow-right"></i></button>
         </div>
@@ -4842,7 +4889,8 @@ function renderOspitiView(){
           <div class="field"><label>Cognome <em>*</em></label><input name="cognome" required autocomplete="family-name" value="${vpmOwnerEscape(bd.cognome||'')}" placeholder="Inserisci il tuo cognome"></div>
         </div>
         <div class="field"><label>Telefono <em>*</em></label><input name="telefono" type="tel" required autocomplete="tel" value="${vpmOwnerEscape(bd.telefono||'')}" placeholder="+39 ..."></div>
-        <div class="field"><label>Indirizzo di residenza <em>*</em></label><input name="indirizzo" required autocomplete="street-address" value="${vpmOwnerEscape(bd.indirizzo||'')}" placeholder="Indirizzo, città e nazione"><small>Inserisci indirizzo completo, città e nazione. Es. Via Michelino 5, Milano, Italia.</small></div>
+        <div class="field"><label>Indirizzo di residenza <em>*</em></label><input name="indirizzo" required autocomplete="street-address" value="${vpmOwnerEscape(bd.indirizzoVia||(!bd.citta&&!bd.nazione?bd.indirizzo:'')||'')}" placeholder="Via e numero civico"></div>
+        <div class="field-row"><div class="field"><label>Città <em>*</em></label><input name="citta" required autocomplete="address-level2" value="${vpmOwnerEscape(bd.citta||'')}" placeholder="Es. Milano"></div><div class="field"><label>Nazione <em>*</em></label><input name="nazione" required autocomplete="country-name" value="${vpmOwnerEscape(bd.nazione||'')}" placeholder="Es. Italia"></div></div>
         <div class="vpm-stay-data-guests"><i class="ti ti-users"></i> ${state.guestDates.adulti} adult${state.guestDates.adulti===1?'o':'i'}${state.guestDates.bambini?`, ${state.guestDates.bambini} bambin${state.guestDates.bambini===1?'o':'i'}`:''}${state.guestDates.animali?`, ${state.guestDates.animali} animal${state.guestDates.animali===1?'e':'i'}`:''} <button type="button" class="link-btn" data-guest-wizard-back="1">Modifica</button></div>
         <div class="field"><label>Note (facoltativo)</label><input name="note" value="${vpmOwnerEscape(bd.note||'')}" placeholder="Richieste particolari"></div>
         <div class="field"><label>Copia del documento d'identità <em>*</em></label><input type="file" name="documento" accept="image/*" ${bd.documento?'':'required'}><small>${bd.documento?'Documento già caricato: seleziona un file solo per sostituirlo.':'Richiesto per la registrazione degli ospiti, come da normativa.'}</small></div>
@@ -4855,7 +4903,7 @@ function renderOspitiView(){
   // ---- Step 5: pagamento e conferma finale ----
   const bd = state.guestBookingData;
   const haLinkPagamento = !!p.linkPagamento;
-  const fotoConferma = getCoverPhotoPubblicaUrl(p);
+  const fotoConferma = getCoverPhotoUrl(p);
   return `<div class="vpm-stay-next-page vpm-stay-confirm-page">
     <div class="vpm-stay-next-top"><button class="vpm-stay-results-back" data-guest-wizard-back="4"><i class="ti ti-arrow-left"></i> Modifica i tuoi dati</button>${renderWizardSteps(5)}</div>
     <div class="vpm-stay-next-title"><span>UN ULTIMO PASSO · VIVEREPM</span><h1>${haLinkPagamento ? 'Pagamento e conferma' : 'Conferma la tua richiesta'}</h1><p>Verifica i dati prima di inviare la prenotazione.</p></div>
@@ -4870,7 +4918,7 @@ function renderOspitiView(){
         <p><i class="ti ti-map-pin"></i> ${vpmOwnerEscape(bd.indirizzo)}</p>
         ${bd.note ? `<p><i class="ti ti-notes"></i> ${vpmOwnerEscape(bd.note)}</p>` : ''}
       </div>
-      <div class="vpm-stay-confirm-total"><span>Totale soggiorno</span><strong>${fmtCurrency(calcolo.totale)}</strong></div>
+      <div class="vpm-stay-confirm-total"><span>${calcolo.totale>0?'Totale soggiorno':'Tariffa soggiorno'}</span><strong>${calcolo.totale>0?fmtCurrency(calcolo.totale):'Da confermare'}</strong></div>
     </section>
     <div class="vpm-stay-confirm-actions">
       ${haLinkPagamento ? `
@@ -6398,7 +6446,11 @@ function attachHandlers(){
     }
     state.guestBookingData = {
       nomeProprio: fd.get('nomeProprio'), cognome: fd.get('cognome'),
-      telefono: fd.get('telefono'), indirizzo: fd.get('indirizzo'),
+      telefono: fd.get('telefono'),
+      indirizzoVia: String(fd.get('indirizzo')||'').trim(),
+      citta: String(fd.get('citta')||'').trim(),
+      nazione: String(fd.get('nazione')||'').trim(),
+      indirizzo: [fd.get('indirizzo'),fd.get('citta'),fd.get('nazione')].map(v=>String(v||'').trim()).filter(Boolean).join(', '),
       note: fd.get('note'), documento
     };
     state.guestWizardStep = 5;

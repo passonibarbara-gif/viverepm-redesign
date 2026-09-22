@@ -1640,6 +1640,30 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-booking-leaves,.vpm-stay-leaf{display:none!important}
 .vpm-stay-next-title:after,.vpm-stay-next-page:after{display:none!important;content:none!important}
 
+
+/* Risultati soggiorni: decorazione minima e riproducibile, nessuna immagine fittizia */
+.vpm-stay-results-head{position:relative;isolation:isolate;padding-top:37px;padding-bottom:42px;background:linear-gradient(110deg,#eaf7f5 0%,#f9fcfa 61%,#faf4eb 100%)!important}
+.vpm-stay-results-head:after{content:none!important;display:none!important}
+.vpm-stay-results-head>.vpm-stay-gold-accent{position:absolute;right:clamp(24px,6vw,92px);top:76px;display:flex;align-items:center;gap:2px;width:auto;height:auto;z-index:0;opacity:.55;transform:rotate(-17deg);pointer-events:none;color:#ad8951}
+.vpm-stay-gold-accent i{display:block;font-size:35px;stroke-width:1}
+.vpm-stay-gold-accent i:nth-child(1){transform:rotate(-45deg) translate(4px,13px);font-size:32px}
+.vpm-stay-gold-accent i:nth-child(2){transform:rotate(18deg) translateY(-8px);font-size:44px}
+.vpm-stay-gold-accent i:nth-child(3){transform:rotate(63deg) translate(-3px,15px);font-size:30px}
+.vpm-stay-results-head>.vpm-stay-results-brand{position:relative;z-index:1}
+.vpm-stay-results-head>.vpm-stay-results-eyebrow{margin-top:37px;position:relative;z-index:1}
+.vpm-stay-results-head h1{max-width:900px;font-size:clamp(37px,4.2vw,59px);line-height:1.12;letter-spacing:-.025em}
+.vpm-stay-results-head>p{font-size:15px;max-width:640px;line-height:1.6}
+.vpm-stay-results-main{background:#fffdfb}
+.vpm-stay-results-heading{padding-bottom:14px;border-bottom:1px solid #e9ece6;margin-bottom:25px}
+.vpm-stay-results-heading h2{font-size:clamp(27px,3vw,35px)}
+.vpm-stay-results-grid .vpm-stay-result-card{border:1px solid #e8ece7;border-radius:18px;box-shadow:0 9px 27px #153f450d;transition:transform .2s,box-shadow .2s}
+.vpm-stay-results-grid .vpm-stay-result-card:hover{transform:translateY(-3px);box-shadow:0 17px 34px #153f451b}
+.vpm-stay-result-photo{height:235px}
+.vpm-stay-result-card .guest-prop-card-body{padding:22px}
+.vpm-stay-result-badge{font-size:10px;color:#246e69;background:#fffffff2}
+.vpm-stay-result-cta{background:#e9f6f3;padding:10px 12px;border-radius:99px}
+@media(max-width:700px){.vpm-stay-results-head>.vpm-stay-gold-accent{right:15px;top:72px;opacity:.23;transform:scale(.7) rotate(-17deg);transform-origin:top right}.vpm-stay-results-head h1{font-size:37px}.vpm-stay-results-heading{align-items:flex-start}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4891,6 +4915,7 @@ function renderOspitiView(){
       <header class="vpm-stay-results-head">
         <div class="vpm-stay-results-brand">VIVERE<span>pm</span> <small>· IL TUO SOGGIORNO, LA NOSTRA CURA</small></div>
         <button class="vpm-stay-results-back" data-guest-wizard-back="1"><i class="ti ti-arrow-left"></i> Modifica la ricerca</button>
+        <div class="vpm-stay-gold-accent" aria-hidden="true"><i class="ti ti-leaf"></i><i class="ti ti-leaf"></i><i class="ti ti-leaf"></i></div>
         <span class="vpm-stay-results-eyebrow">LE TUE PROSSIME VACANZE</span>
         <h1>La tua casa lontano da casa.</h1>
         <p>Scopri gli immobili disponibili per il soggiorno che hai scelto.</p>

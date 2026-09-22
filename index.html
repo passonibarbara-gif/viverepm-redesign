@@ -1289,6 +1289,21 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:850px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:0!important;aspect-ratio:1931/488}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>h1{font-size:clamp(16px,3.45vw,32px)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{display:flex}}
 @media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:240px!important;aspect-ratio:auto}.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{background-size:auto 100%;background-position:40% center}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>h1{left:4%;top:23%;width:70%;height:37%;font-size:clamp(24px,6vw,38px);background:linear-gradient(90deg,#064c47 0%,#064c47 77%,#064c4700 100%)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{display:none}}
 
+
+/* Banner definitivo: il PNG determina da solo l'altezza, nessun ritaglio. */
+.vpm-owner-picker .vpm-owner-picker-hero-final{display:block!important;position:relative;isolation:auto;aspect-ratio:auto!important;min-height:0!important;height:auto!important;padding:0!important;overflow:hidden;border-radius:24px;background:#0d4947}
+.vpm-owner-picker .vpm-owner-picker-hero-final:before,.vpm-owner-picker .vpm-owner-picker-hero-final:after{content:none!important;display:none!important}
+.vpm-owner-banner-image{display:block!important;width:100%!important;height:auto!important;max-width:none!important;object-fit:contain!important;position:static!important;aspect-ratio:1931/488}
+.vpm-owner-banner-name{position:absolute;z-index:2;top:24%;left:3.5%;width:42%;height:37%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(90deg,#0b4b46 0%,#0b4b46 85%,transparent 100%);font-family:'Fraunces',Georgia,serif;font-size:clamp(21px,3.6vw,68px);line-height:1.06;letter-spacing:-.025em;pointer-events:none}
+.vpm-owner-banner-name span{color:#fff;font-weight:600}
+.vpm-owner-banner-name em{color:#f0d2a2;font-weight:500;overflow-wrap:anywhere}
+.vpm-owner-banner-brand{position:absolute;z-index:2;right:0;top:0;bottom:0;width:22%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(5px,1vw,18px);background:#fffffffa;color:#1d625e;text-align:center;padding:12px;pointer-events:none}
+.vpm-owner-banner-brand>i{font-size:clamp(20px,3.8vw,67px)}
+.vpm-owner-banner-brand strong{font-size:clamp(12px,1.65vw,30px);font-weight:500;letter-spacing:.13em}
+.vpm-owner-banner-rule{height:1px;width:55px;background:#bca074}
+.vpm-owner-banner-brand small{font-size:clamp(7px,.85vw,15px);line-height:1.7;letter-spacing:.13em;color:#a38358}
+@media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-final{min-height:0!important;aspect-ratio:auto!important;flex-direction:initial!important}.vpm-owner-banner-name{font-size:clamp(11px,3.5vw,22px)}.vpm-owner-banner-brand{display:flex!important;padding:5px;gap:3px}.vpm-owner-banner-brand strong{letter-spacing:.03em}.vpm-owner-banner-brand>i{font-size:clamp(14px,3vw,24px)}.vpm-owner-banner-brand small{font-size:6px;letter-spacing:0}.vpm-owner-banner-rule{width:25px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4194,25 +4209,10 @@ function renderProprietariView(){
       }).join('');
       return `<div class="portal-shell vpm-owner-picker" style="max-width:1160px;">
         <div class="vpm-owner-picker-top"><span class="vpm-owner-signature">VIVERE<span>PM</span></span><button class="link-btn" data-owner-logout>Esci <i class="ti ti-logout"></i></button></div>
-        <section class="vpm-owner-picker-hero vpm-owner-picker-hero-editorial">
-          <div class="vpm-owner-picker-photo" aria-hidden="true"></div>
-          <div class="vpm-owner-picker-copy">
-            <span class="vpm-owner-property-eyebrow">LA TUA AREA RISERVATA · VIVEREPM</span>
-            <h1>Benvenuta,<br><em>${vpmOwnerEscape(clienteLoggato.nome||'proprietaria')}</em></h1>
-            <p>Il tuo immobile. La nostra gestione. Tutto sotto controllo.</p>
-            <div class="vpm-owner-picker-benefits" aria-label="Servizi a tua disposizione">
-              <span><i class="ti ti-calendar-event"></i><b>Prenotazioni<small>sempre aggiornate</small></b></span>
-              <span><i class="ti ti-chart-bar"></i><b>Rendiconti<small>in tempo reale</small></b></span>
-              <span><i class="ti ti-settings"></i><b>Interventi<small>sotto controllo</small></b></span>
-              <span><i class="ti ti-file-text"></i><b>Documenti<small>sempre disponibili</small></b></span>
-            </div>
-          </div>
-          <div class="vpm-owner-picker-brand">
-            <i class="ti ti-home-heart"></i>
-            <strong>VIVEREPM</strong>
-            <span></span>
-            <small>IL TUO PATRIMONIO<br>LA NOSTRA CURA</small>
-          </div>
+        <section class="vpm-owner-picker-hero vpm-owner-picker-hero-final" aria-label="Benvenuto nell'area proprietari">
+          <img class="vpm-owner-banner-image" src="./viverepm-banner-approvato.png" alt="Terrazza mediterranea ViverePM con panoramica dei servizi">
+          <div class="vpm-owner-banner-name" aria-label="Proprietario"><span>Benvenuta,</span><em>${vpmOwnerEscape(clienteLoggato.nome||'proprietaria')}</em></div>
+          <div class="vpm-owner-banner-brand"><i class="ti ti-home-heart"></i><strong>VIVEREPM</strong><span class="vpm-owner-banner-rule"></span><small>IL TUO PATRIMONIO<br>LA NOSTRA CURA</small></div>
         </section>
         <div class="vpm-owner-picker-heading"><div><span>I TUOI IMMOBILI</span><h2>Le tue proprietà</h2></div><span class="vpm-owner-picker-count">${mieiImmobili.length} ${mieiImmobili.length===1?'proprietà':'proprietà'}</span></div>
         <div class="vpm-owner-property-grid">${cards}</div>

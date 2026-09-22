@@ -4283,7 +4283,7 @@ function renderProprietariView(){
       ${alertBannerProprietario}
       <section class="vpm-owner-estate-feature" aria-label="La tua proprietà">
         <div class="vpm-owner-estate-photo">
-          ${fotoPubbliche(p).length ? `<img src="${vpmOwnerEscape(fotoPubbliche(p)[0])}" alt="Fotografia di ${vpmOwnerEscape(p.nome)}" loading="eager">` : `<div class="vpm-owner-estate-placeholder"><i class="ti ti-home-heart"></i><span>La tua proprietà, la nostra cura</span></div>`}
+          ${getCoverPhotoUrl(p) ? `<img src="${vpmOwnerEscape(getCoverPhotoUrl(p))}" alt="Fotografia di ${vpmOwnerEscape(p.nome)}" loading="eager">` : `<div class="vpm-owner-estate-placeholder"><i class="ti ti-home-heart"></i><span>La tua proprietà, la nostra cura</span></div>`}
         </div>
         <div class="vpm-owner-estate-caption">
           <span>IL TUO IMMOBILE · VIVEREPM</span>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'viverepm-redesign-v20260922-53';
+const CACHE_NAME = 'viverepm-redesign-v20260922-52';
 const CORE_ASSETS = [
   './index.html',
   './manifest.webmanifest',

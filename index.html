@@ -1823,6 +1823,13 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-manage-detail-placeholder span{font-size:9px;text-align:center;max-width:90%;line-height:1.5}
 @media(max-width:800px){.vpm-manage-inner-hero{padding-right:clamp(22px,5vw,45px)}.vpm-manage-inner-hero-photo{width:100%;opacity:.18}.vpm-manage-inner-hero-photo:before{background:linear-gradient(90deg,#fcfdfbee,#fcfdfb99)}.vpm-manage-inner-hero-photo span{display:none}.vpm-manage-empty-card{grid-template-columns:1fr}.vpm-manage-empty-photo{min-height:190px}.vpm-manage-empty-content{padding:15px 16px 23px}.vpm-manage-empty-icon{margin:0 0 18px}}
 
+
+/* Local approved image: reliable fallback for reservation lookup, list and detail */
+.vpm-manage-hero-image,.vpm-manage-inner-hero-photo,.vpm-manage-empty-photo,.vpm-manage-booking-placeholder,.vpm-manage-detail-placeholder{background-image:url('./viverepm-banner-approvato.png')!important;background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important}
+.vpm-manage-detail-photo,.vpm-manage-booking-photo{background:#d9eae7 url('./viverepm-banner-approvato.png') center/cover no-repeat}
+.vpm-manage-detail-photo>img,.vpm-manage-booking-photo>img{position:relative;z-index:1}
+.vpm-manage-detail-placeholder,.vpm-manage-booking-placeholder{min-height:100%;box-sizing:border-box}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>

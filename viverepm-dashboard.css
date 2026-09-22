@@ -615,3 +615,49 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-modal-property .modal-actions .btn-primary{background:linear-gradient(105deg,#00636c,#00948c)!important}
 @media(max-width:800px){.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{grid-template-columns:1fr 1fr}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row{grid-column:1/-1}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:1/-1}.vpm-modal-property .vpm-prop-owner .vpm-prop-fields{grid-template-columns:1fr}.vpm-modal-property .vpm-prop-intro{margin:-2px 0 12px}.vpm-modal-property .vpm-modal-tagline{display:none}}
 @media(max-width:580px){.vpm-modal-premium.vpm-modal-property{padding:0 15px 15px!important}.vpm-modal-property .vpm-modal-head{margin:0 -15px 12px!important;padding:15px!important}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields{grid-template-columns:1fr}.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field-row,.vpm-modal-property .vpm-prop-basics .vpm-prop-fields>.field[style*="display:flex"]{grid-column:1}.vpm-modal-property .vpm-prop-illustration{width:95px;height:50px}.vpm-modal-property .vpm-prop-owner .vpm-prop-fields>#newClienteFields .field-row{grid-template-columns:1fr}.vpm-modal-property .modal-actions{margin:12px -15px -15px!important;padding:12px 15px!important}.vpm-modal-property .modal-actions:before{display:none}}
+
+/* Approved ViverePM modals: operator, periodic inspection, expense */
+.vpm-modal-operatore,.vpm-modal-controllo,.vpm-modal-expense{--vpm-tiffany:#078d91;--vpm-ink:#234550}
+.vpm-modal-operatore .vpm-modal-tagline,.vpm-modal-controllo .vpm-modal-tagline,.vpm-modal-expense .vpm-modal-tagline{position:absolute;top:21px;right:79px;font-family:'Fraunces',serif;font-style:italic;color:#24606a;font-size:13px;transform:rotate(-5deg)}
+.vpm-modal-operatore .vpm-modal-tagline i,.vpm-modal-controllo .vpm-modal-tagline i,.vpm-modal-expense .vpm-modal-tagline i{color:#d39c44}
+.vpm-modal-operatore .vpm-modal-title-icon{background:#ebe6ff!important;color:#6854b0!important}
+.vpm-modal-controllo .vpm-modal-title-icon{background:#e0f7f4!important;color:#087d80!important}
+.vpm-modal-expense .vpm-modal-title-icon{background:#fff0db!important;color:#ce7b25!important}
+.vpm-modal-operatore .vpm-op-identity,.vpm-modal-expense .vpm-expense-amount,.vpm-modal-controllo .vpm-control-section-head,.vpm-modal-operatore .vpm-op-section-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;background:linear-gradient(100deg,#f0fafa,#fff8ed);border-left:3px solid #d9a34c;margin-bottom:13px}
+.vpm-modal-operatore .vpm-op-identity>span,.vpm-modal-expense .vpm-expense-amount>span,.vpm-modal-controllo .vpm-control-section-head>span,.vpm-modal-operatore .vpm-op-section-head>span{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:11px;background:#e7e0ff;color:#6a52ad;font-size:22px}
+.vpm-modal-operatore .vpm-op-identity>div,.vpm-modal-expense .vpm-expense-amount>div,.vpm-modal-controllo .vpm-control-section-head>div,.vpm-modal-operatore .vpm-op-section-head>div{display:grid;gap:3px}
+.vpm-modal-operatore .vpm-op-identity strong,.vpm-modal-expense .vpm-expense-amount strong,.vpm-modal-controllo .vpm-control-section-head strong,.vpm-modal-operatore .vpm-op-section-head strong{font-size:11px;letter-spacing:.08em;color:#214650}
+.vpm-modal-operatore .vpm-op-identity small,.vpm-modal-expense .vpm-expense-amount small,.vpm-modal-controllo .vpm-control-section-head small,.vpm-modal-operatore .vpm-op-section-head small{font-size:11px;color:#657d85}
+.vpm-modal-operatore .vpm-op-contact-grid,.vpm-modal-expense .vpm-expense-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.vpm-modal-operatore .vpm-op-contact-grid .field,.vpm-modal-expense .vpm-expense-grid .field{min-width:0;margin-bottom:12px}
+.vpm-modal-operatore .vpm-op-section{padding:12px 14px 7px;border-radius:12px;margin:12px 0;background:#f7f5ff;border-left:3px solid #9a7ed1}
+.vpm-modal-operatore .vpm-op-section-head{margin:0 0 10px!important;padding:0!important;background:transparent!important;border:0!important}
+.vpm-modal-operatore .vpm-op-homes .vpm-op-section-head>span{background:#e5dfff;color:#6d55a6}
+.vpm-modal-operatore .vpm-op-permissions{background:#eef8ff;border-left-color:#6aafe0}
+.vpm-modal-operatore .vpm-op-permissions .vpm-op-section-head>span{background:#dceeff;color:#327cbb}
+.vpm-modal-operatore #listaImmobiliConsentiti{border-color:#e0d8f2!important;border-radius:10px!important;background:#fff;max-height:115px!important}
+.vpm-modal-operatore .vpm-op-module-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.vpm-modal-operatore .vpm-op-module-grid label{padding:6px 8px!important;background:#fff;border-radius:8px;margin-bottom:5px}
+.vpm-modal-operatore input[type=checkbox],.vpm-modal-controllo input[type=checkbox]{accent-color:#078d91}
+.vpm-modal-controllo{max-width:760px!important}
+.vpm-modal-controllo .vpm-control-date{max-width:100%;background:#eef9f8;border-radius:11px;padding:11px 14px;margin-bottom:12px}
+.vpm-modal-controllo .vpm-control-date .field{margin:0}
+.vpm-modal-controllo .vpm-control-checklist{padding:12px 14px;border-radius:12px;background:#f0f9f9;border-left:3px solid #0aa9a8;margin-bottom:13px}
+.vpm-modal-controllo .vpm-control-checklist .vpm-control-section-head{padding:0!important;background:transparent!important;border:0!important}
+.vpm-modal-controllo .vpm-control-checklist .vpm-control-section-head>span{background:#d7f3f2;color:#098789}
+.vpm-modal-controllo .vpm-control-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vpm-modal-controllo .vpm-control-check-item{min-width:0;margin:0!important;padding:10px;border:1px solid #d9e9e9;border-radius:10px;background:#fff}
+.vpm-modal-controllo .vpm-control-check-item>label{min-height:31px;font-size:11px!important;line-height:1.3;letter-spacing:0!important}
+.vpm-modal-controllo .vpm-control-check-item select{min-height:36px!important;padding:7px 9px!important;font-size:12px!important}
+.vpm-modal-controllo .vpm-control-notes{padding:12px 14px;border-left:3px solid #d9a34c;border-radius:12px;background:#fff8ee}
+.vpm-modal-controllo .vpm-control-notes .vpm-control-section-head{padding:0!important;background:transparent!important;border:0!important}
+.vpm-modal-controllo .vpm-control-notes .vpm-control-section-head>span{background:#ffead0;color:#c57b28}
+.vpm-modal-controllo .vpm-control-notes-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.vpm-modal-controllo .vpm-control-notes-fields .field:first-child{grid-column:1/-1}
+.vpm-modal-expense .vpm-expense-amount{background:linear-gradient(100deg,#fff3e5,#f0fbfa);border-left-color:#df922f}
+.vpm-modal-expense .vpm-expense-amount>span{background:#ffe6c6;color:#c47a24}
+.vpm-modal-expense .vpm-expense-grid .field:last-child{grid-column:1/-1}
+.vpm-modal-expense .vpm-expense-note{display:flex;gap:9px;align-items:center;padding:11px 13px;border-radius:10px;background:#e9f4ff;color:#315f7a;font-size:11px}
+.vpm-modal-expense .vpm-expense-note i{color:#3583bb;font-size:19px}
+.vpm-modal-operatore .modal-actions .btn-primary,.vpm-modal-controllo .modal-actions .btn-primary,.vpm-modal-expense .modal-actions .btn-primary{background:linear-gradient(105deg,#075d68,#008f8a)!important}
+@media(max-width:650px){.vpm-modal-operatore .vpm-modal-tagline,.vpm-modal-controllo .vpm-modal-tagline,.vpm-modal-expense .vpm-modal-tagline{display:none}.vpm-modal-operatore .vpm-op-contact-grid,.vpm-modal-expense .vpm-expense-grid,.vpm-modal-controllo .vpm-control-check-grid,.vpm-modal-controllo .vpm-control-notes-fields{grid-template-columns:1fr}.vpm-modal-operatore .vpm-op-module-grid{grid-template-columns:1fr 1fr}}

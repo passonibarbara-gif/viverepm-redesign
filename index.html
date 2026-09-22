@@ -1757,6 +1757,52 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:850px){.vpm-manage-hero{grid-template-columns:1fr}.vpm-manage-hero-copy{padding:38px 25px}.vpm-manage-eyebrow{margin-bottom:24px}.vpm-manage-hero-image{min-height:240px}.vpm-manage-card{grid-template-columns:1fr;gap:22px}.vpm-manage-card-foot{grid-column:1;margin-top:-8px}}
 @media(max-width:500px){.vpm-manage-hero-copy h1{font-size:38px}.vpm-manage-hero-image{min-height:205px}.vpm-manage-card{padding:22px 18px}.vpm-manage-support{align-items:flex-start}.vpm-manage-main{padding-bottom:40px}}
 
+
+/* Continuation of guest manage booking: empty state, booking selection and details */
+.vpm-manage-inner{min-height:calc(100vh - 80px);background:#fffdfa;color:#1d4549}
+.vpm-manage-inner-hero{padding:clamp(36px,5vw,76px) clamp(24px,6vw,94px) clamp(35px,4vw,62px);background:linear-gradient(110deg,#eaf8f7,#fcfdfb 65%,#fcf5eb);border-bottom:1px solid #e7eee9}
+.vpm-manage-inner-kicker{font-size:10px;font-weight:700;letter-spacing:.19em;color:#a78451}
+.vpm-manage-inner-hero h1{font:600 clamp(37px,4.5vw,64px)/1.1 'Fraunces',Georgia,serif;letter-spacing:-.025em;color:#1c4549;margin:17px 0 14px}
+.vpm-manage-inner-hero p{font-size:15px;color:#5c7175;line-height:1.65;max-width:630px;margin:0}
+.vpm-manage-inner-main{max-width:1300px;margin:auto;padding:30px clamp(22px,5vw,75px) 75px}
+.vpm-manage-empty-card{max-width:650px;margin:15px auto 20px;padding:clamp(30px,5vw,64px);border:1px solid #e3ebe6;border-radius:24px;background:#fff;box-shadow:0 15px 45px #17454810;text-align:center}
+.vpm-manage-empty-icon{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin:0 auto 22px;background:#e7f5f2;color:#218587;font-size:30px}
+.vpm-manage-empty-card h2{font:600 clamp(28px,3vw,40px) 'Fraunces',Georgia,serif;margin:13px 0}
+.vpm-manage-empty-card p{color:#647a7c;font-size:14px;line-height:1.7}
+.vpm-manage-empty-action{display:inline-flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;padding:16px 25px;border-radius:12px}
+.vpm-manage-booking-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:23px;margin-top:10px}
+.vpm-manage-booking-card{display:grid;grid-template-columns:145px minmax(0,1fr) 22px;align-items:center;gap:21px;padding:14px;border:1px solid #e3eae6;border-radius:20px;background:#fff;box-shadow:0 12px 35px #1745480d;text-align:left;cursor:pointer;color:inherit;width:100%;transition:transform .2s,box-shadow .2s}
+.vpm-manage-booking-card:hover{transform:translateY(-3px);box-shadow:0 17px 39px #17454818}
+.vpm-manage-booking-photo{height:150px;border-radius:13px;overflow:hidden;background:#e8f4f2}
+.vpm-manage-booking-photo img,.vpm-manage-detail-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.vpm-manage-booking-placeholder,.vpm-manage-detail-placeholder{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:#257d7e;background:linear-gradient(130deg,#e5f7f4,#f5faf9)}
+.vpm-manage-booking-placeholder i{font-size:32px}.vpm-manage-booking-placeholder span{font:italic 600 23px Georgia,serif}
+.vpm-manage-booking-copy h2{font:600 25px 'Fraunces',Georgia,serif;margin:9px 0 10px}
+.vpm-manage-booking-copy p{font-size:12px;color:#5b7377;line-height:1.5;margin:0 0 13px}
+.vpm-manage-booking-copy p i{color:#26898b;font-size:15px;margin-right:4px}
+.vpm-manage-status{display:inline-block;border-radius:50px;background:#eaf5f2;color:#246e70;padding:7px 11px;font-size:11px;font-weight:600}
+.vpm-manage-booking-arrow{color:#29898b;font-size:20px;align-self:start;margin-top:9px}
+.vpm-manage-detail-card{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);border-radius:23px;border:1px solid #e3eae6;background:#fff;box-shadow:0 15px 45px #17454810;padding:17px;gap:clamp(24px,4vw,54px)}
+.vpm-manage-detail-photo{min-height:380px;border-radius:16px;overflow:hidden;background:#e9f4f2}
+.vpm-manage-detail-placeholder i{font-size:52px}.vpm-manage-detail-placeholder strong{font:italic 600 35px Georgia,serif}.vpm-manage-detail-placeholder span{font-size:10px;letter-spacing:.14em}
+.vpm-manage-detail-info{padding:clamp(18px,3vw,44px) clamp(15px,2vw,28px) clamp(18px,3vw,44px) 0;min-width:0}
+.vpm-manage-detail-info h2{font:600 clamp(32px,3.2vw,46px) 'Fraunces',Georgia,serif;margin:13px 0 20px}
+.vpm-manage-detail-info>p{display:flex;align-items:flex-start;gap:11px;color:#60767a;font-size:14px;line-height:1.55;margin:12px 0;overflow-wrap:anywhere}
+.vpm-manage-detail-info>p i{font-size:18px;color:#258789;flex:none}
+.vpm-manage-detail-status{display:inline-flex;align-items:center;gap:8px;border-radius:50px;padding:9px 14px;margin:20px 0;background:#eaf5f2;color:#287e7e;font-size:12px;font-weight:700}
+.vpm-manage-detail-status.is-confirmed{background:#e6f4e8;color:#39764b}
+.vpm-manage-detail-status.is-rejected{background:#faeae4;color:#a15443}
+.vpm-manage-detail-total{border-top:1px solid #e8eeeb;margin-top:8px;padding-top:21px;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.vpm-manage-detail-total span{font-size:13px;color:#65797c}
+.vpm-manage-detail-total strong{font:600 clamp(25px,2.8vw,38px) 'Fraunces',Georgia,serif;color:#228485}
+.vpm-manage-paid{color:#39764b;font-size:13px;font-weight:700;margin-top:18px}
+.vpm-manage-pay{display:inline-flex;gap:10px;align-items:center;text-decoration:none;margin-top:20px;padding:14px 23px;border-radius:12px}
+.vpm-manage-chat-section{margin-top:34px;padding:clamp(22px,3vw,43px);border:1px solid #e4ebe6;border-radius:22px;background:#fff;box-shadow:0 12px 34px #17454809}
+.vpm-manage-chat-heading h2{font:600 clamp(27px,3vw,38px) 'Fraunces',Georgia,serif;margin:12px 0 8px}
+.vpm-manage-chat-heading p{font-size:13px;color:#61767a;margin:0 0 23px}
+@media(max-width:800px){.vpm-manage-detail-card{grid-template-columns:1fr;gap:0}.vpm-manage-detail-photo{min-height:240px;height:280px}.vpm-manage-detail-info{padding:26px 12px}.vpm-manage-booking-card{grid-template-columns:105px minmax(0,1fr) 17px;gap:12px}.vpm-manage-booking-photo{height:130px}}
+@media(max-width:450px){.vpm-manage-booking-card{grid-template-columns:85px minmax(0,1fr);gap:10px}.vpm-manage-booking-photo{height:115px}.vpm-manage-booking-arrow{display:none}.vpm-manage-booking-copy h2{font-size:21px}.vpm-manage-inner-main{padding-bottom:40px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4871,10 +4917,23 @@ function renderGestisciPrenotazione(){
   });
 
   if(!risultati.length){
-    return `<div class="portal-shell" style="max-width:760px;">
-      <button class="link-btn" data-guest-manage-reset style="margin-bottom:16px;">← Cerca un altro numero</button>
-      <h1 class="page-title">Nessuna prenotazione trovata</h1>
-      <p class="page-sub">Controlla di aver inserito lo stesso numero usato in fase di prenotazione.</p>
+    return `<div class="vpm-manage-inner">
+      <header class="vpm-manage-inner-hero">
+        <span class="vpm-manage-inner-kicker">VIVEREpm · LA TUA PRENOTAZIONE</span>
+        <h1>Ritroviamo il tuo soggiorno.</h1>
+        <p>Non abbiamo trovato prenotazioni associate a questo numero. Verifica di aver inserito lo stesso recapito utilizzato nella richiesta.</p>
+      </header>
+      <main class="vpm-manage-inner-main">
+        <button class="vpm-manage-back" data-guest-manage-reset><i class="ti ti-arrow-left"></i> Cerca un altro numero</button>
+        <section class="vpm-manage-empty-card">
+          <div class="vpm-manage-empty-icon"><i class="ti ti-search"></i></div>
+          <span class="vpm-manage-inner-kicker">NESSUN RISULTATO</span>
+          <h2>Nessuna prenotazione trovata</h2>
+          <p>Puoi riprovare con un altro numero di telefono. Se hai bisogno di assistenza, il team ViverePM è a tua disposizione.</p>
+          <button class="btn-primary vpm-manage-empty-action" data-guest-manage-reset>Riprova la ricerca <i class="ti ti-arrow-right"></i></button>
+        </section>
+      </main>
+      <footer class="vpm-stay-results-footer">IL TUO SOGGIORNO. LA NOSTRA CURA.</footer>
     </div>`;
   }
 
@@ -4885,15 +4944,19 @@ function renderGestisciPrenotazione(){
   }
 
   if(!selezionata){
-    const cards = risultati.map(r=>`
-      <div class="portal-pick-card" data-guest-manage-pick="${r.p.id}::${r.b.id}">
-        <div><div style="font-family:'Fraunces',serif;font-weight:600;">${r.p.nome}</div><div style="font-size:12px;color:var(--ink-soft);">${fmtDate(r.b.checkin)} → ${fmtDate(r.b.checkout)} · ${r.b.stato}</div></div>
-        <span style="color:var(--ink-soft);">→</span>
-      </div>`).join('');
-    return `<div class="portal-shell" style="max-width:760px;">
-      <button class="link-btn" data-guest-manage-reset style="margin-bottom:16px;">← Cerca un altro numero</button>
-      <h1 class="page-title">Le tue prenotazioni</h1>
-      <div class="portal-picker">${cards}</div>
+    const cards = risultati.map(r=>{
+      const foto = getPropCover(r.p);
+      const stato = {richiesta:'In attesa di conferma', confermata:'Confermata', rifiutata:'Rifiutata'}[r.b.stato] || r.b.stato || 'Da verificare';
+      return `<button type="button" class="vpm-manage-booking-card" data-guest-manage-pick="${r.p.id}::${r.b.id}">
+        <div class="vpm-manage-booking-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(r.p.nome)}">` : `<div class="vpm-manage-booking-placeholder"><i class="ti ti-home-heart"></i><span>VIVEREpm</span></div>`}</div>
+        <div class="vpm-manage-booking-copy"><span class="vpm-manage-inner-kicker">IL TUO SOGGIORNO</span><h2>${vpmOwnerEscape(r.p.nome)}</h2><p><i class="ti ti-calendar-event"></i> ${fmtDate(r.b.checkin)} → ${fmtDate(r.b.checkout)}</p><span class="vpm-manage-status">${vpmOwnerEscape(stato)}</span></div>
+        <span class="vpm-manage-booking-arrow"><i class="ti ti-arrow-up-right"></i></span>
+      </button>`;
+    }).join('');
+    return `<div class="vpm-manage-inner">
+      <header class="vpm-manage-inner-hero"><span class="vpm-manage-inner-kicker">VIVEREpm · I TUOI SOGGIORNI</span><h1>Le tue prenotazioni.</h1><p>Seleziona il soggiorno che desideri consultare. Tutti i dettagli sono a portata di mano.</p></header>
+      <main class="vpm-manage-inner-main"><button class="vpm-manage-back" data-guest-manage-reset><i class="ti ti-arrow-left"></i> Cerca un altro numero</button><div class="vpm-manage-booking-list">${cards}</div></main>
+      <footer class="vpm-stay-results-footer">IL TUO SOGGIORNO. LA NOSTRA CURA.</footer>
     </div>`;
   }
 
@@ -4901,28 +4964,35 @@ function renderGestisciPrenotazione(){
   const b = p && (p.prenotazioni||[]).find(x=>x.id===selezionata.bookingId);
   if(!p || !b){ state.guestManageSelected = null; return renderGestisciPrenotazione(); }
 
-  const statoLabel = {richiesta:'In attesa di conferma', confermata:'Confermata', rifiutata:'Rifiutata'}[b.stato] || b.stato;
-  const statoColore = b.stato==='confermata' ? 'sage' : b.stato==='rifiutata' ? 'terracotta' : '';
-
-  return `<div class="portal-shell" style="max-width:760px;">
-    <button class="link-btn" ${risultati.length>1 ? 'data-guest-manage-deselect' : 'data-guest-manage-reset'} style="margin-bottom:16px;">← ${risultati.length>1 ? 'Le tue prenotazioni' : 'Cerca un altro numero'}</button>
-    <h1 class="page-title">${propertyTypeIcon(p.tipo)}${p.nome}</h1>
-    <p class="page-sub">${fmtDate(b.checkin)} → ${fmtDate(b.checkout)}</p>
-
-    <div class="chart-card">
-      <div style="display:flex;gap:14px;flex-wrap:wrap;">
-        <div class="stat-card" style="flex:1;min-width:140px;"><div class="stat-label">Stato</div><div class="stat-value ${statoColore}" style="font-size:17px;">${statoLabel}</div></div>
-        ${b.totale ? `<div class="stat-card" style="flex:1;min-width:140px;"><div class="stat-label">Totale</div><div class="stat-value" style="background:var(--brand-gradient); -webkit-background-clip:text; background-clip:text; color:transparent;">${fmtCurrency(b.totale)}</div></div>` : ''}
-      </div>
-      ${b.pagamentoRicevuto
-        ? `<p style="color:var(--sage);font-size:13.5px;font-weight:500;margin:16px 0 0 0;"><span class="seal">✓</span>Pagamento ricevuto</p>`
-        : (p.linkPagamento && b.totale && b.stato==='confermata'
-            ? `<a class="btn-primary" href="${p.linkPagamento}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block;margin-top:16px;">Paga ora</a>`
-            : '')}
-    </div>
-
-    <p class="section-label" style="margin-top:24px;">Messaggi con l'agenzia</p>
-    ${renderBookingChat(p, b, 'ospite')}
+  const statoLabel = {richiesta:'In attesa di conferma', confermata:'Confermata', rifiutata:'Rifiutata'}[b.stato] || b.stato || 'Da verificare';
+  const statoClass = b.stato==='confermata' ? 'is-confirmed' : b.stato==='rifiutata' ? 'is-rejected' : 'is-pending';
+  const foto = getPropCover(p);
+  return `<div class="vpm-manage-inner">
+    <header class="vpm-manage-inner-hero"><span class="vpm-manage-inner-kicker">VIVEREpm · IL TUO SOGGIORNO</span><h1>La tua vacanza, sotto controllo.</h1><p>Consulta la tua prenotazione e scrivi direttamente al team ViverePM.</p></header>
+    <main class="vpm-manage-inner-main">
+      <button class="vpm-manage-back" ${risultati.length>1 ? 'data-guest-manage-deselect' : 'data-guest-manage-reset'}><i class="ti ti-arrow-left"></i> ${risultati.length>1 ? 'Le tue prenotazioni' : 'Cerca un altro numero'}</button>
+      <section class="vpm-manage-detail-card">
+        <div class="vpm-manage-detail-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-manage-detail-placeholder"><i class="ti ti-home-heart"></i><strong>VIVEREpm</strong><span>IL TUO SOGGIORNO, LA NOSTRA CURA</span></div>`}</div>
+        <div class="vpm-manage-detail-info">
+          <span class="vpm-manage-inner-kicker">RIEPILOGO PRENOTAZIONE</span>
+          <h2>${vpmOwnerEscape(p.nome)}</h2>
+          <p><i class="ti ti-map-pin"></i> ${vpmOwnerEscape(p.indirizzo||'')} ${vpmOwnerEscape(p.tipo||'')}</p>
+          <p><i class="ti ti-calendar-event"></i> ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)}</p>
+          <div class="vpm-manage-detail-status ${statoClass}"><i class="ti ti-circle-check"></i> ${vpmOwnerEscape(statoLabel)}</div>
+          <div class="vpm-manage-detail-total"><span>Totale soggiorno</span><strong>${fmtCurrency(Number(b.totale)||0)}</strong></div>
+          ${b.pagamentoRicevuto
+            ? `<div class="vpm-manage-paid"><i class="ti ti-check"></i> Pagamento ricevuto</div>`
+            : (p.linkPagamento && b.totale && b.stato==='confermata'
+                ? `<a class="btn-primary vpm-manage-pay" href="${p.linkPagamento}" target="_blank" rel="noopener">Paga ora <i class="ti ti-arrow-right"></i></a>`
+                : '')}
+        </div>
+      </section>
+      <section class="vpm-manage-chat-section">
+        <div class="vpm-manage-chat-heading"><span class="vpm-manage-inner-kicker">RESTIAMO IN CONTATTO</span><h2>Messaggi con l’agenzia</h2><p>Hai una domanda sul soggiorno? Scrivici qui.</p></div>
+        ${renderBookingChat(p, b, 'ospite')}
+      </section>
+    </main>
+    <footer class="vpm-stay-results-footer">IL TUO SOGGIORNO. LA NOSTRA CURA.</footer>
   </div>`;
 }
 

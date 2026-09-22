@@ -1626,6 +1626,15 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-booking-header-nav{margin-left:auto}
 @media(max-width:650px){.vpm-booking-leaves{width:100px;height:155px;opacity:.36}.vpm-stay-next-title .vpm-booking-leaves{right:-15px;top:-40px;width:100px;height:160px}.vpm-stay-results-head .vpm-booking-leaves{width:110px;height:170px;right:0;opacity:.35}.vpm-stay-search .vpm-booking-leaves{width:90px;height:140px;opacity:.45}}
 
+
+/* Botanical accent: small, integrated in the hero corner, never a standalone panel */
+.vpm-stay-search,.vpm-stay-results-head,.vpm-stay-next-title{position:relative;isolation:isolate}
+.vpm-stay-search>.vpm-booking-leaves,.vpm-stay-results-head>.vpm-booking-leaves,.vpm-stay-next-title>.vpm-booking-leaves{position:absolute!important;display:block!important;inset:auto!important;right:clamp(12px,2.5vw,35px)!important;top:clamp(10px,2vw,25px)!important;width:76px!important;height:113px!important;max-width:76px!important;max-height:113px!important;min-width:0!important;min-height:0!important;opacity:.36!important;z-index:0!important;transform:rotate(-12deg);pointer-events:none}
+.vpm-stay-results-head>.vpm-booking-leaves{right:clamp(22px,5vw,80px)!important;top:35px!important;width:98px!important;height:145px!important;max-width:98px!important;max-height:145px!important;opacity:.29!important}
+.vpm-stay-next-title>.vpm-booking-leaves{right:clamp(8px,3vw,45px)!important;top:0!important;width:76px!important;height:113px!important;max-width:76px!important;max-height:113px!important;opacity:.27!important}
+.vpm-stay-search>*:not(.vpm-booking-leaves),.vpm-stay-results-head>*:not(.vpm-booking-leaves),.vpm-stay-next-title>*:not(.vpm-booking-leaves){position:relative;z-index:1}
+@media(max-width:750px){.vpm-stay-search>.vpm-booking-leaves,.vpm-stay-results-head>.vpm-booking-leaves,.vpm-stay-next-title>.vpm-booking-leaves{right:8px!important;top:9px!important;width:55px!important;height:82px!important;max-width:55px!important;max-height:82px!important;opacity:.19!important}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>

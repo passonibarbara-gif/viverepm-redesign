@@ -5190,13 +5190,6 @@ function attachHandlers(){
     state.selectedId=id;state.selectedClienteId=null;state.vistaGestore='overview';state.dossierTab=tab;
     render();
   }));
-  const portfolioSearch=document.querySelector('[data-portfolio-search]');
-  if(portfolioSearch && document.querySelector('.vpm-activity-toolbar'))portfolioSearch.addEventListener('input',applyActivityFilters);
-  else if(portfolioSearch)portfolioSearch.addEventListener('input',()=>{
-    const term=portfolioSearch.value.trim().toLocaleLowerCase('it');let shown=0;
-    document.querySelectorAll('.vpm-portfolio-list .vpm-portfolio-row').forEach(row=>{const ok=row.textContent.toLocaleLowerCase('it').includes(term);row.hidden=!ok;if(ok)shown++;});
-    const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
-  });
   const applyActivityFilters=()=>{
     const activity=document.querySelector('.vpm-activity-toolbar');
     if(!activity)return;
@@ -5217,6 +5210,14 @@ function attachHandlers(){
       if(empty)empty.hidden=shown!==0;
     });
   };
+  const portfolioSearch=document.querySelector('[data-portfolio-search]');
+  if(portfolioSearch && document.querySelector('.vpm-activity-toolbar'))portfolioSearch.addEventListener('input',applyActivityFilters);
+  else if(portfolioSearch)portfolioSearch.addEventListener('input',()=>{
+    const term=portfolioSearch.value.trim().toLocaleLowerCase('it');let shown=0;
+    document.querySelectorAll('.vpm-portfolio-list .vpm-portfolio-row').forEach(row=>{const ok=row.textContent.toLocaleLowerCase('it').includes(term);row.hidden=!ok;if(ok)shown++;});
+    const empty=document.querySelector('.vpm-portfolio-no-results');if(empty)empty.hidden=shown!==0;
+  });
+
   document.querySelectorAll('[data-portfolio-filter],[data-control-filter]').forEach(btn=>btn.addEventListener('click',()=>{
     const attr=btn.hasAttribute('data-control-filter')?'data-control-filter':'data-portfolio-filter';
     document.querySelectorAll('['+attr+']').forEach(b=>b.classList.remove('active'));

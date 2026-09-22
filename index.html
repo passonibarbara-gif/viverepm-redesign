@@ -1361,6 +1361,48 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:950px){.vpm-guest-stage{grid-template-columns:1fr}.vpm-guest-scene{min-height:380px}.vpm-guest-scene-copy{padding:48px 35px}.vpm-guest-booking-card{margin:-42px 25px 30px}.vpm-guest-how-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.vpm-guest-topbar{padding:15px}.vpm-guest-logo{font-size:21px}.vpm-guest-logo small{font-size:8px}.vpm-guest-manage{font-size:10px;padding:9px}.vpm-guest-manage strong{display:block}.vpm-guest-scene{min-height:350px}.vpm-guest-scene-copy{padding:43px 22px}.vpm-guest-scene h1{font-size:36px}.vpm-guest-booking-card{margin:-30px 12px 20px;padding:24px 18px}.vpm-guest-booking-card .field-row{gap:10px}.vpm-guest-booking-card .field input{font-size:13px;padding:8px}.vpm-guest-how-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 12px}.vpm-guest-how h2{font-size:23px}}
 
+
+/* VIVEREpm · pagina pubblica Prenota un soggiorno, step periodo */
+.vpm-stay-page{width:100%;max-width:1600px;margin:0 auto;background:#fffdf9;color:#173d43;overflow:hidden}
+.vpm-stay-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(460px,.85fr);min-height:650px;background:#e9f6f4}
+.vpm-stay-story{position:relative;min-height:650px;background:linear-gradient(90deg,rgba(222,244,250,.40),rgba(222,244,250,.03)),url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1800') center center/cover no-repeat;background-color:#d4edf1}
+.vpm-stay-story-copy{position:relative;z-index:1;padding:clamp(50px,6vw,105px) 30px 30px clamp(32px,6vw,94px);text-shadow:0 1px 20px #e5f6f4b3}
+.vpm-stay-eyebrow{font:italic 700 19px 'Fraunces',Georgia,serif;color:#147b82}
+.vpm-stay-eyebrow span{font-size:16px}
+.vpm-stay-story h1{font:600 clamp(35px,3.5vw,57px)/1.12 'Fraunces',Georgia,serif;letter-spacing:-.025em;color:#123d44;margin:28px 0 13px}
+.vpm-stay-story p{font-size:clamp(15px,1.35vw,19px);line-height:1.55;color:#24434c;margin:0}
+.vpm-stay-script{font:italic 31px/1.25 'Brush Script MT','Segoe Script',cursive;color:#a6814a;transform:rotate(-5deg);margin:42px 0 0 10px}
+.vpm-stay-search-wrap{display:flex;align-items:center;justify-content:center;padding:32px clamp(20px,3vw,52px) 32px 0;margin-left:-30px;z-index:2}
+.vpm-stay-search{position:relative;width:100%;max-width:590px;padding:36px clamp(24px,3vw,44px) 25px;background:#fff;border-radius:23px;box-shadow:0 22px 55px #163e4330;overflow:hidden}
+.vpm-stay-search h2{font:600 clamp(26px,2.6vw,38px)/1.2 'Fraunces',Georgia,serif;color:#153e44;margin:0 0 9px;position:relative;z-index:1}
+.vpm-stay-subtitle{font-size:14px;line-height:1.6;color:#49616a;max-width:420px;margin:0 0 24px;position:relative;z-index:1}
+.vpm-stay-leaf{position:absolute;right:22px;top:15px;color:#d7c6a7;opacity:.65;font-size:78px;transform:rotate(-28deg);pointer-events:none}
+.vpm-stay-search .wizard-steps{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 25px;padding:0}
+.vpm-stay-search .wizard-step{font-size:10px;gap:5px;white-space:nowrap}
+.vpm-stay-search .wizard-step .num{width:25px;height:25px;min-width:25px;font-size:11px}
+.vpm-stay-form{width:100%;max-width:none}
+.vpm-stay-form .field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.vpm-stay-form .field{min-width:0;margin-bottom:16px}
+.vpm-stay-form .field label{font-size:11px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:#254c56;margin-bottom:8px}
+.vpm-stay-form .field input{width:100%;min-width:0;min-height:52px;padding:12px 14px;border:1px solid #d9e4e8;border-radius:13px;background:#fff;font-size:15px;color:#173d43}
+.vpm-stay-form .field input:focus{outline:none;border-color:#2ca8a9;box-shadow:0 0 0 3px #2ca8a926}
+.vpm-stay-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:53px;margin-top:4px;border-radius:13px;background:linear-gradient(100deg,#187882,#2baaaa);font-size:14px;font-weight:700}
+.vpm-stay-secure{text-align:center;margin-top:16px;color:#365961;font-size:12px}
+.vpm-stay-manage{display:block;margin:13px auto 0;text-align:center;font-size:12px;color:#267e85;text-decoration:underline}
+.vpm-stay-how{padding:30px clamp(22px,5vw,78px) 35px;text-align:center;background:linear-gradient(#fffdf9,#fff)}
+.vpm-stay-how h2{display:flex;align-items:center;gap:22px;justify-content:center;font:600 25px 'Fraunces',Georgia,serif;color:#153e44;margin:0 0 28px}
+.vpm-stay-how h2:before,.vpm-stay-how h2:after{content:'';height:1px;flex:1;max-width:280px;background:#e5d3b7}
+.vpm-stay-how-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.vpm-stay-how-grid>div{display:flex;align-items:center;flex-direction:column}
+.vpm-stay-how-grid span{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#e3f5f3;color:#177c81;font-size:29px;margin-bottom:13px}
+.vpm-stay-how-grid>div:nth-child(3) span,.vpm-stay-how-grid>div:nth-child(5) span{background:#f4ecdf;color:#a7834c}
+.vpm-stay-how-grid strong{font:600 16px 'Fraunces',Georgia,serif;color:#183e45}
+.vpm-stay-how-grid p{font-size:12px;line-height:1.5;color:#526a71;margin:7px 0}
+.vpm-stay-signoff{font-size:10px;letter-spacing:.32em;color:#31535c;margin-top:37px}
+@media(max-width:1050px){.vpm-stay-hero{grid-template-columns:minmax(0,1fr) minmax(410px,1fr)}.vpm-stay-search-wrap{padding-right:20px}.vpm-stay-story-copy{padding-left:36px}.vpm-stay-story h1{font-size:39px}.vpm-stay-search{padding:30px 24px}}
+@media(max-width:760px){.vpm-stay-hero{grid-template-columns:1fr}.vpm-stay-story{min-height:370px;background-position:center 48%}.vpm-stay-story-copy{padding:32px 24px}.vpm-stay-story h1{font-size:37px;margin-top:16px}.vpm-stay-script{font-size:26px;margin-top:22px}.vpm-stay-search-wrap{margin:-35px 0 0;padding:0 16px 26px}.vpm-stay-search{max-width:590px;padding:28px 22px}.vpm-stay-how-grid{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:22px}.vpm-stay-how-grid>div:last-child{grid-column:1/-1}.vpm-stay-how h2{font-size:21px;gap:10px}}
+@media(max-width:420px){.vpm-stay-form .field-row{gap:9px}.vpm-stay-form .field input{font-size:13px;padding:10px}.vpm-stay-search .wizard-step{font-size:9px}.vpm-stay-story h1{font-size:32px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4531,48 +4573,49 @@ function renderOspitiView(){
 
   // ---- Step 1: scelta periodo ----
   if(step===1){
-    return `<div class="portal-shell vpm-guest-landing">
-      <div class="vpm-guest-topbar">
-        <div class="vpm-guest-logo"><i class="ti ti-home-heart"></i><span>VIVERE<em>pm</em><small>Property Management & Holiday Homes</small></span></div>
-        <button type="button" class="vpm-guest-manage" data-guest-goto-manage>Hai già prenotato? <strong>Gestisci la prenotazione →</strong></button>
-      </div>
-      <div class="vpm-guest-stage">
-        <div class="vpm-guest-scene">
-          <div class="vpm-guest-scene-copy">
+    return `<div class="vpm-stay-page">
+      <section class="vpm-stay-hero" aria-label="Cerca il tuo soggiorno">
+        <div class="vpm-stay-story">
+          <div class="vpm-stay-story-copy">
+            <span class="vpm-stay-eyebrow">VIVERE<span>pm</span></span>
             <h1>La tua prossima<br>vacanza comincia qui</h1>
-            <p>Case esclusive, esperienze autentiche,<br>tutto il fascino dell'Italia.</p>
-            <div class="vpm-guest-script">Più di un soggiorno,<br>un modo di vivere.</div>
+            <p>Case esclusive, esperienze autentiche,<br>tutto il fascino dell’Italia.</p>
+            <div class="vpm-stay-script">Più di un soggiorno,<br>un modo di vivere.</div>
           </div>
         </div>
-        <div class="vpm-guest-booking-card">
-          <div class="vpm-guest-olive" aria-hidden="true">❧</div>
-          <h2>Trova il tuo soggiorno</h2>
-          <p class="vpm-guest-intro">Scegli le date, controlla la disponibilità in tempo reale e prenota in pochi minuti.</p>
-          <form id="guestDatesForm">
-            <div class="field-row">
-              <div class="field"><label>Check-in</label><input type="date" name="checkin" required value="${state.guestDates.checkin}"></div>
-              <div class="field"><label>Check-out</label><input type="date" name="checkout" required value="${state.guestDates.checkout}"></div>
-            </div>
-            <div class="field-row">
-              <div class="field"><label>Adulti</label><input type="number" name="adulti" min="1" required value="${state.guestDates.adulti||1}"></div>
-              <div class="field"><label>Bambini</label><input type="number" name="bambini" min="0" value="${state.guestDates.bambini||0}"></div>
-            </div>
-            <div class="field"><label>Animali domestici al seguito</label><input type="number" name="animali" min="0" value="${state.guestDates.animali||0}"></div>
-            <button type="submit" class="btn-primary vpm-guest-search">Cerca immobili disponibili <i class="ti ti-arrow-right"></i></button>
-          </form>
-          <div class="vpm-guest-secure"><i class="ti ti-lock"></i> Prenotazione sicura e protetta</div>
+        <div class="vpm-stay-search-wrap">
+          <div class="vpm-stay-search">
+            <div class="vpm-stay-leaf" aria-hidden="true"><i class="ti ti-leaf"></i></div>
+            <h2>Trova il tuo soggiorno</h2>
+            <p class="vpm-stay-subtitle">Scegli le date, controlla la disponibilità in tempo reale e prenota in pochi minuti.</p>
+            ${renderWizardSteps(1)}
+            <form id="guestDatesForm" class="vpm-stay-form">
+              <div class="field-row">
+                <div class="field"><label>Check-in</label><input type="date" name="checkin" required value="${state.guestDates.checkin}"></div>
+                <div class="field"><label>Check-out</label><input type="date" name="checkout" required value="${state.guestDates.checkout}"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label>Adulti</label><input type="number" name="adulti" min="1" required value="${state.guestDates.adulti||1}"></div>
+                <div class="field"><label>Bambini</label><input type="number" name="bambini" min="0" value="${state.guestDates.bambini||0}"></div>
+              </div>
+              <div class="field"><label>Animali domestici al seguito</label><input type="number" name="animali" min="0" value="${state.guestDates.animali||0}"></div>
+              <button type="submit" class="btn-primary vpm-stay-submit">Cerca immobili disponibili <i class="ti ti-arrow-right"></i></button>
+            </form>
+            <div class="vpm-stay-secure"><i class="ti ti-lock"></i> La tua richiesta viene gestita con cura</div>
+            <button class="link-btn vpm-stay-manage" data-guest-goto-manage>Hai già prenotato? Gestisci la tua prenotazione →</button>
+          </div>
         </div>
-      </div>
-      <section class="vpm-guest-how">
+      </section>
+      <section class="vpm-stay-how" aria-label="Come funziona la prenotazione">
         <h2>Come funziona la prenotazione</h2>
-        <div class="vpm-guest-how-grid">
-          <div><i class="ti ti-calendar-event"></i><strong>1. Scegli le date</strong><span>Indica il periodo<br>del tuo soggiorno</span></div>
-          <div><i class="ti ti-search"></i><strong>2. Trova la tua casa</strong><span>Scopri gli immobili<br>disponibili</span></div>
-          <div><i class="ti ti-file-text"></i><strong>3. Inserisci i dettagli</strong><span>Completa la prenotazione<br>in pochi minuti</span></div>
-          <div><i class="ti ti-credit-card"></i><strong>4. Conferma</strong><span>Ricevi la conferma<br>via email</span></div>
-          <div><i class="ti ti-luggage"></i><strong>5. Buon viaggio!</strong><span>Noi siamo qui per te</span></div>
+        <div class="vpm-stay-how-grid">
+          <div><span><i class="ti ti-calendar"></i></span><strong>1. Scegli le date</strong><p>Indica il periodo<br>del tuo soggiorno</p></div>
+          <div><span><i class="ti ti-search"></i></span><strong>2. Trova la tua casa</strong><p>Scopri gli immobili<br>disponibili</p></div>
+          <div><span><i class="ti ti-file-text"></i></span><strong>3. Inserisci i dettagli</strong><p>Completa la prenotazione<br>in pochi minuti</p></div>
+          <div><span><i class="ti ti-mail-check"></i></span><strong>4. Conferma</strong><p>Ricevi aggiornamenti<br>sulla tua richiesta</p></div>
+          <div><span><i class="ti ti-luggage"></i></span><strong>5. Buon viaggio!</strong><p>Noi siamo qui per te</p></div>
         </div>
-        <p>IL TUO SOGGIORNO. LA NOSTRA CURA.</p>
+        <div class="vpm-stay-signoff">IL TUO SOGGIORNO. LA NOSTRA CURA.</div>
       </section>
     </div>`;
   }

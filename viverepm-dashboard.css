@@ -677,3 +677,13 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
  .topnav:not(:has(+ .app main .vpm-dashboard)) .vpm-global-search{width:min(360px,100%)!important}
  .topnav:not(:has(+ .app main .vpm-dashboard)) .topnav-tabs{gap:3px!important;padding:0 10px!important}
 }
+
+/* Stable top bar on non-dashboard pages: search no longer overlays sidebar or headings */
+@media(min-width:861px){
+ .topnav.vpm-topnav-workspace{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:nowrap!important;gap:0!important;position:relative!important;z-index:9!important;width:100%!important;height:60px!important;min-height:60px!important;margin:0!important;padding:0 24px!important;background:#fff!important;box-shadow:0 1px 0 #e2edf1!important;pointer-events:auto!important}
+ .topnav.vpm-topnav-workspace .topnav-brand{display:none!important}
+ .topnav.vpm-topnav-workspace .topnav-tabs{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:nowrap!important;gap:7px!important;width:auto!important;max-width:100%!important;height:60px!important;min-height:0!important;margin:0!important;padding:0!important;background:transparent!important}
+ .topnav.vpm-topnav-workspace + .app{min-height:calc(100vh - 60px)!important}
+ .topnav.vpm-topnav-workspace + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 60px)!important}
+ .topnav.vpm-topnav-workspace + .app main{margin-top:0!important;padding-top:22px!important;min-width:0!important}
+}

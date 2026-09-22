@@ -1687,6 +1687,16 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:1050px){.vpm-stay-data-layout{grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);gap:16px}.vpm-stay-data-photo{min-height:630px}.vpm-stay-data-photo-copy strong{font-size:42px}}
 @media(max-width:760px){.vpm-stay-data-layout{grid-template-columns:minmax(0,1fr)}.vpm-stay-data-photo{min-height:330px;order:-1;background-position:center 58%}.vpm-stay-data-photo-copy{padding:25px 14px}.vpm-stay-data-photo-copy strong{font-size:38px}.vpm-stay-data-layout .vpm-stay-data-form .field-row{grid-template-columns:1fr}}
 
+
+/* Ripristino fotografia mediterranea nella testata "Le case disponibili" */
+.vpm-stay-results-head{position:relative!important;isolation:isolate;overflow:hidden;min-height:405px!important;box-sizing:border-box;background:#e8f3f0!important}
+.vpm-stay-results-head:before{content:''!important;display:block!important;position:absolute!important;inset:0!important;z-index:-2!important;background:url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1800') center 54%/cover no-repeat!important;pointer-events:none}
+.vpm-stay-results-head:after{content:''!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;z-index:-1!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:linear-gradient(90deg,rgba(248,252,249,.96) 0%,rgba(248,252,249,.91) 31%,rgba(248,252,249,.65) 48%,rgba(248,252,249,.08) 78%)!important;pointer-events:none}
+.vpm-stay-results-head>.vpm-stay-gold-accent{display:none!important}
+.vpm-stay-results-head>.vpm-stay-results-brand,.vpm-stay-results-head>.vpm-stay-results-eyebrow,.vpm-stay-results-head>h1,.vpm-stay-results-head>p,.vpm-stay-results-head>.vpm-stay-results-criteria{position:relative;z-index:1}
+.vpm-stay-results-head>h1{max-width:800px}
+@media(max-width:750px){.vpm-stay-results-head{min-height:385px!important}.vpm-stay-results-head:after{background:linear-gradient(90deg,rgba(248,252,249,.95),rgba(248,252,249,.78) 75%,rgba(248,252,249,.42))!important}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>

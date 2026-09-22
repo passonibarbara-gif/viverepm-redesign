@@ -687,3 +687,23 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
  .topnav.vpm-topnav-workspace + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 60px)!important}
  .topnav.vpm-topnav-workspace + .app main{margin-top:0!important;padding-top:22px!important;min-width:0!important}
 }
+
+/* v27: Stable search header and sidebar label — no overlap with content */
+@media(min-width:861px){
+ .topnav.vpm-topnav-workspace{display:grid!important;grid-template-columns:minmax(240px,1fr) auto!important;align-items:center!important;justify-content:stretch!important;gap:18px!important;height:72px!important;min-height:72px!important;padding:0 25px!important;overflow:visible!important}
+ .topnav.vpm-topnav-workspace .topnav-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;min-width:0!important;width:auto!important;max-width:100%!important;z-index:1!important}
+ .topnav.vpm-topnav-workspace .vpm-global-search{display:flex!important;align-items:center!important;width:min(440px,100%)!important;max-width:100%!important;height:43px!important;margin:0!important;box-sizing:border-box!important}
+ .topnav.vpm-topnav-workspace .vpm-global-search input{min-width:0!important;width:100%!important}
+ .topnav.vpm-topnav-workspace .topnav-tabs{width:auto!important;max-width:100%!important;height:72px!important;margin:0!important;padding:0!important;justify-self:end!important}
+ .topnav.vpm-topnav-workspace + .app{min-height:calc(100vh - 72px)!important}
+ .topnav.vpm-topnav-workspace + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 72px)!important}
+ .topnav.vpm-topnav-workspace + .app main{margin-top:0!important;padding-top:22px!important}
+}
+@media(min-width:861px) and (max-width:1180px){
+ .topnav.vpm-topnav-workspace{grid-template-columns:minmax(170px,1fr) auto!important;gap:10px!important;padding:0 16px!important}
+ .topnav.vpm-topnav-workspace .vpm-global-search{width:min(300px,100%)!important}
+ .topnav.vpm-topnav-workspace .topnav-tabs{gap:3px!important}
+}
+.sidebar .nav-item[data-nav="comunicazioni"] .nav-item-main{display:flex;align-items:center;gap:0;min-width:0;font-size:clamp(12px,1.08vw,14px);letter-spacing:-.015em;white-space:nowrap}
+.sidebar .nav-item[data-nav="comunicazioni"] .nav-icon{flex:none}
+.sidebar .nav-item[data-nav="comunicazioni"] .nav-badge{flex:none;margin-left:auto}

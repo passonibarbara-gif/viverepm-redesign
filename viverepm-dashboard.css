@@ -661,3 +661,19 @@ h1.page-title{font:700 clamp(24px,2.5vw,32px) 'IBM Plex Sans',sans-serif;letter-
 .vpm-modal-expense .vpm-expense-note i{color:#3583bb;font-size:19px}
 .vpm-modal-operatore .modal-actions .btn-primary,.vpm-modal-controllo .modal-actions .btn-primary,.vpm-modal-expense .modal-actions .btn-primary{background:linear-gradient(105deg,#075d68,#008f8a)!important}
 @media(max-width:650px){.vpm-modal-operatore .vpm-modal-tagline,.vpm-modal-controllo .vpm-modal-tagline,.vpm-modal-expense .vpm-modal-tagline{display:none}.vpm-modal-operatore .vpm-op-contact-grid,.vpm-modal-expense .vpm-expense-grid,.vpm-modal-controllo .vpm-control-check-grid,.vpm-modal-controllo .vpm-control-notes-fields{grid-template-columns:1fr}.vpm-modal-operatore .vpm-op-module-grid{grid-template-columns:1fr 1fr}}
+
+/* Non-dashboard workspace: top navigation must occupy its own row.
+   Previous negative margins pulled the sidebar and page underneath search. */
+@media(min-width:861px){
+ .topnav:not(:has(+ .app main .vpm-dashboard)){position:relative!important;height:70px!important;min-height:70px!important;padding:10px 24px 10px 240px!important;background:#fff!important;box-shadow:0 1px 0 #e2edf1!important;pointer-events:auto!important;z-index:8}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) .topnav-brand{flex:1 1 auto;min-width:0}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) .vpm-global-search{width:min(480px,100%)!important;max-width:100%;height:44px!important;box-sizing:border-box}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) .topnav-tabs{height:70px!important;min-width:0;margin:-10px -24px -10px auto!important;padding:0 22px!important;background:#fff!important}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) + .app{min-height:calc(100vh - 70px)!important}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 70px)!important}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) + .app main{margin-top:0!important;padding-top:22px!important;min-width:0}
+}
+@media(min-width:861px) and (max-width:1150px){
+ .topnav:not(:has(+ .app main .vpm-dashboard)) .vpm-global-search{width:min(360px,100%)!important}
+ .topnav:not(:has(+ .app main .vpm-dashboard)) .topnav-tabs{gap:3px!important;padding:0 10px!important}
+}

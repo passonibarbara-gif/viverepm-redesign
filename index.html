@@ -1184,6 +1184,44 @@ body:has(.vpm-owner-shell){background:linear-gradient(145deg,#f0f7f5 0%,#faf9f5 
 .vpm-owner-profile-readonly .vpm-owner-readonly-value{min-height:51px;display:flex;align-items:center;padding:13px 16px;background:#f5faf8;border:1px solid #dceae5;border-radius:11px;color:#254d53;font-size:14px;overflow-wrap:anywhere}
 .vpm-owner-profile-readonly .field{min-width:0;margin-bottom:16px}
 .vpm-owner-profile-readonly .vpm-owner-action{margin-top:4px;background:linear-gradient(105deg,#0e6e70,#23a49b);box-shadow:0 7px 17px #0e777024}
+
+/* Area proprietari · selezione immobili */
+body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70%,#eef7f4)}
+.vpm-owner-picker{padding:30px clamp(16px,3vw,40px) 70px!important}
+.vpm-owner-picker-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
+.vpm-owner-picker-top .link-btn{background:#fff;border:1px solid #d7e9e2;border-radius:99px;padding:10px 17px;color:#23595b;text-decoration:none}
+.vpm-owner-picker-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;min-height:245px;padding:34px clamp(25px,4vw,55px);border-radius:25px;background:linear-gradient(112deg,#103d45 0%,#126a6c 64%,#31a69b 100%);box-shadow:0 19px 39px #154c492b;color:#fff}
+.vpm-owner-picker-hero:before{content:"";position:absolute;right:-90px;top:-140px;width:390px;height:390px;border:1px solid #ffffff35;border-radius:50%;box-shadow:0 0 0 46px #ffffff0b,0 0 0 92px #ffffff08;pointer-events:none}
+.vpm-owner-picker-copy{position:relative;z-index:1}
+.vpm-owner-picker-copy h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,4vw,51px);line-height:1.12;margin:15px 0;color:#fff}
+.vpm-owner-picker-copy h1 em{font-weight:400;color:#f0d5a9}
+.vpm-owner-picker-copy p{color:#e0f0ec;font-size:14px;line-height:1.6;margin:0}
+.vpm-owner-picker-ornament{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:12px;color:#e7d1ac;opacity:.92;margin-right:30px}
+.vpm-owner-picker-ornament i{font-size:84px;stroke-width:1}
+.vpm-owner-picker-ornament span{text-align:center;font-size:10px;letter-spacing:.17em;line-height:1.7}
+.vpm-owner-picker-heading{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:36px 0 20px}
+.vpm-owner-picker-heading>div>span{font-size:10px;font-weight:800;letter-spacing:.18em;color:#a07d4f}
+.vpm-owner-picker-heading h2{font-family:'Fraunces',serif;color:#18494e;font-size:30px;margin:7px 0 0}
+.vpm-owner-picker-count{font-size:12px;color:#4f7476;background:#e6f4ee;border-radius:99px;padding:8px 14px}
+.vpm-owner-property-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.vpm-owner-property-card{appearance:none;display:flex;flex-direction:column;position:relative;overflow:hidden;text-align:left;cursor:pointer;padding:0;background:#fff;border:1px solid #dbe9e3;border-radius:21px;box-shadow:0 9px 23px #154b4312;transition:transform .18s,box-shadow .18s,border-color .18s}
+.vpm-owner-property-card:hover{transform:translateY(-4px);border-color:#8bc8b7;box-shadow:0 18px 33px #154b4324}
+.vpm-owner-property-card:focus-visible{outline:3px solid #0b9890;outline-offset:3px}
+.vpm-owner-property-photo{height:190px;width:100%;overflow:hidden;background:linear-gradient(130deg,#0f525a,#299e96 66%,#a4d9ca)}
+.vpm-owner-property-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.vpm-owner-property-card:hover .vpm-owner-property-photo img{transform:scale(1.035)}
+.vpm-owner-property-placeholder{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:#e8f7ed}
+.vpm-owner-property-placeholder i{font-size:56px;opacity:.9}
+.vpm-owner-property-placeholder small{font-family:'Fraunces',serif;letter-spacing:.19em;font-size:12px}
+.vpm-owner-property-info{padding:23px 25px 16px;flex:1}
+.vpm-owner-property-index{font-size:10px;letter-spacing:.18em;font-weight:800;color:#a48253}
+.vpm-owner-property-info h2{font-family:'Fraunces',serif;font-size:27px;font-weight:600;color:#173f46;margin:8px 0}
+.vpm-owner-property-info p{display:flex;align-items:center;gap:7px;color:#648084;font-size:13px;margin:0 0 15px}
+.vpm-owner-property-type{display:inline-flex;align-items:center;gap:6px;background:#eaf6f1;color:#267a76;padding:7px 11px;border-radius:99px;font-size:11px}
+.vpm-owner-property-enter{display:flex;align-items:center;justify-content:space-between;margin:0 25px 22px;padding-top:16px;border-top:1px solid #e8efeb;color:#0b7777;font-size:13px;font-weight:700}
+.vpm-owner-property-enter i{display:grid;place-items:center;background:#e1f4ee;width:34px;height:34px;border-radius:50%;font-size:17px}
+@media(max-width:700px){.vpm-owner-property-grid{grid-template-columns:1fr}.vpm-owner-picker-hero{min-height:225px;padding:28px 22px}.vpm-owner-picker-ornament{display:none}.vpm-owner-picker-heading{margin-top:27px}.vpm-owner-property-photo{height:175px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4072,19 +4110,31 @@ function renderProprietariView(){
     if(mieiImmobili.length===1){
       state.ownerPropId = mieiImmobili[0].id;
     } else {
-      const cards = mieiImmobili.map(p=>`
-        <div class="portal-pick-card" data-owner-pick="${p.id}">
-          <div><div style="font-family:'Fraunces',serif;font-weight:600;">${p.nome}</div><div style="font-size:12px;color:var(--ink-soft);">${p.indirizzo||'—'}</div></div>
-          <span style="color:var(--ink-soft);">→</span>
-        </div>`).join('');
-      return `<div class="portal-shell">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <h1 class="page-title" style="margin-bottom:0;">I tuoi immobili</h1>
-          <button class="link-btn" data-owner-logout>Esci</button>
-        </div>
-        <p class="page-sub">Seleziona l'immobile che vuoi consultare.</p>
-        <div class="portal-picker">${cards}</div>
+      const cards = mieiImmobili.map((p,index)=>{
+        const cover=(p.foto||[]).find(f=>f&&typeof f==='object'&&f.id===p.fotoCopertina&&f.url)
+          ||(p.foto||[]).find(f=>f&&typeof f==='object'&&f.categoria==='pubblicita'&&f.url);
+        const coverUrl=cover?.url||'';
+        return `<button type="button" class="vpm-owner-property-card" data-owner-pick="${vpmOwnerEscape(p.id)}">
+          <div class="vpm-owner-property-photo ${coverUrl?'has-photo':''}">${coverUrl?'<img src="'+vpmOwnerEscape(coverUrl)+'" alt="Foto di '+vpmOwnerEscape(p.nome)+'">':'<span class="vpm-owner-property-placeholder"><i class="ti ti-home-heart"></i><small>VIVEREPM</small></span>'}</div>
+          <div class="vpm-owner-property-info">
+            <span class="vpm-owner-property-index">IMMOBILE ${String(index+1).padStart(2,'0')}</span>
+            <h2>${vpmOwnerEscape(p.nome||'Il tuo immobile')}</h2>
+            <p><i class="ti ti-map-pin"></i> ${vpmOwnerEscape(p.indirizzo||'Indirizzo non indicato')}</p>
+            <span class="vpm-owner-property-type"><i class="ti ti-key"></i> ${vpmOwnerEscape(p.tipo||'Immobile')}</span>
+          </div>
+          <span class="vpm-owner-property-enter">Entra <i class="ti ti-arrow-up-right"></i></span>
+        </button>`;
+      }).join('');
+      return `<div class="portal-shell vpm-owner-picker" style="max-width:1160px;">
+        <div class="vpm-owner-picker-top"><span class="vpm-owner-signature">VIVERE<span>PM</span></span><button class="link-btn" data-owner-logout>Esci <i class="ti ti-logout"></i></button></div>
+        <section class="vpm-owner-picker-hero">
+          <div class="vpm-owner-picker-copy"><span class="vpm-owner-property-eyebrow">LA TUA AREA RISERVATA · VIVEREPM</span><h1>Ogni immobile,<br><em>tutto sotto controllo.</em></h1><p>Benvenuto${clienteLoggato.nome?', '+vpmOwnerEscape(clienteLoggato.nome.split(' ')[0]):''}. Seleziona la proprietà che desideri consultare.</p></div>
+          <div class="vpm-owner-picker-ornament"><i class="ti ti-building-estate"></i><span>IL TUO PATRIMONIO<br>LA NOSTRA CURA</span></div>
+        </section>
+        <div class="vpm-owner-picker-heading"><div><span>IL TUO PORTFOLIO</span><h2>I tuoi immobili</h2></div><span class="vpm-owner-picker-count">${mieiImmobili.length} ${mieiImmobili.length===1?'proprietà':'proprietà'}</span></div>
+        <div class="vpm-owner-property-grid">${cards}</div>
       </div>`;
+
     }
   }
 

@@ -1273,6 +1273,22 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:850px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{aspect-ratio:auto;min-height:340px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:80%}.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits{max-width:100%}}
 @media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:390px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{background-size:auto 100%;background-position:50% center}.vpm-owner-picker-hero-editorial:after{background:linear-gradient(90deg,#064c47f9,#064c47f0 54%,#064c47aa)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:100%}.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits{padding-top:22px}}
 
+
+/* FIX banner approvato: mostra il PNG originale senza filtri sull'immagine.
+   Si copre soltanto il nome fisso per renderlo dinamico. */
+.vpm-owner-picker .vpm-owner-picker-hero-editorial{position:relative;aspect-ratio:1931/488;min-height:0!important;background:#064c47;isolation:isolate}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{position:absolute;inset:0;z-index:-1;background-image:url("./viverepm-banner-approvato.png");background-position:center;background-size:100% 100%;background-repeat:no-repeat}
+.vpm-owner-picker-hero-editorial:after{display:none!important}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{position:static;padding:0;max-width:none;flex:1}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>.vpm-owner-property-eyebrow,
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>p,
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits{display:none!important}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>h1{position:absolute;left:3.5%;top:21%;width:41%;height:40%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:0;margin:0!important;padding:0 1% 0 0;background:linear-gradient(90deg,#064c47 0%,#064c47 84%,#064c4700 100%);font-size:clamp(24px,3.45vw,69px);line-height:1.08;overflow:hidden;z-index:2}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>h1 em{font-size:inherit;color:#f0d2a2;overflow-wrap:anywhere}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{position:absolute;right:0;top:0;bottom:0;width:23%;box-sizing:border-box;flex:none;z-index:3;background:#fffffffa;box-shadow:-15px 0 26px #ffffff9c}
+@media(max-width:850px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:0!important;aspect-ratio:1931/488}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>h1{font-size:clamp(16px,3.45vw,32px)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{display:flex}}
+@media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:240px!important;aspect-ratio:auto}.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{background-size:auto 100%;background-position:40% center}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy>h1{left:4%;top:23%;width:70%;height:37%;font-size:clamp(24px,6vw,38px);background:linear-gradient(90deg,#064c47 0%,#064c47 77%,#064c4700 100%)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{display:none}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>

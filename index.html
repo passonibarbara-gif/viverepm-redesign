@@ -1047,8 +1047,18 @@ h1.page-title{font-family:'IBM Plex Sans',sans-serif;font-size:30px;letter-spaci
 .vpm-modal-expense .vpm-expense-note i{color:#3583bb;font-size:19px}
 .vpm-modal-operatore .modal-actions .btn-primary,.vpm-modal-controllo .modal-actions .btn-primary,.vpm-modal-expense .modal-actions .btn-primary{background:linear-gradient(105deg,#075d68,#008f8a)!important}
 @media(max-width:650px){.vpm-modal-operatore .vpm-modal-tagline,.vpm-modal-controllo .vpm-modal-tagline,.vpm-modal-expense .vpm-modal-tagline{display:none}.vpm-modal-operatore .vpm-op-contact-grid,.vpm-modal-expense .vpm-expense-grid,.vpm-modal-controllo .vpm-control-check-grid,.vpm-modal-controllo .vpm-control-notes-fields{grid-template-columns:1fr}.vpm-modal-operatore .vpm-op-module-grid{grid-template-columns:1fr 1fr}}
+
+/* Stable top bar on non-dashboard pages: search no longer overlays sidebar or headings */
+@media(min-width:861px){
+ .topnav.vpm-topnav-workspace{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:nowrap!important;gap:0!important;position:relative!important;z-index:9!important;width:100%!important;height:60px!important;min-height:60px!important;margin:0!important;padding:0 24px!important;background:#fff!important;box-shadow:0 1px 0 #e2edf1!important;pointer-events:auto!important}
+ .topnav.vpm-topnav-workspace .topnav-brand{display:none!important}
+ .topnav.vpm-topnav-workspace .topnav-tabs{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:nowrap!important;gap:7px!important;width:auto!important;max-width:100%!important;height:60px!important;min-height:0!important;margin:0!important;padding:0!important;background:transparent!important}
+ .topnav.vpm-topnav-workspace + .app{min-height:calc(100vh - 60px)!important}
+ .topnav.vpm-topnav-workspace + .app .sidebar{margin-top:0!important;min-height:calc(100vh - 60px)!important}
+ .topnav.vpm-topnav-workspace + .app main{margin-top:0!important;padding-top:22px!important;min-width:0!important}
+}
 </style>
-<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-25">
+<link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-26">
 </head>
 <body>
 <div id="root"></div>
@@ -4390,7 +4400,7 @@ function renderTopNav(){
     }
   }
   const isOspiti = state.view==='ospiti';
-  return `<div class="topnav">
+  return `<div class="topnav ${state.view==='gestore' && state.vistaGestore==='overview' && !state.selectedId && !state.selectedClienteId ? 'vpm-topnav-dashboard' : 'vpm-topnav-workspace'}">
     <div class="topnav-brand"><label class="vpm-global-search"><i class="ti ti-search"></i><input id="vpm-global-search" type="search" placeholder="Cerca immobili, prenotazioni, ospiti..." aria-label="Cerca immobili"></label></div>
     <div class="topnav-tabs">
       ${!isOspiti ? `

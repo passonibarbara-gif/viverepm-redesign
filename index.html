@@ -1256,6 +1256,23 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:850px){.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{flex-basis:23%}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:77%}.vpm-owner-picker-benefits{gap:10px;margin-top:23px}.vpm-owner-picker-benefits b{font-size:11px}.vpm-owner-picker-benefits small{font-size:9px}}
 @media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:350px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{inset:0 0 0 12%}.vpm-owner-picker-hero-editorial:after{background:linear-gradient(90deg,#0e4948f7 0%,#0e4948ed 52%,#0e494887 100%)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:100%;padding:27px 22px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{display:none}.vpm-owner-picker-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.vpm-owner-picker-benefits b{white-space:normal}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy h1{font-size:clamp(27px,7vw,39px)}}
 
+
+/* Banner proprietari: immagine approvata caricata nel repository (radice).
+   La porzione sinistra è velata per sostituire il nome fisso nell'immagine
+   con il nome dinamico dell'utente autenticato. */
+.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:0;aspect-ratio:1931/488;background:#064c47;overflow:hidden}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{inset:0;z-index:-2;background-image:url("./viverepm-banner-approvato.png");background-position:center;background-size:100% 100%;background-repeat:no-repeat}
+.vpm-owner-picker-hero-editorial:after{z-index:-1;background:linear-gradient(90deg,#064c47 0%,#064c47 32%,#064c47fa 38%,#064c47e8 43%,#064c47aa 49%,#064c4740 56%,transparent 65%)}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{padding:clamp(20px,2.3vw,45px) clamp(24px,3.9vw,75px);justify-content:space-between;max-width:79%}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy h1{font-size:clamp(27px,3.4vw,60px);line-height:1.06;margin:clamp(8px,1vw,18px) 0 8px;max-width:780px}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy p{font-size:clamp(12px,1.15vw,22px)}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits{margin-top:auto;padding-top:clamp(13px,2vw,35px);gap:clamp(8px,1.35vw,26px)}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits b{font-size:clamp(10px,.9vw,17px)}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits small{font-size:clamp(9px,.7vw,14px)}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{flex:0 0 22%;background:linear-gradient(90deg,#ffffffeb,#fff 24%);box-shadow:-18px 0 40px #ffffff40}
+@media(max-width:850px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{aspect-ratio:auto;min-height:340px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:80%}.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits{max-width:100%}}
+@media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:390px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{background-size:auto 100%;background-position:50% center}.vpm-owner-picker-hero-editorial:after{background:linear-gradient(90deg,#064c47f9,#064c47f0 54%,#064c47aa)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:100%}.vpm-owner-picker-hero-editorial .vpm-owner-picker-benefits{padding-top:22px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>

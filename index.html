@@ -1304,6 +1304,25 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-owner-banner-brand small{font-size:clamp(7px,.85vw,15px);line-height:1.7;letter-spacing:.13em;color:#a38358}
 @media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-final{min-height:0!important;aspect-ratio:auto!important;flex-direction:initial!important}.vpm-owner-banner-name{font-size:clamp(11px,3.5vw,22px)}.vpm-owner-banner-brand{display:flex!important;padding:5px;gap:3px}.vpm-owner-banner-brand strong{letter-spacing:.03em}.vpm-owner-banner-brand>i{font-size:clamp(14px,3vw,24px)}.vpm-owner-banner-brand small{font-size:6px;letter-spacing:0}.vpm-owner-banner-rule{width:25px}}
 
+
+/* Panoramica del singolo immobile: foto reale + identità ViverePM */
+.vpm-owner-estate-feature{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.85fr);overflow:hidden;border-radius:22px;border:1px solid #d8e9e4;background:#164f4b;box-shadow:0 15px 38px #174c4520;margin:16px 0 20px;min-height:290px}
+.vpm-owner-estate-photo{min-height:290px;background:#e6f1ed;overflow:hidden}
+.vpm-owner-estate-photo img{display:block;width:100%;height:100%;min-height:290px;max-height:410px;object-fit:cover;object-position:center}
+.vpm-owner-estate-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;min-height:290px;background:linear-gradient(135deg,#e1f4ef,#c6e4df);color:#286f68;font-family:'Fraunces',Georgia,serif;font-size:20px}
+.vpm-owner-estate-placeholder i{font-size:48px}
+.vpm-owner-estate-caption{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(22px,3vw,42px);color:#fff;min-width:0}
+.vpm-owner-estate-caption>span{font-size:10px;font-weight:700;letter-spacing:.19em;color:#ebd0a0}
+.vpm-owner-estate-caption h2{font-family:'Fraunces',Georgia,serif;font-size:clamp(27px,3vw,45px);line-height:1.12;margin:18px 0 9px;overflow-wrap:anywhere}
+.vpm-owner-estate-caption p{font-size:13px;color:#e2f0ec;line-height:1.6;margin:0}
+.vpm-owner-estate-tag{display:inline-flex;align-items:center;gap:7px;border:1px solid #c3dfd15e;border-radius:99px;padding:7px 12px;margin:20px 0 14px;color:#f0d7aa;font-size:11px}
+.vpm-owner-estate-caption small{font-size:12px;color:#e9f1ec;line-height:1.5}
+.vpm-owner-shell .vpm-owner-tile-grid-primary{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:0;margin-bottom:10px}
+.vpm-owner-shell .vpm-owner-tile-grid-secondary{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:0}
+.vpm-owner-shell .vpm-owner-tile-grid-primary .vpm-owner-tile{min-height:142px}
+@media(max-width:850px){.vpm-owner-estate-feature{grid-template-columns:minmax(0,1.2fr) minmax(220px,.8fr)}.vpm-owner-shell .vpm-owner-tile-grid-primary,.vpm-owner-shell .vpm-owner-tile-grid-secondary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.vpm-owner-estate-feature{grid-template-columns:1fr}.vpm-owner-estate-photo,.vpm-owner-estate-photo img{min-height:190px;max-height:260px}.vpm-owner-estate-caption{padding:23px}.vpm-owner-estate-caption h2{margin:11px 0 7px}.vpm-owner-estate-tag{margin:13px 0}.vpm-owner-shell .vpm-owner-tile-grid-primary,.vpm-owner-shell .vpm-owner-tile-grid-secondary{gap:9px}.vpm-owner-shell .vpm-owner-tile{min-height:125px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4262,11 +4281,25 @@ function renderProprietariView(){
     ` : '';
     ownerTabContent = `
       ${alertBannerProprietario}
-      <div class="vpm-owner-tile-grid">
+      <section class="vpm-owner-estate-feature" aria-label="La tua proprietà">
+        <div class="vpm-owner-estate-photo">
+          ${fotoPubbliche(p).length ? `<img src="${vpmOwnerEscape(fotoPubbliche(p)[0])}" alt="Fotografia di ${vpmOwnerEscape(p.nome)}" loading="eager">` : `<div class="vpm-owner-estate-placeholder"><i class="ti ti-home-heart"></i><span>La tua proprietà, la nostra cura</span></div>`}
+        </div>
+        <div class="vpm-owner-estate-caption">
+          <span>IL TUO IMMOBILE · VIVEREPM</span>
+          <h2>${vpmOwnerEscape(p.nome)}</h2>
+          <p><i class="ti ti-map-pin"></i> ${vpmOwnerEscape(p.indirizzo||'Indirizzo non indicato')} · ${vpmOwnerEscape(p.tipo||'Immobile')}</p>
+          <div class="vpm-owner-estate-tag"><i class="ti ti-rosette-discount-check"></i> Gestito da ViverePM</div>
+          <small>Il tuo immobile. La nostra gestione. Tutto sotto controllo.</small>
+        </div>
+      </section>
+      <div class="vpm-owner-tile-grid vpm-owner-tile-grid-primary">
         ${vpmOwnerNavCard('prenotazioni','ti-calendar-event','Prenotazioni','Calendario e soggiorni','teal',(p.prenotazioni||[]).filter(b=>b.stato==='richiesta').length)}
         ${vpmOwnerNavCard('spese','ti-wallet','Rendiconti','Entrate, spese e pagamenti','orange',alertProprietario.speseInAttesa)}
         ${vpmOwnerNavCard('interventi','ti-tools','Interventi','Lavori e autorizzazioni','purple',alertProprietario.preventiviInAttesa)}
         ${vpmOwnerNavCard('messaggi','ti-messages','Messaggi','Scrivi al tuo gestore','blue',(p.messaggi||[]).filter(m=>m.autore==='gestore'&&!m.letto).length)}
+      </div>
+      <div class="vpm-owner-tile-grid vpm-owner-tile-grid-secondary">
         ${vpmOwnerNavCard('documenti','ti-files','Documenti','Consulta e carica file','blue',0)}
         ${vpmOwnerNavCard('disponibilita','ti-calendar-off','Uso personale','Blocca le tue date','orange',0)}
         ${vpmOwnerNavCard('profilo','ti-user-circle','I miei dati','Aggiorna il profilo','purple',0)}

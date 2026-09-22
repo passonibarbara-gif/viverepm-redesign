@@ -1830,6 +1830,14 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-manage-detail-photo>img,.vpm-manage-booking-photo>img{position:relative;z-index:1}
 .vpm-manage-detail-placeholder,.vpm-manage-booking-placeholder{min-height:100%;box-sizing:border-box}
 
+
+/* Property-photo fallback: no generic photography in property cards or booking details */
+.vpm-manage-booking-photo,.vpm-manage-detail-photo{background:#e6f3f0!important}
+.vpm-manage-booking-placeholder,.vpm-manage-detail-placeholder{background:#e6f3f0!important;background-image:none!important;color:#297c7c!important;min-height:100%;height:100%;box-sizing:border-box;text-align:center;padding:18px}
+.vpm-manage-booking-placeholder:before,.vpm-manage-detail-placeholder:before{display:none!important;content:none!important}
+.vpm-manage-booking-placeholder i,.vpm-manage-detail-placeholder i{font-size:40px!important;color:#2d8987!important;text-shadow:none!important}
+.vpm-manage-booking-placeholder span,.vpm-manage-detail-placeholder span{font:500 12px/1.5 'IBM Plex Sans',sans-serif!important;color:#417a7a!important;text-shadow:none!important;max-width:180px;letter-spacing:0!important}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4983,7 +4991,7 @@ function renderGestisciPrenotazione(){
       const foto = getCoverPhotoPubblicaUrl(r.p);
       const stato = {richiesta:'In attesa di conferma', confermata:'Confermata', rifiutata:'Rifiutata'}[r.b.stato] || r.b.stato || 'Da verificare';
       return `<button type="button" class="vpm-manage-booking-card" data-guest-manage-pick="${r.p.id}::${r.b.id}">
-        <div class="vpm-manage-booking-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(r.p.nome)}">` : `<div class="vpm-manage-booking-placeholder" role="img" aria-label="Immagine mediterranea d'atmosfera, non fotografia dell'immobile"><span>VIVEREpm</span><small>IMMAGINE D’ATMOSFERA</small></div>`}</div>
+        <div class="vpm-manage-booking-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(r.p.nome)}">` : `<div class="vpm-manage-booking-placeholder" role="img" aria-label="Fotografia dell'immobile non disponibile"><i class="ti ti-home-heart"></i><span>Foto non disponibile</span></div>`}</div>
         <div class="vpm-manage-booking-copy"><span class="vpm-manage-inner-kicker">IL TUO SOGGIORNO</span><h2>${vpmOwnerEscape(r.p.nome)}</h2><p><i class="ti ti-calendar-event"></i> ${fmtDate(r.b.checkin)} → ${fmtDate(r.b.checkout)}</p><span class="vpm-manage-status">${vpmOwnerEscape(stato)}</span></div>
         <span class="vpm-manage-booking-arrow"><i class="ti ti-arrow-up-right"></i></span>
       </button>`;
@@ -5007,7 +5015,7 @@ function renderGestisciPrenotazione(){
     <main class="vpm-manage-inner-main">
       <button class="vpm-manage-back" ${risultati.length>1 ? 'data-guest-manage-deselect' : 'data-guest-manage-reset'}><i class="ti ti-arrow-left"></i> ${risultati.length>1 ? 'Le tue prenotazioni' : 'Cerca un altro numero'}</button>
       <section class="vpm-manage-detail-card">
-        <div class="vpm-manage-detail-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-manage-detail-placeholder" role="img" aria-label="Panorama mediterraneo d'atmosfera, non fotografia dell'immobile"><strong>VIVEREpm</strong><span>IMMAGINE D’ATMOSFERA · IL TUO SOGGIORNO, LA NOSTRA CURA</span></div>`}</div>
+        <div class="vpm-manage-detail-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-manage-detail-placeholder" role="img" aria-label="Fotografia dell'immobile non disponibile"><i class="ti ti-home-heart"></i><span>Fotografia dell'immobile non disponibile</span></div>`}</div>
         <div class="vpm-manage-detail-info">
           <span class="vpm-manage-inner-kicker">RIEPILOGO PRENOTAZIONE</span>
           <h2>${vpmOwnerEscape(p.nome)}</h2>

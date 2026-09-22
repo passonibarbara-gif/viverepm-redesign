@@ -1233,6 +1233,29 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:700px){.vpm-owner-picker-visual{flex:0 0 34%;min-width:100px}.vpm-owner-picker-visual img{height:150px}.vpm-owner-picker-hero{gap:14px}.vpm-owner-picker-instruction{margin-top:16px}}
 @media(max-width:480px){.vpm-owner-picker-hero{flex-direction:column;align-items:stretch}.vpm-owner-picker-visual{width:100%;max-width:none;min-width:0}.vpm-owner-picker-visual img{height:150px}}
 .vpm-owner-mandate-readonly{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;color:#447b77;background:#e7f4ee;border:1px solid #cde7dd;padding:9px 13px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+
+/* Proprietari: hero editoriale con foto mediterranea a tutta altezza */
+.vpm-owner-picker .vpm-owner-picker-hero-editorial{isolation:isolate;display:flex;align-items:stretch;min-height:315px;padding:0;background:#0e4948;box-shadow:0 18px 40px #174a4023}
+.vpm-owner-picker .vpm-owner-picker-hero-editorial:before{display:none}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{position:absolute;z-index:-2;inset:0 0 0 34%;background:url("assets/viverepm-terrace.svg") center 54%/cover no-repeat}
+.vpm-owner-picker-hero-editorial:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,#0e4948 0%,#0e4948 26%,#0e4948f0 39%,#0e49489c 53%,#0e494800 72%);pointer-events:none}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{display:flex;flex-direction:column;justify-content:center;flex:1 1 auto;padding:35px clamp(25px,4vw,54px);max-width:74%}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy h1{font-size:clamp(31px,3.4vw,53px);margin:15px 0 12px;line-height:1.09}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy h1 em{color:#ead0a1;font-style:italic}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy p{color:#f1f6f3;font-size:clamp(13px,1.2vw,17px)}
+.vpm-owner-picker-benefits{display:flex;gap:clamp(11px,2vw,27px);margin-top:35px;flex-wrap:wrap}
+.vpm-owner-picker-benefits>span{display:flex;align-items:center;gap:8px;color:#ecd3a7}
+.vpm-owner-picker-benefits>span>i{display:grid;place-items:center;flex:0 0 33px;height:33px;background:#ffffff24;border-radius:10px;font-size:19px}
+.vpm-owner-picker-benefits b{font-weight:500;font-size:12px;white-space:nowrap}
+.vpm-owner-picker-benefits small{display:block;color:#e5ece9;font-size:10px;margin-top:3px;font-weight:400}
+.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{flex:0 0 21%;background:linear-gradient(100deg,#ffffffdd,#fffffffa 38%);color:#1c6865;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:13px;padding:20px 15px;text-align:center;z-index:1}
+.vpm-owner-picker-brand>i{font-size:58px;color:#1d6a66}
+.vpm-owner-picker-brand strong{font-size:clamp(15px,1.6vw,23px);letter-spacing:.14em;font-weight:500}
+.vpm-owner-picker-brand>span{width:54px;height:1px;background:#c9a46e}
+.vpm-owner-picker-brand small{color:#a58659;font-size:9px;letter-spacing:.18em;line-height:1.9}
+@media(max-width:850px){.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{flex-basis:23%}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:77%}.vpm-owner-picker-benefits{gap:10px;margin-top:23px}.vpm-owner-picker-benefits b{font-size:11px}.vpm-owner-picker-benefits small{font-size:9px}}
+@media(max-width:620px){.vpm-owner-picker .vpm-owner-picker-hero-editorial{min-height:350px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-photo{inset:0 0 0 12%}.vpm-owner-picker-hero-editorial:after{background:linear-gradient(90deg,#0e4948f7 0%,#0e4948ed 52%,#0e494887 100%)}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy{max-width:100%;padding:27px 22px}.vpm-owner-picker-hero-editorial .vpm-owner-picker-brand{display:none}.vpm-owner-picker-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.vpm-owner-picker-benefits b{white-space:normal}.vpm-owner-picker-hero-editorial .vpm-owner-picker-copy h1{font-size:clamp(27px,7vw,39px)}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4138,11 +4161,27 @@ function renderProprietariView(){
       }).join('');
       return `<div class="portal-shell vpm-owner-picker" style="max-width:1160px;">
         <div class="vpm-owner-picker-top"><span class="vpm-owner-signature">VIVERE<span>PM</span></span><button class="link-btn" data-owner-logout>Esci <i class="ti ti-logout"></i></button></div>
-        <section class="vpm-owner-picker-hero">
-          <div class="vpm-owner-picker-copy"><span class="vpm-owner-property-eyebrow">IL TUO SPAZIO · VIVEREPM</span><h1>Benvenuto, ${vpmOwnerEscape(clienteLoggato.nome||'proprietario')}</h1><p>Il tuo immobile. La nostra gestione. Tutto sotto controllo.</p><span class="vpm-owner-picker-instruction">Seleziona qui sotto la proprietà che desideri consultare.</span></div>
-          <div class="vpm-owner-picker-visual"><img src="assets/viverepm-terrace.svg" alt="Terrazza mediterranea ViverePM"></div>
+        <section class="vpm-owner-picker-hero vpm-owner-picker-hero-editorial">
+          <div class="vpm-owner-picker-photo" aria-hidden="true"></div>
+          <div class="vpm-owner-picker-copy">
+            <span class="vpm-owner-property-eyebrow">LA TUA AREA RISERVATA · VIVEREPM</span>
+            <h1>Benvenuta,<br><em>${vpmOwnerEscape(clienteLoggato.nome||'proprietaria')}</em></h1>
+            <p>Il tuo immobile. La nostra gestione. Tutto sotto controllo.</p>
+            <div class="vpm-owner-picker-benefits" aria-label="Servizi a tua disposizione">
+              <span><i class="ti ti-calendar-event"></i><b>Prenotazioni<small>sempre aggiornate</small></b></span>
+              <span><i class="ti ti-chart-bar"></i><b>Rendiconti<small>in tempo reale</small></b></span>
+              <span><i class="ti ti-settings"></i><b>Interventi<small>sotto controllo</small></b></span>
+              <span><i class="ti ti-file-text"></i><b>Documenti<small>sempre disponibili</small></b></span>
+            </div>
+          </div>
+          <div class="vpm-owner-picker-brand">
+            <i class="ti ti-home-heart"></i>
+            <strong>VIVEREPM</strong>
+            <span></span>
+            <small>IL TUO PATRIMONIO<br>LA NOSTRA CURA</small>
+          </div>
         </section>
-        <div class="vpm-owner-picker-heading"><div><span>IL TUO PORTFOLIO</span><h2>I tuoi immobili</h2></div><span class="vpm-owner-picker-count">${mieiImmobili.length} ${mieiImmobili.length===1?'proprietà':'proprietà'}</span></div>
+        <div class="vpm-owner-picker-heading"><div><span>I TUOI IMMOBILI</span><h2>Le tue proprietà</h2></div><span class="vpm-owner-picker-count">${mieiImmobili.length} ${mieiImmobili.length===1?'proprietà':'proprietà'}</span></div>
         <div class="vpm-owner-property-grid">${cards}</div>
       </div>`;
 

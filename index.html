@@ -1614,6 +1614,18 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 .vpm-stay-results-footer{background:#fffdf9}
 @media(max-width:700px){.vpm-booking-header{gap:10px;min-height:65px;padding:10px 16px}.vpm-booking-header-brand strong{font-size:22px}.vpm-booking-header-brand strong span{font-size:16px}.vpm-booking-brand-icon{font-size:24px}.vpm-booking-header-brand small{font-size:8px}.vpm-booking-header-nav{display:none}.vpm-booking-header-cta{padding:11px 16px}.vpm-stay-next-title:after{font-size:55px;top:-15px;opacity:.35}}
 
+
+/* Foglie champagne effettive, presenti nelle schermate pubbliche */
+.vpm-booking-leaves{position:absolute;right:0;top:0;width:155px;height:230px;z-index:0;opacity:.78;pointer-events:none;overflow:visible}
+.vpm-stay-search .vpm-booking-leaves{width:124px;height:190px;right:-8px;top:-15px;opacity:.72}
+.vpm-stay-results-head .vpm-booking-leaves{right:3%;top:0;width:175px;height:255px;opacity:.55}
+.vpm-stay-next-title .vpm-booking-leaves{right:0;top:-54px;width:155px;height:230px;opacity:.55}
+.vpm-stay-next-title:after,.vpm-stay-next-page:after{content:none!important;display:none!important}
+.vpm-stay-next-title h1,.vpm-stay-next-title p,.vpm-stay-next-title>span,.vpm-stay-results-head h1,.vpm-stay-results-head>p,.vpm-stay-results-head .vpm-stay-results-eyebrow,.vpm-stay-results-criteria{position:relative;z-index:1}
+.vpm-booking-header{justify-content:space-between}
+.vpm-booking-header-nav{margin-left:auto}
+@media(max-width:650px){.vpm-booking-leaves{width:100px;height:155px;opacity:.36}.vpm-stay-next-title .vpm-booking-leaves{right:-15px;top:-40px;width:100px;height:160px}.vpm-stay-results-head .vpm-booking-leaves{width:110px;height:170px;right:0;opacity:.35}.vpm-stay-search .vpm-booking-leaves{width:90px;height:140px;opacity:.45}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4797,7 +4809,7 @@ function renderOspitiView(){
         </div>
         <div class="vpm-stay-search-wrap">
           <div class="vpm-stay-search">
-            <div class="vpm-stay-leaf" aria-hidden="true"><i class="ti ti-leaf"></i></div>
+            ${renderVpmBookingLeaves()}
             <h2>Trova il tuo soggiorno</h2>
             <p class="vpm-stay-subtitle">Scegli le date, controlla la disponibilità in tempo reale e prenota in pochi minuti.</p>
             ${renderWizardSteps(1)}
@@ -4862,7 +4874,7 @@ function renderOspitiView(){
     }).join('') || `<div class="vpm-stay-no-results"><i class="ti ti-calendar-search"></i><h2>Non abbiamo trovato una casa per queste date</h2><p>Prova a modificare il periodo o il numero di ospiti e animali: potresti trovare altre disponibilità.</p><button class="btn-primary" data-guest-wizard-back="1">Modifica la ricerca <i class="ti ti-arrow-right"></i></button></div>`;
 
     return `<div class="vpm-stay-results">
-      <header class="vpm-stay-results-head">
+      <header class="vpm-stay-results-head">${renderVpmBookingLeaves()}
         <div class="vpm-stay-results-brand">VIVERE<span>pm</span> <small>· IL TUO SOGGIORNO, LA NOSTRA CURA</small></div>
         <button class="vpm-stay-results-back" data-guest-wizard-back="1"><i class="ti ti-arrow-left"></i> Modifica la ricerca</button>
         <span class="vpm-stay-results-eyebrow">LE TUE PROSSIME VACANZE</span>
@@ -4895,7 +4907,7 @@ function renderOspitiView(){
     const fotoDettaglioFinali = fotoDettaglio.length ? (copertinaDettaglio ? [copertinaDettaglio,...fotoDettaglio.filter(f=>f!==copertinaDettaglio)] : fotoDettaglio) : [];
     return `<div class="vpm-stay-next-page">
       <div class="vpm-stay-next-top"><button class="vpm-stay-results-back" data-guest-wizard-back="2"><i class="ti ti-arrow-left"></i> Torna agli immobili</button>${renderWizardSteps(3)}</div>
-      <div class="vpm-stay-next-title"><span>IL TUO SOGGIORNO · VIVEREPM</span><h1>Scopri la tua prossima casa.</h1></div>
+      <div class="vpm-stay-next-title">${renderVpmBookingLeaves()}<span>IL TUO SOGGIORNO · VIVEREPM</span><h1>Scopri la tua prossima casa.</h1></div>
       <section class="vpm-stay-detail-layout">
         <div class="vpm-stay-detail-media">
           ${fotoDettaglioFinali.length ? renderPhotoGallery(fotoDettaglioFinali) : `<div class="vpm-stay-detail-empty"><i class="ti ti-home-heart"></i><span>Fotografie dell'immobile non ancora caricate</span></div>`}
@@ -4928,7 +4940,7 @@ function renderOspitiView(){
     const bd = state.guestBookingData;
     return `<div class="vpm-stay-next-page vpm-stay-data-page">
       <div class="vpm-stay-next-top"><button class="vpm-stay-results-back" data-guest-wizard-back="3"><i class="ti ti-arrow-left"></i> Torna ai dettagli</button>${renderWizardSteps(4)}</div>
-      <div class="vpm-stay-next-title"><span>CI SIAMO QUASI · VIVEREPM</span><h1>I tuoi dati</h1><p>Servono per completare la richiesta di prenotazione.</p></div>
+      <div class="vpm-stay-next-title">${renderVpmBookingLeaves()}<span>CI SIAMO QUASI · VIVEREPM</span><h1>I tuoi dati</h1><p>Servono per completare la richiesta di prenotazione.</p></div>
       <form id="guestDataForm" class="vpm-stay-data-form">
         <div class="field-row">
           <div class="field"><label>Nome <em>*</em></label><input name="nomeProprio" required autocomplete="given-name" value="${vpmOwnerEscape(bd.nomeProprio||'')}" placeholder="Inserisci il tuo nome"></div>
@@ -4952,7 +4964,7 @@ function renderOspitiView(){
   const fotoConferma = getCoverPhotoPubblicaUrl(p);
   return `<div class="vpm-stay-next-page vpm-stay-confirm-page">
     <div class="vpm-stay-next-top"><button class="vpm-stay-results-back" data-guest-wizard-back="4"><i class="ti ti-arrow-left"></i> Modifica i tuoi dati</button>${renderWizardSteps(5)}</div>
-    <div class="vpm-stay-next-title"><span>UN ULTIMO PASSO · VIVEREPM</span><h1>${haLinkPagamento ? 'Pagamento e conferma' : 'Conferma la tua richiesta'}</h1><p>Verifica i dati prima di inviare la prenotazione.</p></div>
+    <div class="vpm-stay-next-title">${renderVpmBookingLeaves()}<span>UN ULTIMO PASSO · VIVEREPM</span><h1>${haLinkPagamento ? 'Pagamento e conferma' : 'Conferma la tua richiesta'}</h1><p>Verifica i dati prima di inviare la prenotazione.</p></div>
     <section class="vpm-stay-confirm-card">
       ${fotoConferma ? `<img class="vpm-stay-confirm-photo" src="${vpmOwnerEscape(fotoConferma)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-stay-confirm-photo vpm-stay-confirm-placeholder"><i class="ti ti-home-heart"></i><span>Foto dell'immobile in arrivo</span></div>`}
       <div class="vpm-stay-confirm-info">
@@ -5060,6 +5072,14 @@ function renderTopNav(){
 }
 
 /* Navigazione pubblica uniforme per tutti i passaggi di prenotazione */
+function renderVpmBookingLeaves(){
+  return `<svg class="vpm-booking-leaves" viewBox="0 0 185 275" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M125 268 C120 210 110 159 72 103 C55 78 47 49 48 12" stroke="#B99B69" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M112 208 C145 185 161 156 163 123 M96 164 C60 151 34 126 21 95 M77 114 C113 94 130 66 132 35 M120 235 C89 220 67 212 41 213" stroke="#B99B69" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M48 12 C23 40 28 68 54 87 C65 55 61 34 48 12Z M72 103 C31 96 14 72 13 48 C46 56 66 73 72 103Z M132 35 C104 50 101 76 110 96 C133 78 141 55 132 35Z M163 123 C135 136 132 161 139 183 C160 166 171 143 163 123Z M21 95 C16 126 35 146 65 149 C60 122 46 104 21 95Z M41 213 C59 189 83 191 101 210 C79 224 59 226 41 213Z M124 231 C145 208 169 212 179 234 C157 244 139 243 124 231Z" fill="#CDB991" fill-opacity=".65" stroke="#B99B69" stroke-width=".8"/>
+  </svg>`;
+}
+
 function renderVpmGuestHeader(){
   return `<header class="vpm-booking-header">
     <div class="vpm-booking-header-brand"><span class="vpm-booking-brand-icon"><i class="ti ti-home-heart"></i></span><span><strong>VIVERE<span>pm</span></strong><small>Property Management &amp; Holiday Homes</small></span></div>
@@ -5067,7 +5087,6 @@ function renderVpmGuestHeader(){
       <button type="button" data-guest-wizard-back="1">Trova un soggiorno</button>
       <button type="button" data-guest-goto-manage>Gestisci prenotazione</button>
     </nav>
-    <button type="button" class="vpm-booking-header-cta" data-guest-wizard-back="1">Prenota <i class="ti ti-arrow-right"></i></button>
   </header>`;
 }
 

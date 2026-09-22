@@ -4909,10 +4909,15 @@ function renderGestisciPrenotazione(){
     </div>`;
   }
 
+  // Confronta i recapiti ignorando spazi, trattini, parentesi e prefisso 00/+.
+  // Il modulo usa un placeholder con spazi, mentre i dati salvati possono non averne.
+  const normalizzaTelefonoPrenotazione = valore => String(valore||'').trim().replace(/[^\d+]/g,'').replace(/^00/,'+').replace(/\+/g,'');
+  const telefonoCercato = normalizzaTelefonoPrenotazione(state.guestManagePhone);
   const risultati = [];
   state.properties.forEach(p=>{
     (p.prenotazioni||[]).forEach(b=>{
-      if(b.telefono === state.guestManagePhone) risultati.push({p, b});
+      const telefonoSalvato = normalizzaTelefonoPrenotazione(b.telefono);
+      if(telefonoCercato && telefonoSalvato === telefonoCercato) risultati.push({p, b});
     });
   });
 

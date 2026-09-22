@@ -1803,6 +1803,26 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 @media(max-width:800px){.vpm-manage-detail-card{grid-template-columns:1fr;gap:0}.vpm-manage-detail-photo{min-height:240px;height:280px}.vpm-manage-detail-info{padding:26px 12px}.vpm-manage-booking-card{grid-template-columns:105px minmax(0,1fr) 17px;gap:12px}.vpm-manage-booking-photo{height:130px}}
 @media(max-width:450px){.vpm-manage-booking-card{grid-template-columns:85px minmax(0,1fr);gap:10px}.vpm-manage-booking-photo{height:115px}.vpm-manage-booking-arrow{display:none}.vpm-manage-booking-copy h2{font-size:21px}.vpm-manage-inner-main{padding-bottom:40px}}
 
+
+/* Guest management inner pages: photographic continuity with ViverePM's Mediterranean look */
+.vpm-manage-inner-hero{position:relative;isolation:isolate;overflow:hidden;min-height:230px;box-sizing:border-box;padding-right:min(40%,520px)}
+.vpm-manage-inner-hero-photo{position:absolute;z-index:-2;top:0;bottom:0;right:0;width:43%;background:#c9e2df url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1800') center 55%/cover no-repeat}
+.vpm-manage-inner-hero-photo:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#fcfdfb 0%,#fcfdfb4d 25%,transparent 65%)}
+.vpm-manage-inner-hero-photo span{position:absolute;right:24px;bottom:19px;color:#fff;font-size:9px;letter-spacing:.16em;text-shadow:0 1px 8px #16444d;font-weight:700}
+.vpm-manage-inner-hero h1,.vpm-manage-inner-hero p,.vpm-manage-inner-hero>.vpm-manage-inner-kicker{position:relative;z-index:1}
+.vpm-manage-empty-card{max-width:920px;display:grid;grid-template-columns:minmax(230px,.85fr) minmax(0,1.15fr);padding:14px;gap:20px;text-align:left;align-items:stretch}
+.vpm-manage-empty-photo{min-height:330px;border-radius:16px;position:relative;background:#d6e9e5 url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1200') center/cover no-repeat}
+.vpm-manage-empty-photo span{position:absolute;bottom:19px;left:20px;color:#fff;text-shadow:0 1px 8px #153f45;font-size:10px;font-weight:700;letter-spacing:.15em}
+.vpm-manage-empty-content{align-self:center;padding:25px 24px 25px 6px}
+.vpm-manage-empty-icon{margin:0 0 20px}
+.vpm-manage-booking-placeholder{position:relative;color:#fff;background:#d2e7e4 url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=800') center/cover no-repeat}
+.vpm-manage-booking-placeholder:before,.vpm-manage-detail-placeholder:before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#153f4585,#153f4508 70%);pointer-events:none}
+.vpm-manage-booking-placeholder span,.vpm-manage-booking-placeholder small,.vpm-manage-detail-placeholder strong,.vpm-manage-detail-placeholder span{position:relative;z-index:1;text-shadow:0 1px 9px #143b44}
+.vpm-manage-booking-placeholder small{font-size:8px;letter-spacing:.09em;font-weight:700}
+.vpm-manage-detail-placeholder{position:relative;color:#fff;background:#d2e7e4 url('https://images.pexels.com/photos/37030525/pexels-photo-37030525.jpeg?auto=compress&cs=tinysrgb&w=1400') center/cover no-repeat}
+.vpm-manage-detail-placeholder span{font-size:9px;text-align:center;max-width:90%;line-height:1.5}
+@media(max-width:800px){.vpm-manage-inner-hero{padding-right:clamp(22px,5vw,45px)}.vpm-manage-inner-hero-photo{width:100%;opacity:.18}.vpm-manage-inner-hero-photo:before{background:linear-gradient(90deg,#fcfdfbee,#fcfdfb99)}.vpm-manage-inner-hero-photo span{display:none}.vpm-manage-empty-card{grid-template-columns:1fr}.vpm-manage-empty-photo{min-height:190px}.vpm-manage-empty-content{padding:15px 16px 23px}.vpm-manage-empty-icon{margin:0 0 18px}}
+
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
 </head>
@@ -4923,7 +4943,7 @@ function renderGestisciPrenotazione(){
 
   if(!risultati.length){
     return `<div class="vpm-manage-inner">
-      <header class="vpm-manage-inner-hero">
+      <header class="vpm-manage-inner-hero"><div class="vpm-manage-inner-hero-photo" role="img" aria-label="Panorama mediterraneo, fotografia d'atmosfera ViverePM"><span>VIVEREpm · HOLIDAY HOMES</span></div>
         <span class="vpm-manage-inner-kicker">VIVEREpm · LA TUA PRENOTAZIONE</span>
         <h1>Ritroviamo il tuo soggiorno.</h1>
         <p>Non abbiamo trovato prenotazioni associate a questo numero. Verifica di aver inserito lo stesso recapito utilizzato nella richiesta.</p>
@@ -4931,11 +4951,14 @@ function renderGestisciPrenotazione(){
       <main class="vpm-manage-inner-main">
         <button class="vpm-manage-back" data-guest-manage-reset><i class="ti ti-arrow-left"></i> Cerca un altro numero</button>
         <section class="vpm-manage-empty-card">
+          <div class="vpm-manage-empty-photo" role="img" aria-label="Terrazza mediterranea, immagine d'atmosfera ViverePM"><span>SIAMO QUI PER TE</span></div>
+          <div class="vpm-manage-empty-content">
           <div class="vpm-manage-empty-icon"><i class="ti ti-search"></i></div>
           <span class="vpm-manage-inner-kicker">NESSUN RISULTATO</span>
           <h2>Nessuna prenotazione trovata</h2>
           <p>Puoi riprovare con un altro numero di telefono. Se hai bisogno di assistenza, il team ViverePM è a tua disposizione.</p>
           <button class="btn-primary vpm-manage-empty-action" data-guest-manage-reset>Riprova la ricerca <i class="ti ti-arrow-right"></i></button>
+          </div>
         </section>
       </main>
       <footer class="vpm-stay-results-footer">IL TUO SOGGIORNO. LA NOSTRA CURA.</footer>
@@ -4953,13 +4976,13 @@ function renderGestisciPrenotazione(){
       const foto = getCoverPhotoPubblicaUrl(r.p);
       const stato = {richiesta:'In attesa di conferma', confermata:'Confermata', rifiutata:'Rifiutata'}[r.b.stato] || r.b.stato || 'Da verificare';
       return `<button type="button" class="vpm-manage-booking-card" data-guest-manage-pick="${r.p.id}::${r.b.id}">
-        <div class="vpm-manage-booking-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(r.p.nome)}">` : `<div class="vpm-manage-booking-placeholder"><i class="ti ti-home-heart"></i><span>VIVEREpm</span></div>`}</div>
+        <div class="vpm-manage-booking-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(r.p.nome)}">` : `<div class="vpm-manage-booking-placeholder" role="img" aria-label="Immagine mediterranea d'atmosfera, non fotografia dell'immobile"><span>VIVEREpm</span><small>IMMAGINE D’ATMOSFERA</small></div>`}</div>
         <div class="vpm-manage-booking-copy"><span class="vpm-manage-inner-kicker">IL TUO SOGGIORNO</span><h2>${vpmOwnerEscape(r.p.nome)}</h2><p><i class="ti ti-calendar-event"></i> ${fmtDate(r.b.checkin)} → ${fmtDate(r.b.checkout)}</p><span class="vpm-manage-status">${vpmOwnerEscape(stato)}</span></div>
         <span class="vpm-manage-booking-arrow"><i class="ti ti-arrow-up-right"></i></span>
       </button>`;
     }).join('');
     return `<div class="vpm-manage-inner">
-      <header class="vpm-manage-inner-hero"><span class="vpm-manage-inner-kicker">VIVEREpm · I TUOI SOGGIORNI</span><h1>Le tue prenotazioni.</h1><p>Seleziona il soggiorno che desideri consultare. Tutti i dettagli sono a portata di mano.</p></header>
+      <header class="vpm-manage-inner-hero"><div class="vpm-manage-inner-hero-photo" role="img" aria-label="Panorama mediterraneo, fotografia d'atmosfera ViverePM"><span>VIVEREpm · HOLIDAY HOMES</span></div><span class="vpm-manage-inner-kicker">VIVEREpm · I TUOI SOGGIORNI</span><h1>Le tue prenotazioni.</h1><p>Seleziona il soggiorno che desideri consultare. Tutti i dettagli sono a portata di mano.</p></header>
       <main class="vpm-manage-inner-main"><button class="vpm-manage-back" data-guest-manage-reset><i class="ti ti-arrow-left"></i> Cerca un altro numero</button><div class="vpm-manage-booking-list">${cards}</div></main>
       <footer class="vpm-stay-results-footer">IL TUO SOGGIORNO. LA NOSTRA CURA.</footer>
     </div>`;
@@ -4973,11 +4996,11 @@ function renderGestisciPrenotazione(){
   const statoClass = b.stato==='confermata' ? 'is-confirmed' : b.stato==='rifiutata' ? 'is-rejected' : 'is-pending';
   const foto = getCoverPhotoPubblicaUrl(p);
   return `<div class="vpm-manage-inner">
-    <header class="vpm-manage-inner-hero"><span class="vpm-manage-inner-kicker">VIVEREpm · IL TUO SOGGIORNO</span><h1>La tua vacanza, sotto controllo.</h1><p>Consulta la tua prenotazione e scrivi direttamente al team ViverePM.</p></header>
+    <header class="vpm-manage-inner-hero"><div class="vpm-manage-inner-hero-photo" role="img" aria-label="Panorama mediterraneo, fotografia d'atmosfera ViverePM"><span>VIVEREpm · HOLIDAY HOMES</span></div><span class="vpm-manage-inner-kicker">VIVEREpm · IL TUO SOGGIORNO</span><h1>La tua vacanza, sotto controllo.</h1><p>Consulta la tua prenotazione e scrivi direttamente al team ViverePM.</p></header>
     <main class="vpm-manage-inner-main">
       <button class="vpm-manage-back" ${risultati.length>1 ? 'data-guest-manage-deselect' : 'data-guest-manage-reset'}><i class="ti ti-arrow-left"></i> ${risultati.length>1 ? 'Le tue prenotazioni' : 'Cerca un altro numero'}</button>
       <section class="vpm-manage-detail-card">
-        <div class="vpm-manage-detail-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-manage-detail-placeholder"><i class="ti ti-home-heart"></i><strong>VIVEREpm</strong><span>IL TUO SOGGIORNO, LA NOSTRA CURA</span></div>`}</div>
+        <div class="vpm-manage-detail-photo">${foto ? `<img src="${vpmOwnerEscape(foto)}" alt="Foto di ${vpmOwnerEscape(p.nome)}">` : `<div class="vpm-manage-detail-placeholder" role="img" aria-label="Panorama mediterraneo d'atmosfera, non fotografia dell'immobile"><strong>VIVEREpm</strong><span>IMMAGINE D’ATMOSFERA · IL TUO SOGGIORNO, LA NOSTRA CURA</span></div>`}</div>
         <div class="vpm-manage-detail-info">
           <span class="vpm-manage-inner-kicker">RIEPILOGO PRENOTAZIONE</span>
           <h2>${vpmOwnerEscape(p.nome)}</h2>

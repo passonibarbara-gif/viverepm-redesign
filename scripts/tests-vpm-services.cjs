@@ -1,0 +1,24 @@
+const vm=require('vm'),fs=require('fs'),assert=require('assert');
+const handlers={},alerts=[];
+const property={id:'p',clienteId:'c',nome:'<script>x</script>',prenotazioni:[{id:'b',nome:'Mario',checkin:'2026-11-02',checkout:'2026-11-03'}]};
+const notifications=[];
+const context={addNotifica:(...args)=>notifications.push(args),window:{},document:{addEventListener:(event,fn)=>handlers[event]=fn},state:{view:'proprietari',ownerAuth:{email:'owner@test.it'},properties:[property]},getClienteByEmail:()=>({id:'c'}),getCliente:()=>({nome:'<img onerror=x>',email:'owner@test.it'}),saveData:async()=>{},render:()=>{},uid:()=>Math.random().toString(16).slice(2),alert:x=>alerts.push(x),confirm:()=>true,FormData:class{constructor(f){this.values=f.values}get(k){return this.values[k]}entries(){return Object.entries(this.values)[Symbol.iterator]()}},readFileAsDataUrl:async()=>''};
+vm.createContext(context);vm.runInContext(fs.readFileSync('vpm-services.js','utf8'),context);
+const render=context.window.vpmServicesRender;
+for(const tab of ['contratti','portali','ospiti','shop'])assert(render(property,'proprietario',tab).length>50);
+assert(!render(property,'proprietario','portali').includes('<img onerror=x>'));
+property.vpmServices={documents:[],portal:{},guests:{},orders:[],catalog:[{id:'prod',name:'Corredo',description:'Lenzuola',price:45.5,active:true}]};
+async function submit(action,values){let button={};const form={dataset:{serviceForm:action,serviceProperty:'p'},values,querySelector:()=>button,elements:{}};await handlers.submit({target:{closest:()=>form},preventDefault(){},stopImmediatePropagation(){}});}
+(async()=>{
+ await submit('order-add',{product:'prod',quantity:'2',room:'Camera 1',notes:'',confirm:'on'});
+ assert.equal(property.vpmServices.orders[0].total,91);assert.equal(notifications.length,1);assert.equal(context.window.vpmServicesPending(property,'gestore').count,1);
+ await submit('order-add',{product:'prod',quantity:'-1'});assert.equal(property.vpmServices.orders.length,1);
+ await submit('catalog-add',{name:'Not allowed',description:'test',price:'1'});assert.equal(property.vpmServices.catalog.length,1);
+ await submit('guest-add',{booking:'missing',birthDate:'2000-01-01'});assert.equal(Object.keys(property.vpmServices.guests).length,0);
+ await submit('guest-add',{booking:'b',firstName:'Mario',lastName:'Rossi',birthDate:'2000-01-01',birthPlace:'Roma',nationality:'Italiana',documentType:'Passaporto',documentNumber:'AB12'});
+ assert.equal(property.vpmServices.guests.b.people.length,1);
+ context.state.view='gestore';context.state.gestoreUnlocked=true;context.haModulo=()=>false;await submit('catalog-add',{name:'Blocked',description:'x',price:'1'});assert.equal(property.vpmServices.catalog.length,1);context.haModulo=()=>true;
+ await submit('portal-status',{status:'Attivazione in corso'});assert.notEqual(property.vpmServices.portal.status,'Attivazione in corso');
+ await submit('guest-status',{booking:'b',status:'Trasmessi manualmente',reference:'R1'});assert.notEqual(property.vpmServices.guests.b.status,'Trasmessi manualmente');
+ console.log('PASS: renders, escapes, order totals/quantity, role guards, booking link and delegation gates');
+})().catch(e=>{console.error(e);process.exit(1)});

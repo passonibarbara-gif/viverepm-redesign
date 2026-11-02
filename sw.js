@@ -1,6 +1,7 @@
-const CACHE_NAME = 'viverepm-redesign-v20260922-52';
+const CACHE_NAME = 'viverepm-redesign-v20261102-owner-services';
 const CORE_ASSETS = [
   './index.html',
+  './vpm-workflows.css',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'

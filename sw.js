@@ -1,4 +1,4 @@
-const CACHE_NAME = 'viverepm-redesign-v20261102-property-modal';
+const CACHE_NAME = 'viverepm-redesign-v20261102-manager-navigation';
 const CORE_ASSETS = [
   './index.html',
   './vpm-workflows.css',

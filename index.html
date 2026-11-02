@@ -6862,10 +6862,17 @@ function attachHandlers(){
   const propForm = document.getElementById('propForm');
   if(propForm){
     const clienteSelectEl = document.getElementById('clienteSelect');
-    if(clienteSelectEl) clienteSelectEl.addEventListener('change', ()=>{
+    function aggiornaCampiNuovoProprietario(){
       const box = document.getElementById('newClienteFields');
-      if(box) box.style.display = clienteSelectEl.value ? 'none' : 'block';
-    });
+      if(!box||!clienteSelectEl)return;
+      const esistente=Boolean(clienteSelectEl.value);
+      box.style.display=esistente?'none':'block';
+      box.querySelectorAll('input,select,textarea').forEach(input=>{input.disabled=esistente;});
+    }
+    if(clienteSelectEl){
+      clienteSelectEl.addEventListener('change', aggiornaCampiNuovoProprietario);
+      aggiornaCampiNuovoProprietario();
+    }
     const dispCheckEl = document.getElementById('dispCheck');
     if(dispCheckEl) dispCheckEl.addEventListener('change', ()=>{
       const box = document.getElementById('caratteristicheField');

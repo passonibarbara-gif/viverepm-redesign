@@ -1,4 +1,4 @@
-const CACHE_NAME = 'viverepm-redesign-v20261102-dashboard-actions';
+const CACHE_NAME = 'viverepm-redesign-v20261102-property-save';
 const CORE_ASSETS = [
   './index.html',
   './vpm-workflows.css',

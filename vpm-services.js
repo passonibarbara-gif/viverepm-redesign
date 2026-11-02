@@ -17,7 +17,7 @@
   }
   const field = (label,name,value='',type='text',required=false) => `<label class="field">${esc(label)}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'step="any" min="0"':''} ${required?'required':''}></label>`;
   const select = (label,name,values,value='') => `<label class="field">${esc(label)}<select name="${name}">${values.map(v=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(v)}</option>`).join('')}</select></label>`;
-  const form = (p,action,body) => `<form class="vpm-owner-form vpm-service-form" data-service-form="${action}" data-service-property="${esc(p.id)}">${body}</form>`;
+  const form = (p,action,body) => `<form ${action==='portal-save'?'novalidate':''} class="vpm-owner-form vpm-service-form" data-service-form="${action}" data-service-property="${esc(p.id)}">${body}</form>`;
   const button = label => `<button class="btn-primary" type="submit">${label}</button>`;
   const empty = text => `<div class="vpm-owner-empty">${text}</div>`;
   const note = text => `<p class="vpm-owner-hint">${text}</p>`;
@@ -40,12 +40,19 @@
     return `<h2>Contratto e deleghe</h2>${note('Contratti e deleghe sono condivisi con il gestore. Il caricamento di un file non equivale a una firma digitale. Il gestore verifica la copia sottoscritta.')} ${manager ? form(p,'document-add', field('Titolo','title','','text',true)+select('Tipo','kind',['Contratto di servizio','Delega portali','Delega comunicazioni ospiti','Altro'])+field('Scadenza facoltativa','expiry','','date')+upload('Documento da sottoscrivere')+button('Carica documento')) : ''}
     ${ds.length ? ds.map(d=>`<section class="vpm-owner-form"><h3>${esc(d.title)}</h3><p>${esc(d.kind)} · Versione ${Number(d.version)||1} · ${esc(d.status)}${d.expiry?' · Scadenza '+esc(d.expiry):''}</p>${fileLink(d.file,'Scarica originale')} ${fileLink(d.signedFile,'Scarica copia sottoscritta')}${!manager ? form(p,'document-sign',`<input type="hidden" name="id" value="${esc(d.id)}">${upload('Carica copia sottoscritta')}${button('Invia copia al gestore')}`) : form(p,'document-status',`<input type="hidden" name="id" value="${esc(d.id)}">${select('Verifica documento','status',['Da firmare','Copia ricevuta, da verificare','Firmato verificato','Da correggere'],d.status)}${button('Aggiorna verifica')}`)}</section>`).join('') : empty('Il gestore non ha ancora caricato contratti o deleghe.')}`;
   }
+  const portalFeedback = {};
+  const portalNotice = p => portalFeedback[p.id] ? `<div class="vpm-service-feedback" role="status">${esc(portalFeedback[p.id])}</div>` : '';
+  function portalError(form,message){
+    let box=form.querySelector('[data-service-error]');
+    if(!box){box=document.createElement('div');box.dataset.serviceError='';box.className='vpm-service-error';box.setAttribute('role','alert');form.appendChild(box);}
+    box.textContent=message;
+  }
   const portalStatuses = ['Bozza','Dati inviati al gestore','Dati mancanti','Attivazione in corso','Azione richiesta al proprietario','Annuncio attivo'];
   function portals(p,manager) {
     const v = data(p).portal || {}, c = getCliente(p) || {};
     const delegation = (data(p).documents || []).some(d=>d.kind==='Delega portali' && signed(d));
     const body = select('Intestatario account','entity',['Persona fisica','Società'],v.entity)+field('Nome e cognome o ragione sociale','legalName',v.legalName||c.nome,'text',true)+field('Codice fiscale / identificativo fiscale','taxId',v.taxId,'text',true)+field('Partita IVA, se applicabile','vat',v.vat)+field('Nome rappresentante, se società','representative',v.representative)+field('Indirizzo intestatario','address',v.address,'text',true)+field('Email del proprietario per gli account','email',v.email||c.email,'email',true)+field('Telefono','phone',v.phone||c.telefono,'tel',true)+field('Beneficiario degli incassi','beneficiary',v.beneficiary,'text',true)+field('IBAN beneficiario','iban',v.iban,'text',true)+select('Portali da attivare','platforms',['Booking e Airbnb','Booking','Airbnb'],v.platforms)+select('Account Booking esistente','bookingExisting',['No','Sì'],v.bookingExisting)+field('Email account Booking / link annuncio','bookingAccount',v.bookingAccount)+select('Account Airbnb esistente','airbnbExisting',['No','Sì'],v.airbnbExisting)+field('Email account Airbnb / link annuncio','airbnbAccount',v.airbnbAccount)+field('Nome struttura','accommodation',v.accommodation||p.nome,'text',true)+field('Indirizzo struttura','propertyAddress',v.propertyAddress||p.indirizzo,'text',true)+field('CIN / CIR / altri codici struttura','registration',v.registration)+field('Camere e posti letto','capacity',v.capacity)+field('Note per il gestore','notes',v.notes);
-    return `<h2>Booking e Airbnb</h2><p>Stato pratica: <strong>${esc(v.status||'Bozza')}</strong></p>${note('Il proprietario decide i prezzi e riceve gli incassi sul proprio conto. Il gestore prepara l’inserimento dei dati. Le verifiche e le conferme richieste dai portali devono essere completate dal titolare. Non inserire password.')}<p>Delega portali: ${delegation?'copia sottoscritta verificata':'da completare in Contratto e deleghe'}</p>${manager ? `<div class="vpm-owner-form">${['legalName','taxId','vat','representative','address','email','phone','beneficiary','iban','platforms','bookingExisting','bookingAccount','airbnbExisting','airbnbAccount','accommodation','propertyAddress','registration','capacity','notes'].map(k=>`<p><strong>${esc({legalName:'Intestatario',taxId:'Codice fiscale',vat:'Partita IVA',representative:'Rappresentante',address:'Indirizzo',email:'Email',phone:'Telefono',beneficiary:'Beneficiario',iban:'IBAN',platforms:'Portali',bookingExisting:'Booking esistente',bookingAccount:'Account Booking',airbnbExisting:'Airbnb esistente',airbnbAccount:'Account Airbnb',accommodation:'Struttura',propertyAddress:'Indirizzo struttura',registration:'Codici struttura',capacity:'Capienza',notes:'Note'}[k])}:</strong> ${esc(v[k]||'Da compilare')}</p>`).join('')}${fileLink(v.identityFile,'Documento identità')} ${fileLink(v.companyFile,'Documento società')}</div>`+form(p,'portal-status',select('Stato pratica','status',portalStatuses,v.status||'Bozza')+field('Attività richiesta al proprietario','managerNotes',v.managerNotes)+button('Aggiorna pratica')) : form(p,'portal-save',`<div class="field-row">${body}</div>${upload('Documento identità intestatario o rappresentante, se richiesto','identityFile',false)}${fileLink(v.identityFile,'Documento identità caricato')}${upload('Visura o documento società, se applicabile','companyFile',false)}${fileLink(v.companyFile,'Documento società caricato')}<label><input type="checkbox" name="send" value="yes"> Invia i dati al gestore per l’attivazione</label>${note('Se non selezioni l’invio, i dati restano in bozza. La delega deve essere caricata e verificata prima dell’avvio della pratica.')}${button('Salva dati')}`)}${v.managerNotes?`<div class="vpm-owner-empty">Richiesta del gestore: ${esc(v.managerNotes)}</div>`:''}${!delegation&&!manager?form(p,'delegation-request','<p>Richiedi al gestore il documento di delega per Booking e Airbnb.</p>'+button('Richiedi invio delega')):''}${v.delegationRequested?note('Richiesta di invio delega registrata il '+esc(v.delegationRequested.slice(0,10))):''}`;
+    return `<h2>Booking e Airbnb</h2><p>Stato pratica: <strong>${esc(v.status||'Bozza')}</strong></p>${note('Il proprietario decide i prezzi e riceve gli incassi sul proprio conto. Il gestore prepara l’inserimento dei dati. Le verifiche e le conferme richieste dai portali devono essere completate dal titolare. Non inserire password.')}<p>Delega portali: ${delegation?'copia sottoscritta verificata':'da completare in Contratto e deleghe'}</p>${manager ? `<div class="vpm-owner-form">${['legalName','taxId','vat','representative','address','email','phone','beneficiary','iban','platforms','bookingExisting','bookingAccount','airbnbExisting','airbnbAccount','accommodation','propertyAddress','registration','capacity','notes'].map(k=>`<p><strong>${esc({legalName:'Intestatario',taxId:'Codice fiscale',vat:'Partita IVA',representative:'Rappresentante',address:'Indirizzo',email:'Email',phone:'Telefono',beneficiary:'Beneficiario',iban:'IBAN',platforms:'Portali',bookingExisting:'Booking esistente',bookingAccount:'Account Booking',airbnbExisting:'Airbnb esistente',airbnbAccount:'Account Airbnb',accommodation:'Struttura',propertyAddress:'Indirizzo struttura',registration:'Codici struttura',capacity:'Capienza',notes:'Note'}[k])}:</strong> ${esc(v[k]||'Da compilare')}</p>`).join('')}${fileLink(v.identityFile,'Documento identità')} ${fileLink(v.companyFile,'Documento società')}</div>`+form(p,'portal-status',select('Stato pratica','status',portalStatuses,v.status||'Bozza')+field('Attività richiesta al proprietario','managerNotes',v.managerNotes)+button('Aggiorna pratica')) : form(p,'portal-save',`<div class="field-row">${body}</div>${upload('Documento identità intestatario o rappresentante, se richiesto','identityFile',false)}${fileLink(v.identityFile,'Documento identità caricato')}${upload('Visura o documento società, se applicabile','companyFile',false)}${fileLink(v.companyFile,'Documento società caricato')}${note('Puoi salvare una bozza anche se mancano dei dati. Quando hai completato i campi richiesti, invia la richiesta al gestore. La delega verrà completata prima dell’attivazione degli annunci.')}<div class="vpm-service-buttons"><button class="btn-secondary" type="submit" name="portalSubmit" value="draft">Salva bozza</button><button class="btn-primary" type="submit" name="portalSubmit" value="send">Invia richiesta al gestore</button></div>${portalNotice(p)}`)}${v.managerNotes?`<div class="vpm-owner-empty">Richiesta del gestore: ${esc(v.managerNotes)}</div>`:''}${!delegation&&!manager?form(p,'delegation-request','<p>Richiedi al gestore il documento di delega per Booking e Airbnb.</p>'+(v.delegationRequested?'<div class="vpm-service-feedback" role="status">Richiesta inviata al gestore il '+esc(fmtDate(v.delegationRequested))+'. Troverai il documento nella sezione Contratto e deleghe appena il gestore lo avrà caricato.</div><button class="btn-secondary" type="button" disabled>Richiesta già inviata</button>':button('Richiedi invio delega'))):''}`;
   }
   function guests(p,manager) {
     const gs=data(p).guests||{}, bookings=p.prenotazioni||[];
@@ -87,19 +94,29 @@
     const action=f.dataset.serviceForm,manager=['document-add','document-status','portal-status','guest-status','catalog-add','order-status'].includes(action);
     const actionModule=action.startsWith('guest-')?'prenotazioni':/^(catalog|order)-/.test(action)?'spese':null;
     if(!can(p,manager,actionModule)){alert('Accesso non consentito.');return;}
-    const fd=new FormData(f),get=k=>String(fd.get(k)||'').trim(),s=ensure(p);
-    const b=f.querySelector('[type=submit]');if(b)b.disabled=true;
+    if(f.dataset.busy==='true')return;
+    const fd=new FormData(f),get=k=>String(fd.get(k)||'').trim();
+    const sending=action==='portal-save'&&(event.submitter?.value==='send'||get('send')==='yes');
+    if(sending&&typeof f.checkValidity==='function'&&!f.checkValidity()){
+      portalError(f,'Completa i campi obbligatori evidenziati prima di inviare la richiesta. Per conservare i dati parziali usa Salva bozza.');
+      f.reportValidity();return;
+    }
+    const previousServices=p.vpmServices?JSON.parse(JSON.stringify(p.vpmServices)):null;
+    const previousNotifications=JSON.parse(JSON.stringify(p.notifiche||[]));
+    const s=ensure(p),b=f.querySelector('[type=submit]');
+    const submitButtons=Array.from(f.querySelectorAll?f.querySelectorAll('[type=submit]'):b?[b]:[]);
+    f.dataset.busy='true';submitButtons.forEach(button=>button.disabled=true);
     try{
       if(action==='document-add') { const file=await fileFrom(f.elements.document,true);const same=s.documents.filter(d=>d.kind===get('kind'));s.documents.push({id:uid(),title:get('title'),kind:get('kind'),expiry:get('expiry'),version:same.length+1,status:'Da firmare',file,createdAt:new Date().toISOString()}); }
       else if(action==='document-sign'){const d=s.documents.find(d=>d.id===get('id'));if(!d)throw Error('Documento non trovato.');d.signedFile=await fileFrom(f.elements.document,true);d.status='Copia ricevuta, da verificare';d.signedUploadedAt=new Date().toISOString();}
       else if(action==='document-status'){const d=s.documents.find(d=>d.id===get('id'));if(!d)throw Error('Documento non trovato.');if(get('status')==='Firmato verificato'&&!d.signedFile)throw Error('Occorre prima la copia sottoscritta.');d.status=get('status');}
-      else if(action==='delegation-request'){s.portal.delegationRequested=new Date().toISOString();}
+      else if(action==='delegation-request'){if(s.portal.delegationRequested){portalFeedback[p.id]='La richiesta di delega è già stata inviata al gestore.';render();return;}s.portal.delegationRequested=new Date().toISOString();}
       else if(action==='portal-save'){
-        if(get('entity')==='Società'&&!get('representative'))throw Error('Indica il rappresentante della società.');
+        if(sending&&get('entity')==='Società'&&!get('representative'))throw Error('Indica il rappresentante della società.');
         const identityFile=await fileFrom(f.elements.identityFile,false),companyFile=await fileFrom(f.elements.companyFile,false);
         if(identityFile)s.portal.identityFile=identityFile;if(companyFile)s.portal.companyFile=companyFile;
-        const iban=get('iban').replace(/\s/g,'').toUpperCase();if(!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(iban))throw Error('Controlla il formato IBAN.');
-        for(const [k,v]of fd.entries())if(typeof v==='string'&&k!=='send')s.portal[k]=v.trim();s.portal.iban=iban;s.portal.status=get('send')==='yes'?'Dati inviati al gestore':'Bozza';s.portal.updatedAt=new Date().toISOString();
+        const iban=get('iban').replace(/\s/g,'').toUpperCase();if(sending&&!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(iban))throw Error('Controlla il formato IBAN.');
+        for(const [k,v]of fd.entries())if(typeof v==='string'&&k!=='send')s.portal[k]=v.trim();s.portal.iban=iban;s.portal.status=sending?'Dati inviati al gestore':s.portal.submittedAt?s.portal.status||'Dati inviati al gestore':'Bozza';s.portal.updatedAt=new Date().toISOString();if(sending)s.portal.submittedAt=new Date().toISOString();
       }
       else if(action==='portal-status'){if(['Attivazione in corso','Annuncio attivo'].includes(get('status'))&&!s.documents.some(d=>d.kind==='Delega portali'&&signed(d)))throw Error('Verifica prima la copia sottoscritta della delega portali.');s.portal.status=get('status');s.portal.managerNotes=get('managerNotes');}
       else if(action==='guest-add') {if(!(p.prenotazioni||[]).some(b=>b.id===get('booking')))throw Error('Prenotazione non trovata.');if(get('birthDate')>new Date().toISOString().slice(0,10))throw Error('La data di nascita non può essere futura.');const g=s.guests[get('booking')]||(s.guests[get('booking')]={people:[],status:'Da preparare'});g.people.push({id:uid(),firstName:get('firstName'),lastName:get('lastName'),birthDate:get('birthDate'),birthPlace:get('birthPlace'),nationality:get('nationality'),documentType:get('documentType'),documentNumber:get('documentNumber'),issuedBy:get('issuedBy')});g.status='Da preparare';}
@@ -116,11 +133,18 @@
           'portal-status':['Aggiornamento pratica Booking e Airbnb: '+get('status'),'proprietario','portali'],
           'order-status':['Aggiornamento ordine servizi: '+get('status'),'proprietario','shop']
         };
-        if(action==='portal-save'&&get('send')==='yes') notifications[action]=['Dati Booking e Airbnb inviati dal proprietario.','gestore','portali'];
+        if(action==='portal-save'&&sending) notifications[action]=['Dati Booking e Airbnb inviati dal proprietario.','gestore','portali'];
         const n=notifications[action]; if(n) addNotifica(p,n[0],n[1],n[2]);
       }
-      await saveData();if(state.error)throw Error(state.error);render();
-    }catch(error){alert(error.message||'Operazione non riuscita.');if(b)b.disabled=false;}
+      const saved=await saveData();if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+      if(action==='portal-save')portalFeedback[p.id]=sending?'Richiesta inviata al gestore. Puoi seguire lo stato della pratica in questa sezione.':'Bozza salvata. Puoi completare i dati e inviare la richiesta in un secondo momento.';
+      render();
+    }catch(error){
+      if(previousServices)p.vpmServices=previousServices;else delete p.vpmServices;
+      p.notifiche=previousNotifications;f.dataset.busy='false';submitButtons.forEach(button=>button.disabled=false);
+      if(['portal-save','delegation-request'].includes(action))portalError(f,error.message||'Operazione non riuscita. Riprova.');
+      else alert(error.message||'Operazione non riuscita.');
+    }
   },true);
   document.addEventListener('click',async event=>{
     const b=event.target.closest('[data-service-action]');if(!b)return;

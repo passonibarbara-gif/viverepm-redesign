@@ -4295,7 +4295,7 @@ function renderOverview(){
     <div class="vpm-workspace">
       <div class="vpm-maincol">
         <section class="vpm-panel">
-          <h2 class="vpm-panel-title">Oggi <small>${today.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small>${haModulo('prenotazioni')?'<button data-nav-prenotazioni><i class="ti ti-plus"></i> Nuova prenotazione</button>':''}</h2>
+          <h2 class="vpm-panel-title">Oggi <small>${today.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</small></h2>
           <div class="vpm-timeline"><div class="vpm-time-labels"><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span></div>
           <div class="vpm-timeline-track">${todays.length?todays.map(e=>`<div class="vpm-event" data-goto-evento="${e.propId}::${e.tab}"><i class="ti ti-calendar-event"></i><div><b>${e.titolo}</b><span>${e.immobile}</span></div></div>`).join(''):'<div class="vpm-empty">Nessuna attività registrata per oggi. Le attività compaiono qui dalle prenotazioni e dalle scadenze reali.</div>'}</div></div>
         </section>

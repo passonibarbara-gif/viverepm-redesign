@@ -3,9 +3,10 @@
   'use strict';
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money = n => Number(n).toLocaleString('it-IT', {style:'currency',currency:'EUR'});
-  const data = p => p.vpmServices || {documents:[],portal:{},guests:{},orders:[],catalog:[]};
+  const defaultCatalog = () => [{id:'corredo-casa',name:'Corredo casa',description:'Lenzuola e asciugamani. Quantità e misure da concordare per il tuo immobile.',kind:'Acquisto corredo',price:null,active:true}];
+  const data = p => p.vpmServices || {documents:[],portal:{},guests:{},orders:[],catalog:defaultCatalog()};
   function ensure(p) {
-    p.vpmServices = Object.assign({documents:[],portal:{},guests:{},orders:[],catalog:[]}, p.vpmServices || {});
+    p.vpmServices = Object.assign({documents:[],portal:{},guests:{},orders:[],catalog:defaultCatalog()}, p.vpmServices || {});
     return p.vpmServices;
   }
   function can(p, manager, module) {

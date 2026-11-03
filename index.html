@@ -4580,8 +4580,6 @@ function renderDossier(p){
       </div>
       <p class="section-label">Contratto di gestione</p>
       ${renderContrattoGestione(p)}
-      <p class="section-label" style="margin-top:24px;">Locazione a lungo termine</p>
-      ${renderLocazione(p)}
       <p class="section-label" style="margin-top:24px;">Prenotazioni brevi (portale ospiti)</p>
       ${renderPrenotazioniBreviInfo(p)}
       <p class="section-label" style="margin-top:24px;">Documenti</p>
@@ -5586,19 +5584,6 @@ function renderModalRaw(){
             </div>
             <p style="font-size:11px;color:var(--ink-soft);margin:-4px 0 14px 0;">Il proprietario userà questa email per crearsi da solo un accesso (dal login dell'area proprietari, "Non hai ancora un accesso?").</p>
           </div>
-          </div></div><div class="vpm-prop-section vpm-prop-rental"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-key"></i></span><div><strong>Locazione a lungo termine</strong><small>Contratto e canone, se applicabili</small></div></div><div class="vpm-prop-fields">
-          <div class="field" style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" name="locazioneAttiva" id="locCheck" ${(p.locazione&&p.locazione.attivo)?'checked':''}>
-            <label for="locCheck" style="margin:0;text-transform:none;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:var(--ink);">Immobile locato (in affitto a lungo termine)</label>
-          </div>
-          <div id="locazioneField" class="form-subsection" style="${(p.locazione&&p.locazione.attivo)?'':'display:none;'}">
-            <div class="field-row">
-              <div class="field"><label>Data inizio contratto</label><input type="date" name="locazioneDataInizio" value="${(p.locazione&&p.locazione.dataInizio)||''}"></div>
-              <div class="field"><label>Scadenza contratto (facoltativa)</label><input type="date" name="locazioneScadenza" value="${(p.locazione&&p.locazione.scadenzaContratto)||''}"></div>
-            </div>
-            <div class="field"><label>Canone mensile (€)</label><input type="number" name="locazioneCanone" min="0" value="${(p.locazione&&p.locazione.canone)||''}" placeholder="0"></div>
-          </div>
-
           </div></div><div class="vpm-prop-section vpm-prop-booking"><div class="vpm-prop-section-title"><span class="vpm-prop-section-icon"><i class="ti ti-calendar-event"></i></span><div><strong>Prenotazioni brevi</strong><small>Annuncio e disponibilità sul portale ospiti</small></div></div><div class="vpm-prop-fields">
           <div class="field" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" name="disponibilePrenotazioni" id="dispCheck" ${p.disponibilePrenotazioni?'checked':''}>
@@ -6970,14 +6955,7 @@ function attachHandlers(){
       }
       const percentualeRaw = fd.get('percentualeProprietario');
       const propEsistente = state.modal.editing;
-      const locazioneAttiva = fd.get('locazioneAttiva')==='on';
-      const locazione = locazioneAttiva ? {
-        attivo: true,
-        dataInizio: fd.get('locazioneDataInizio')||'',
-        scadenzaContratto: fd.get('locazioneScadenza')||'',
-        canone: Number(fd.get('locazioneCanone'))||0,
-        pagamenti: (propEsistente && propEsistente.locazione && propEsistente.locazione.pagamenti) || []
-      } : (propEsistente && propEsistente.locazione ? {...propEsistente.locazione, attivo:false} : null);
+      const locazione = propEsistente?.locazione || null;
       const amenitaSelezionate = fd.getAll('amenita');
       const altreRighe = (fd.get('caratteristicheAltro')||'').split('\n').map(r=>r.trim()).filter(Boolean);
       const saved=await saveProperty({

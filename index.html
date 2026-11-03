@@ -5366,7 +5366,7 @@ function vpmIdentityArchive(c){
   return `<div class="vpm-owner-form"><h3>${vpmIdentityEscape(d.type==='passport'?'Passaporto':d.type==='licence'?'Patente':'Carta d’identità')}</h3><div class="field-row">${vpmIdentityFile(d.front,d.type==='passport'?'Pagina dati del passaporto':'Fronte')}${d.type!=='passport'?vpmIdentityFile(d.back,'Retro'):''}</div><p>Documento salvato nella scheda cliente.</p></div>`;
 }
 function vpmIdentitySlots(d){
-  return ['front',...(d.type==='passport'?[]:['back'])].map(side=>{const label=side==='back'?'Retro':d.type==='passport'?'Pagina dati del passaporto':'Fronte';return `<div class="field"><label for="identity-${side}">${label}</label><input id="identity-${side}" type="file" name="identity-${side}" data-identity-side="${side}" accept="image/jpeg,image/png,image/webp,application/pdf"><div data-identity-status="${side}" role="status" aria-live="polite">${d[side]?'File già salvato. Seleziona un file solo per sostituirlo.':'Nessun file selezionato.'}</div><progress data-identity-progress="${side}" max="100" value="0" hidden aria-label="Avanzamento lettura file" style="width:100%;height:12px;"></progress><div data-identity-preview="${side}">${vpmIdentityFile(d[side],label)}</div></div>`;}).join('');
+  return ['front',...(d.type==='passport'?[]:['back'])].map(side=>{const label=side==='back'?'Retro':d.type==='passport'?'Pagina dati del passaporto':'Fronte';return `<div class="field"><label for="identity-${side}">${label}</label><input id="identity-${side}" type="file" name="identity-${side}" data-identity-side="${side}" accept="image/jpeg,image/png,image/webp,application/pdf"><div data-identity-status="${side}" role="status" aria-live="polite">${d[side]?'File già salvato. Seleziona un file solo per sostituirlo.':'Nessun file selezionato.'}</div><progress data-identity-progress="${side}" max="100" value="0" hidden aria-label="Avanzamento lettura file" style="width:100%;height:12px;"></progress><div data-identity-preview="${side}">${vpmIdentityFile(d[side],label)}</div><button type="button" class="icon-btn danger" data-identity-remove="${side}">Rimuovi file</button></div>`;}).join('');
 }
 function vpmIdentityEditor(c){
   const d=c.identityDocument||{type:'idcard'};
@@ -5387,10 +5387,21 @@ function vpmBindIdentity(form,client){
   const type=form.querySelector('[name=identityType]');
   type.addEventListener('change',()=>{
     if(d.pending)return;
-    d.type=type.value;d.front=null;d.back=null;d.errors={};
+    d.type=type.value;d.front=null;d.back=null;d.errors={};d.removed=false;
     form.querySelector('[data-identity-slots]').innerHTML=vpmIdentitySlots(d);
     form.querySelector('[data-identity-guidance]').textContent=d.type==='passport'?'Carica una sola pagina: quella con foto e dati personali. JPG, PNG, WEBP o PDF, massimo 5 MB.':'Carica due file distinti: fronte e retro. JPG, PNG, WEBP o PDF, massimo 5 MB per file.';
     overall.textContent='Tipo modificato. I documenti precedenti restano salvati fino al salvataggio della scheda. Carica il nuovo documento completo.';
+  });
+  form.addEventListener('click',event=>{
+    const button=event.target.closest('[data-identity-remove]');if(!button)return;
+    event.preventDefault();if(d.pending||form.dataset.saving==='true')return;
+    const side=button.dataset.identityRemove;if(!['front','back'].includes(side))return;
+    d[side]=null;d.errors[side]=null;d.removed=true;
+    const input=form.querySelector('[data-identity-side="'+side+'"]');if(input)input.value='';
+    const preview=form.querySelector('[data-identity-preview="'+side+'"]');if(preview)preview.innerHTML='';
+    const progress=form.querySelector('[data-identity-progress="'+side+'"]');if(progress){progress.hidden=true;progress.value=0;}
+    const status=form.querySelector('[data-identity-status="'+side+'"]');if(status){status.textContent='File rimosso dalla selezione.';status.style.color='';}
+    overall.textContent=d.front||d.back?'File rimosso. Carica il lato corretto per completare il documento, poi salva.':'Nessun file selezionato. Premi “Salva proprietario” per confermare anche l’eventuale rimozione del documento già salvato.';
   });
   form.addEventListener('change',async event=>{
     const input=event.target;if(!input.dataset?.identitySide)return;
@@ -7070,7 +7081,7 @@ function attachHandlers(){
     clienteForm.querySelectorAll('[data-identity-side],[name=identityType]').forEach(input=>input.disabled=true);
     try{
       const identityDocument=clienteForm.vpmIdentityDraft?vpmValidateIdentity(clienteForm.vpmIdentityDraft):modalAtStart.editing?.identityDocument;
-      if(modalAtStart.editing?.identityDocument&&clienteForm.vpmIdentityDraft&&!identityDocument)throw Error('Carica il nuovo documento completo prima di sostituire quello salvato.');
+      if(modalAtStart.editing?.identityDocument&&clienteForm.vpmIdentityDraft&&!identityDocument&&!clienteForm.vpmIdentityDraft.removed)throw Error('Carica il nuovo documento completo prima di sostituire quello salvato.');
       const fd = new FormData(clienteForm);
       const existingDocumenti = (modalAtStart.editing && modalAtStart.editing.documenti) || [];
       const fileInput = clienteForm.querySelector('input[name=documenti]');
@@ -7083,12 +7094,12 @@ function attachHandlers(){
         nome: fd.get('nome'), telefono: fd.get('telefono'),
         email: fd.get('email')||'', indirizzo: fd.get('indirizzo')||'',
         documenti: existingDocumenti.concat(nuoviDocumenti),
-        ...(identityDocument?{identityDocument}:{})
+        ...(identityDocument?{identityDocument}:clienteForm.vpmIdentityDraft?.removed?{identityDocument:null}:{})
       }, editingId);
       const status=clienteForm.querySelector('[data-identity-overall]');if(status)status.textContent='Salvataggio della scheda e dei documenti in corso…';
       const saved=await saveData({renderOnError:false});
       if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
-      state.clientSaveNotice={id:cliente.id,text:identityDocument?'Cliente e documento salvati. '+(identityDocument.type==='passport'?'Pagina dati del passaporto acquisita.':'Fronte e retro acquisiti.'):'Dati del cliente salvati.'};
+      state.clientSaveNotice={id:cliente.id,text:identityDocument?'Cliente e documento salvati. '+(identityDocument.type==='passport'?'Pagina dati del passaporto acquisita.':'Fronte e retro acquisiti.'):clienteForm.vpmIdentityDraft?.removed?'Dati del cliente e rimozione del documento salvati.':'Dati del cliente salvati.'};
       if(state.modal===modalAtStart){state.selectedClienteId = cliente.id;state.selectedId = null;closeModal();}render();
     }catch(error){
       state.clienti=previousClienti;

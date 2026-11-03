@@ -25,6 +25,7 @@ assert(!ctx.vpmIdentityFile({...front,name:'<script>alert(1)</script>'},'Fronte'
  const form={dataset:{},querySelector:k=>elements[k],querySelectorAll:()=>[submit],setAttribute(){},addEventListener:(type,fn)=>handlers[type]=fn};
  let resolveRead;ctx.readFileAsDataUrl=()=>new Promise(resolve=>resolveRead=resolve);
  ctx.vpmBindIdentity(form,saved);
+ assert(ctx.vpmIdentitySlots({type:'idcard',front,back}).includes('data-identity-remove="back"'));
  const input={dataset:{identitySide:'front'},files:[{name:'nuovo.png',size:10,type:'image/png'}]};
  const task=handlers.change({target:input});assert(submit.disabled);assert(elements['[data-identity-status="front"]'].textContent.includes('Preparazione'));
  assert.throws(()=>ctx.vpmValidateIdentity(form.vpmIdentityDraft),/Attendi/);
@@ -35,5 +36,9 @@ assert(!ctx.vpmIdentityFile({...front,name:'<script>alert(1)</script>'},'Fronte'
  input.files=[{name:'bad.exe',size:10,type:'application/octet-stream'}];await handlers.change({target:input});
  assert(elements['[data-identity-status="front"]'].textContent.includes('Formato non supportato'));
  assert.throws(()=>ctx.vpmValidateIdentity(form.vpmIdentityDraft),/Correggi/);
+ handlers.click({target:{closest:()=>({dataset:{identityRemove:'front'}})},preventDefault(){}});
+ assert.equal(form.vpmIdentityDraft.front,null);assert.equal(ctx.vpmValidateIdentity(form.vpmIdentityDraft),null);
+ assert(form.vpmIdentityDraft.removed);assert.equal(saved.identityDocument.front.name,'fronte.png','removal remains staged until save');
+ assert.equal(elements['[data-identity-preview="front"]'].innerHTML,'');
  console.log('PASS: identity sides, passport single page, staged upload feedback, busy state, errors, escaped previews and preserved stored files.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

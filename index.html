@@ -4573,7 +4573,7 @@ function renderDossier(p){
           <button class="icon-btn" data-action="send-owner-credentials">Invita il proprietario</button>
         </div>
       ` : ''}
-      <p class="section-label">Caratteristiche</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;"><p class="section-label" style="margin:0;">Caratteristiche</p>${isAdmin()?'<button type="button" class="btn-primary" data-action="edit-property"><i class="ti ti-edit"></i> Modifica dati immobile</button>':'<span class="vpm-owner-hint">Per modificare i dati occorre l’accesso amministratore.</span>'}</div>
       <div class="stat-row" style="margin-bottom:24px;">
         <div class="stat-card"><div class="stat-label">Ospiti massimi</div><div class="stat-value" style="font-size:17px;">${(p.capacitaAdulti||p.capacitaBambini) ? `${p.capacitaAdulti||0} adult${p.capacitaAdulti===1?'o':'i'}${p.capacitaBambini?` + ${p.capacitaBambini} bambin${p.capacitaBambini===1?'o':'i'}`:''}` : '—'}</div></div>
         <div class="stat-card"><div class="stat-label">Animali domestici</div><div class="stat-value" style="font-size:17px;">${p.animaliAmmessi ? 'Ammessi' : 'Non ammessi'}</div></div>
@@ -6515,11 +6515,11 @@ function attachHandlers(){
     if(confirm('Rimuovere questo documento?')) removeDocumentoImmobile(state.selectedId, b.getAttribute('data-del-documento-immobile'));
   }));
 
-  const editPropBtn = document.querySelector('[data-action="edit-property"]');
-  if(editPropBtn) editPropBtn.addEventListener('click', ()=>{
+  document.querySelectorAll('[data-action="edit-property"]').forEach(button=>button.addEventListener('click', ()=>{
     const p = state.properties.find(x=>x.id===state.selectedId);
+    if(!isAdmin()||!p||!immobileConsentito(p.id))return;
     openModal('property', p);
-  });
+  }));
   const delPropBtn = document.querySelector('[data-action="delete-property"]');
   if(delPropBtn) delPropBtn.addEventListener('click', ()=>deleteProperty(state.selectedId));
 

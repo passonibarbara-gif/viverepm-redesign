@@ -7,6 +7,7 @@ function element(attrs={}){const handlers={};return {attrs,handlers,dataset:Obje
 const map=new Map(),documentListeners=[],modals=[];
 function pair(selector,attrs){const xs=[element(attrs),element(attrs)];map.set(selector,xs);return xs;}
 const clients=pair('[data-action="new-cliente"]',{'data-action':'new-cliente'});
+const edits=pair('[data-action="edit-property"]',{'data-action':'edit-property'});
 const properties=pair('[data-action="new-property"]',{'data-action':'new-property'});
 const settings=pair('[data-action="open-settings"]',{'data-action':'open-settings'});
 const bookings=pair('[data-nav-prenotazioni]',{'data-nav-prenotazioni':''});
@@ -17,9 +18,10 @@ const propertyTabs=pair('[data-vpm-open-tab]',{'data-vpm-open-tab':'p::portali'}
 const root={contains:()=>true};
 const ctx={window:{__notifOutsideBound:true},document:{querySelectorAll:q=>map.get(q)||[],querySelector:q=>(map.get(q)||[])[0]||null,getElementById:id=>id==='root'?root:null,addEventListener:(type,fn)=>documentListeners.push({type,fn})},state:{properties:[{id:'p'}],selectedId:null,selectedClienteId:null,vistaGestore:'overview',settings:{},calendarSelectedDay:'2026-11-03'},isAdmin:()=>true,haModulo:()=>true,immobileConsentito:()=>true,immobiliVisibili:()=>[{id:'p'}],vpmRememberRecent(){},calcolaAlertImmobile:()=>({}),segnaMessaggiLetti(){},segnaMessaggiBookingLetti(){},openModal:(...a)=>modals.push(a),render(){ctx.renderCount++;},renderCount:0};
 vm.createContext(ctx);vm.runInContext(source,ctx);ctx.attachHandlers();
-for(const [name,buttons]of Object.entries({clients,properties,settings,bookings,ownerTabs,dossierTabs,propertyTabs,calendarClose})){
+for(const [name,buttons]of Object.entries({clients,properties,edits,settings,bookings,ownerTabs,dossierTabs,propertyTabs,calendarClose})){
   assert(buttons.every(b=>(b.handlers.click||[]).length===1),`${name}: every repeated control must receive one click listener`);
 }
+ctx.state.selectedId='p';for(const b of edits)b.click();assert.equal(modals.filter(x=>x[0]==='property').length,2);modals.length=0;
 for(const b of clients)b.click();assert.equal(modals.filter(x=>x[0]==='cliente').length,2);
 for(const b of properties)b.click();assert.equal(modals.filter(x=>x[0]==='property').length,2);
 for(const b of settings)b.click();assert.equal(modals.filter(x=>x[0]==='settings').length,2);

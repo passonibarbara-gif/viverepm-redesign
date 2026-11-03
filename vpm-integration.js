@@ -1,5 +1,6 @@
 /* Navigation integration, read-only legacy prices and isolated review data. */
 function vpmNewTabAllowed(tab){
+  if(state.view==='proprietari'&&tab==='ospiti')return false;
   const modules={camere:'prenotazioni',tariffe:'listino',economia:'spese',contratti:'anagrafica',portali:'anagrafica',ospiti:'prenotazioni',shop:'spese'};
   return Object.hasOwn(modules,tab)&&(state.view==='proprietari'||modules[tab]==='anagrafica'||haModulo(modules[tab]));
 }

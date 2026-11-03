@@ -1849,7 +1849,7 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
-<link rel="stylesheet" href="vpm-workflows.css?v=20261103-sidebar-font">
+<link rel="stylesheet" href="vpm-workflows.css?v=20261103-owner-menu">
 </head>
 <body>
 <div id="root"></div>
@@ -4767,7 +4767,6 @@ function renderProprietariView(){
     {id:'economia', label:'Incassi e compensi', icon:'ti-receipt'},
     {id:'contratti', label:'Contratto e deleghe', icon:'ti-signature'},
     {id:'portali', label:'Booking e Airbnb', icon:'ti-world'},
-    {id:'ospiti', label:'Ospiti e adempimenti', icon:'ti-users'},
     {id:'shop', label:'Shop e servizi', icon:'ti-shopping-bag'},
 
     {id:'foto', label:'Foto', icon:'ti-photo'},
@@ -7217,6 +7216,7 @@ function attachHandlers(){
 
 
 
+
 // VPM MODULES START
 /* Insert inside the application closure, before its initial render(). */
 (function installExpenseFlows(){
@@ -7435,8 +7435,8 @@ function attachHandlers(){
   function guests(p,manager) {
     const gs=data(p).guests||{}, bookings=p.prenotazioni||[];
     const delegation=authorization(data(p),'comunicazioni');
-    const service=data(p).guestService||{};
-    return `<h2>Ospiti e adempimenti</h2>${portalNotice(p)}${!manager?form(p,'guest-service-request',field('Nota facoltativa per il gestore','notes',service.notes)+note('Le deleghe per questo servizio vengono richiamate dal contratto.')+button(service.requestedAt?'Aggiorna richiesta servizio':'Richiedi servizio comunicazioni ospiti')):''}${service.requestedAt?'<p>Servizio richiesto il '+esc(fmtDate(service.requestedAt))+'. '+(delegation?'Autorizzazione verificata.':'Il gestore segue la documentazione contrattuale.')+'</p>':''}${note('I dati sono collegati alla prenotazione. Questa schermata prepara e registra il lavoro manuale, senza trasmissioni automatiche alle autorità. Raccogli solo i dati necessari agli adempimenti applicabili.')}<p>Autorizzazione comunicazioni ospiti: ${delegation?'verificata':'in attesa del contratto e delle deleghe richiamate'}</p>${bookings.length ? bookings.filter(b=>b.stato!=='rifiutata').map(b=>{const group=gs[b.id]||{people:[],status:'Da preparare'};return `<section class="vpm-owner-form"><h3>${esc(b.nome||'Prenotazione')} · ${esc(b.checkin)} / ${esc(b.checkout)}</h3><p>Adempimenti: ${esc(group.status)}</p>${(group.people||[]).map(g=>`<div class="vpm-owner-doc"><div><strong>${esc(g.firstName)} ${esc(g.lastName)}</strong><small>${esc(g.nationality)} · Nato/a ${esc(g.birthDate)} a ${esc(g.birthPlace)} · ${esc(g.documentType)} ${esc(g.documentNumber)}</small></div><button type="button" class="icon-btn" data-service-action="guest-remove" data-service-property="${esc(p.id)}" data-booking="${esc(b.id)}" data-id="${esc(g.id)}">Rimuovi</button></div>`).join('')}${form(p,'guest-add',`<input type="hidden" name="booking" value="${esc(b.id)}"><h4>Aggiungi ospite effettivo</h4><div class="field-row">${field('Nome','firstName','','text',true)}${field('Cognome','lastName','','text',true)}${field('Data di nascita','birthDate','','date',true)}${field('Luogo di nascita','birthPlace','','text',true)}${field('Cittadinanza','nationality','','text',true)}${select('Tipo documento','documentType',['Carta di identità','Passaporto','Altro'])}${field('Numero documento','documentNumber','','text',true)}${field('Autorità / luogo rilascio','issuedBy')}</div>${button('Aggiungi ospite')}`)}${manager?form(p,'guest-status',`<input type="hidden" name="booking" value="${esc(b.id)}">${select('Stato adempimenti','status',['Da preparare','Dati incompleti','Pronti per trasmissione','Trasmessi manualmente'],group.status)}${field('Riferimento / note trasmissione','reference',group.reference)}${upload('Ricevuta trasmissione facoltativa','receipt',false)}${fileLink(group.receipt,'Scarica ricevuta')}${button('Aggiorna adempimenti')}`):''}</section>`;}).join(''):empty('Non ci sono prenotazioni. Aggiungi prima una prenotazione per registrare gli ospiti.')}`;
+    if(!manager)return '';
+    return `<h2>Ospiti e adempimenti</h2>${note('I dati sono collegati alla prenotazione. Questa schermata prepara e registra il lavoro manuale, senza trasmissioni automatiche alle autorità. Raccogli solo i dati necessari agli adempimenti applicabili.')}<p>Autorizzazione comunicazioni ospiti: ${delegation?'verificata':'in attesa del contratto e delle deleghe richiamate'}</p>${bookings.length ? bookings.filter(b=>b.stato!=='rifiutata').map(b=>{const group=gs[b.id]||{people:[],status:'Da preparare'};return `<section class="vpm-owner-form"><h3>${esc(b.nome||'Prenotazione')} · ${esc(b.checkin)} / ${esc(b.checkout)}</h3><p>Adempimenti: ${esc(group.status)}</p>${(group.people||[]).map(g=>`<div class="vpm-owner-doc"><div><strong>${esc(g.firstName)} ${esc(g.lastName)}</strong><small>${esc(g.nationality)} · Nato/a ${esc(g.birthDate)} a ${esc(g.birthPlace)} · ${esc(g.documentType)} ${esc(g.documentNumber)}</small></div><button type="button" class="icon-btn" data-service-action="guest-remove" data-service-property="${esc(p.id)}" data-booking="${esc(b.id)}" data-id="${esc(g.id)}">Rimuovi</button></div>`).join('')}${form(p,'guest-add',`<input type="hidden" name="booking" value="${esc(b.id)}"><h4>Aggiungi ospite effettivo</h4><div class="field-row">${field('Nome','firstName','','text',true)}${field('Cognome','lastName','','text',true)}${field('Data di nascita','birthDate','','date',true)}${field('Luogo di nascita','birthPlace','','text',true)}${field('Cittadinanza','nationality','','text',true)}${select('Tipo documento','documentType',['Carta di identità','Passaporto','Altro'])}${field('Numero documento','documentNumber','','text',true)}${field('Autorità / luogo rilascio','issuedBy')}</div>${button('Aggiungi ospite')}`)}${manager?form(p,'guest-status',`<input type="hidden" name="booking" value="${esc(b.id)}">${select('Stato adempimenti','status',['Da preparare','Dati incompleti','Pronti per trasmissione','Trasmessi manualmente'],group.status)}${field('Riferimento / note trasmissione','reference',group.reference)}${upload('Ricevuta trasmissione facoltativa','receipt',false)}${fileLink(group.receipt,'Scarica ricevuta')}${button('Aggiorna adempimenti')}`):''}</section>`;}).join(''):empty('Non ci sono prenotazioni. Aggiungi prima una prenotazione per registrare gli ospiti.')}`;
   }
   function shop(p,manager) {
     const s=data(p),catalog=s.catalog||[],orders=s.orders||[];
@@ -7453,7 +7453,6 @@ function attachHandlers(){
       if(manager&&r.status==='risposta-inviata')items.push({tab:'portali',title:'Verifica risposta: '+r.title,requestId:r.id,status:r.status});
       if(!manager&&['aperta','da-integrare'].includes(r.status))items.push({tab:'portali',title:(r.status==='da-integrare'?'Integra risposta: ':'Rispondi alla richiesta: ')+r.title,requestId:r.id,status:r.status});
     });
-    if(manager&&s.guestService?.requestedAt&&!authorization(s,'comunicazioni'))items.push({tab:'ospiti',title:'Servizio comunicazioni ospiti richiesto: completa il contratto'});
     if(manager && ['Dati inviati al gestore','Attivazione in corso','Verifiche del gestore'].includes(portal.status)) items.push({tab:'portali',title:'Pratica portali: '+portal.status});
     if(!manager && ['Dati mancanti','Azione richiesta al proprietario'].includes(portal.status)) items.push({tab:'portali',title:'Completa pratica portali'});
     (s.orders||[]).forEach(o=>{
@@ -7466,7 +7465,7 @@ function attachHandlers(){
     return {count:items.length,title:'Attività servizi',items};
   };
   window.vpmServicesRender = function(p,role,tab) {
-    if(!p) return '';
+    if(!p || (tab==='ospiti'&&role!=='gestore')) return '';
     const manager=role==='gestore';
     return ({contratti:documents,portali:portals,ospiti:guests,shop})[tab]?.(p,manager)||'';
   };
@@ -7475,6 +7474,7 @@ function attachHandlers(){
     event.preventDefault(); event.stopImmediatePropagation();
     const p=state.properties.find(p=>p.id===f.dataset.serviceProperty);if(!p)return;
     const action=f.dataset.serviceForm,manager=['document-add','document-status','document-metadata','portal-save','portal-status','guest-status','catalog-add','order-status','portal-request-add','portal-request-review','portal-request-from-note'].includes(action);
+    if(action==='guest-service-request'||(action.startsWith('guest-')&&state.view!=='gestore')){alert('Funzione riservata al gestore.');return;}
     const actionModule=action.startsWith('guest-')?'prenotazioni':/^(catalog|order)-/.test(action)?'spese':null;
     if(!can(p,manager,actionModule)){alert('Accesso non consentito.');return;}
     if(['portal-request-reply','portal-service-request','guest-service-request','delegation-request','document-sign'].includes(action)&&state.view!=='proprietari'){alert('Questa azione spetta al proprietario.');return;}
@@ -7507,7 +7507,6 @@ function attachHandlers(){
         if(!['Booking e Airbnb','Booking','Airbnb'].includes(get('platforms')))throw Error('Seleziona il servizio richiesto.');
         const changed=s.portal.platforms&&s.portal.platforms!==get('platforms');const at=new Date().toISOString();(s.portal.serviceHistory||(s.portal.serviceHistory=[])).push({at,platforms:get('platforms'),notes:get('notes'),actor:'proprietario'});s.portal.platforms=get('platforms');s.portal.notes=get('notes');s.portal.submittedAt=s.portal.submittedAt||at;s.portal.updatedAt=at;if(!s.portal.status||s.portal.status==='Bozza')s.portal.status='Dati inviati al gestore';else if(changed&&['Attivazione in corso',...terminalStatuses].includes(s.portal.status))s.portal.status='Verifiche del gestore';
       }
-      else if(action==='guest-service-request'){const at=new Date().toISOString();const service=s.guestService||(s.guestService={});(service.history||(service.history=[])).push({at,notes:get('notes')});service.requestedAt=service.requestedAt||at;service.updatedAt=at;service.notes=get('notes');}
       else if(action==='portal-request-from-note'){
         if(!String(s.portal.managerNotes||'').trim())throw Error('Non ci sono note da trasformare.');
         requestFromNote(s.portal,s.portal.managerNotes.trim());automaticPortalState(s.portal);
@@ -7568,7 +7567,6 @@ function attachHandlers(){
           'document-sign':['Copia sottoscritta ricevuta, da verificare.','gestore','contratti'],
           'document-metadata':['Collegamenti del contratto aggiornati dal gestore.','proprietario','contratti'],
           'portal-service-request':['Richiesta servizio Booking e Airbnb dal proprietario.','gestore','portali'],
-          'guest-service-request':['Richiesta servizio comunicazioni ospiti dal proprietario.','gestore','ospiti'],
           'portal-request-from-note':['Nuova richiesta di integrazione per la pratica Booking e Airbnb.','proprietario','portali'],
           'portal-request-add':['Nuova richiesta per la pratica Booking e Airbnb: '+get('title'),'proprietario','portali'],
           'portal-request-reply':['Risposta del proprietario ricevuta, da verificare.','gestore','portali'],
@@ -7589,7 +7587,6 @@ function attachHandlers(){
       if(action==='portal-status')portalFeedback[p.id]='Pratica aggiornata. Stato: '+s.portal.status+'. Il proprietario trova un avviso nella propria area.';
       if(action==='portal-save')portalFeedback[p.id]='Dati operativi salvati dal gestore.';
       if(action==='portal-service-request')portalFeedback[p.id]='Richiesta servizio inviata al gestore. Segui lo stato e rispondi alle eventuali richieste in questa sezione.';
-      if(action==='guest-service-request')portalFeedback[p.id]='Richiesta servizio comunicazioni ospiti inviata al gestore.';
       render();
     }catch(error){
       if(previousServices)p.vpmServices=previousServices;else delete p.vpmServices;
@@ -7602,6 +7599,7 @@ function attachHandlers(){
     const b=event.target.closest('[data-service-action]');if(!b)return;
     event.preventDefault();event.stopImmediatePropagation();
     const p=state.properties.find(p=>p.id===b.dataset.serviceProperty),action=b.dataset.serviceAction;if(!p||!can(p,action==='catalog-toggle',action==='catalog-toggle'?'spese':'prenotazioni'))return;
+    if(action==='guest-remove'&&state.view!=='gestore')return;
     const s=ensure(p);
     if(action==='guest-remove'){if(!confirm('Rimuovere i dati di questo ospite?'))return;const g=s.guests[b.dataset.booking];if(g){g.people=g.people.filter(g=>g.id!==b.dataset.id);g.status='Da preparare';}}
     if(action==='catalog-toggle'){const item=s.catalog.find(x=>x.id===b.dataset.id);if(item)item.active=item.active===false;}
@@ -7796,6 +7794,7 @@ function attachHandlers(){
 
 /* Navigation integration, read-only legacy prices and isolated review data. */
 function vpmNewTabAllowed(tab){
+  if(state.view==='proprietari'&&tab==='ospiti')return false;
   const modules={camere:'prenotazioni',tariffe:'listino',economia:'spese',contratti:'anagrafica',portali:'anagrafica',ospiti:'prenotazioni',shop:'spese'};
   return Object.hasOwn(modules,tab)&&(state.view==='proprietari'||modules[tab]==='anagrafica'||haModulo(modules[tab]));
 }

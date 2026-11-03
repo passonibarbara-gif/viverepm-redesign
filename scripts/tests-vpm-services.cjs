@@ -5,7 +5,7 @@ const notifications=[];
 const context={fmtDate:d=>String(d).slice(0,10),addNotifica:(p,...args)=>{notifications.push([p,...args]);(p.notifiche||(p.notifiche=[])).push({text:args[0],role:args[1],tab:args[2]});},window:{},document:{addEventListener:(event,fn)=>handlers[event]=fn},state:{view:'proprietari',ownerAuth:{email:'owner@test.it'},properties:[property]},getClienteByEmail:()=>({id:'c'}),getCliente:()=>({nome:'<img onerror=x>',email:'owner@test.it'}),saveData:async()=>{},render:()=>{},uid:()=>Math.random().toString(16).slice(2),alert:x=>alerts.push(x),confirm:()=>true,FormData:class{constructor(f){this.values=f.values}get(k){return this.values[k]}entries(){return Object.entries(this.values)[Symbol.iterator]()}},readFileAsDataUrl:async()=> 'data:application/pdf;base64,JVBERg=='};
 vm.createContext(context);vm.runInContext(fs.readFileSync('vpm-services.js','utf8'),context);
 const render=context.window.vpmServicesRender;
-for(const tab of ['contratti','portali','ospiti','shop'])assert(render(property,'proprietario',tab).length>50);
+for(const tab of ['contratti','portali','shop'])assert(render(property,'proprietario',tab).length>50);
 assert(!render(property,'proprietario','portali').includes('<img onerror=x>'));
 property.vpmServices={documents:[],portal:{},guests:{},orders:[],catalog:[{id:'prod',name:'Corredo',description:'Lenzuola',price:45.5,active:true}]};
 const forms=[];
@@ -21,6 +21,7 @@ const completePortal={entity:'Persona fisica',legalName:'Invio completo',taxId:'
  await submit('order-add',{product:'prod',quantity:'-1'});assert.equal(property.vpmServices.orders.length,1);
  await submit('catalog-add',{name:'Not allowed',description:'test',price:'1'});assert.equal(property.vpmServices.catalog.length,1);
  await submit('guest-add',{booking:'missing',birthDate:'2000-01-01'});assert.equal(Object.keys(property.vpmServices.guests).length,0);
+ context.state.view='gestore';context.state.gestoreUnlocked=true;context.haModulo=()=>true;
  await submit('guest-add',{booking:'b',firstName:'Mario',lastName:'Rossi',birthDate:'2000-01-01',birthPlace:'Roma',nationality:'Italiana',documentType:'Passaporto',documentNumber:'AB12'});
  assert.equal(property.vpmServices.guests.b.people.length,1);
  context.state.view='gestore';context.state.gestoreUnlocked=true;context.haModulo=()=>false;await submit('catalog-add',{name:'Blocked',description:'x',price:'1'});assert.equal(property.vpmServices.catalog.length,1);context.haModulo=()=>true;
@@ -33,7 +34,7 @@ const completePortal={entity:'Persona fisica',legalName:'Invio completo',taxId:'
  await submit('portal-service-request',{platforms:'Booking',notes:'Attivare il servizio'});
  assert.equal(property.vpmServices.portal.platforms,'Booking');assert.equal(property.vpmServices.portal.status,'Dati inviati al gestore');assert(property.vpmServices.portal.submittedAt);assert.equal(property.vpmServices.portal.serviceHistory.length,1);
  assert(render(property,'proprietario','portali').includes('Richiesta servizio inviata'));
- await submit('guest-service-request',{notes:'Gestire le comunicazioni'});assert(property.vpmServices.guestService.requestedAt);assert(context.window.vpmServicesPending(property,'gestore').items.some(i=>i.tab==='ospiti'));
+ await submit('guest-service-request',{notes:'Gestire le comunicazioni'});assert(!property.vpmServices.guestService);assert.equal(render(property,'proprietario','ospiti'),'');
  context.state.view='gestore';
  await submit('portal-service-request',{platforms:'Airbnb'});assert.equal(property.vpmServices.portal.platforms,'Booking');
  assert(render(property,'gestore','portali').includes('Salva dati operativi'));

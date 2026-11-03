@@ -130,9 +130,6 @@
       if(manager && !['Consegnato / eseguito','Annullato'].includes(o.status)) items.push({tab:'shop',title:'Ordine da gestire: '+o.name});
       if(!manager && o.status!=='Annullato' && o.paymentStatus==='Da pagare') items.push({tab:'shop',title:'Pagamento ordine: '+o.name});
     });
-    if(manager) Object.entries(s.guests||{}).forEach(([id,g])=>{
-      if(g.status!=='Trasmessi manualmente' && (p.prenotazioni||[]).some(b=>b.id===id&&b.stato!=='rifiutata')) items.push({tab:'ospiti',title:'Adempimenti ospiti da completare'});
-    });
     return {count:items.length,title:'Attività servizi',items};
   };
   window.vpmServicesRender = function(p,role,tab) {

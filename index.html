@@ -4547,7 +4547,6 @@ function renderDossier(p){
     {id:'economia', label:'Incassi e compensi', icon:'ti-receipt'},
     {id:'contratti', label:'Contratto e deleghe', icon:'ti-signature'},
     {id:'portali', label:'Booking e Airbnb', icon:'ti-world'},
-    {id:'ospiti', label:'Ospiti e adempimenti', icon:'ti-users'},
     {id:'shop', label:'Shop e servizi', icon:'ti-shopping-bag'},
 
     {id:'foto', label:'Foto', icon:'ti-photo'},
@@ -7285,6 +7284,7 @@ function attachHandlers(){
 
 
 
+
 // VPM MODULES START
 /* Insert inside the application closure, before its initial render(). */
 (function installExpenseFlows(){
@@ -7526,9 +7526,6 @@ function attachHandlers(){
     (s.orders||[]).forEach(o=>{
       if(manager && !['Consegnato / eseguito','Annullato'].includes(o.status)) items.push({tab:'shop',title:'Ordine da gestire: '+o.name});
       if(!manager && o.status!=='Annullato' && o.paymentStatus==='Da pagare') items.push({tab:'shop',title:'Pagamento ordine: '+o.name});
-    });
-    if(manager) Object.entries(s.guests||{}).forEach(([id,g])=>{
-      if(g.status!=='Trasmessi manualmente' && (p.prenotazioni||[]).some(b=>b.id===id&&b.stato!=='rifiutata')) items.push({tab:'ospiti',title:'Adempimenti ospiti da completare'});
     });
     return {count:items.length,title:'Attività servizi',items};
   };
@@ -7904,7 +7901,7 @@ function attachHandlers(){
 
 /* Navigation integration, read-only legacy prices and isolated review data. */
 function vpmNewTabAllowed(tab){
-  if(state.view==='proprietari'&&tab==='ospiti')return false;
+  if(tab==='ospiti')return false;
   const modules={camere:'prenotazioni',tariffe:'listino',economia:'spese',contratti:'anagrafica',portali:'anagrafica',ospiti:'prenotazioni',shop:'spese'};
   return Object.hasOwn(modules,tab)&&(state.view==='proprietari'||modules[tab]==='anagrafica'||haModulo(modules[tab]));
 }

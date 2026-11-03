@@ -12,7 +12,35 @@
   const moduleFor=kind=>['unit','booking','assign','camere'].includes(kind)?'prenotazioni':['rate','tariffe','published'].includes(kind)?'listino':'spese';
   const validNumber=v=>v!==null&&String(v).trim()!==''&&Number.isFinite(Number(v))&&Number(v)>=0;
   const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')&&!Number.isNaN(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
-  async function persist(){try{await saveData();if(state.error)return false;render();return true;}catch(err){state.error='Salvataggio non riuscito: '+err.message;render();return false;}}
+  const pendingProperties=new Set();
+  const transactionKeys=['vpmRooms','prenotazioni','notifiche'];
+  function snapshot(p){return Object.fromEntries(transactionKeys.map(key=>[key,{exists:Object.prototype.hasOwnProperty.call(p,key),value:p[key]===undefined?undefined:JSON.parse(JSON.stringify(p[key]))}]));}
+  function restore(p,before){transactionKeys.forEach(key=>{if(before[key].exists)p[key]=before[key].value;else delete p[key];});}
+  function showSaveError(target,message){
+    if(target&&typeof target.querySelector==='function'&&typeof document.createElement==='function'){
+      let box=target.querySelector('[data-vpm-room-error]');
+      if(!box){box=document.createElement('div');box.dataset.vpmRoomError='';box.className='vpm-service-error';box.setAttribute('role','alert');target.appendChild(box);}
+      box.textContent=message;
+    }else alert(message);
+  }
+  async function mutate(p,target,operation){
+    if(pendingProperties.has(p.id))return false;
+    const before=snapshot(p),controls=target&&typeof target.querySelectorAll==='function'?Array.from(target.querySelectorAll('button[type=submit]')):target&&target.tagName==='BUTTON'?[target]:[];
+    const previousDisabled=controls.map(button=>Boolean(button.disabled));
+    pendingProperties.add(p.id);if(target?.dataset)target.dataset.vpmRoomBusy='true';controls.forEach(button=>{button.disabled=true;});
+    try{
+      const changed=await operation();
+      if(changed!==true){restore(p,before);return false;}
+      const result=await saveData({renderOnError:false});
+      if(result===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+      render();return true;
+    }catch(err){
+      restore(p,before);showSaveError(target,err?.message||'Salvataggio non riuscito. Riprova.');return false;
+    }finally{
+      pendingProperties.delete(p.id);if(target?.dataset)delete target.dataset.vpmRoomBusy;
+      controls.forEach((button,index)=>{button.disabled=previousDisabled[index];});
+    }
+  }
   function notify(p,text,recipient,tab){if(typeof addNotifica==='function')addNotifica(p,text,recipient,tab);}
   const cfg=p=>p.vpmRooms||{units:[],rates:[],feeBasis:'',includeCleaning:false};
   function mutable(p){if(!p.vpmRooms)p.vpmRooms={units:[],rates:[],feeBasis:'',includeCleaning:false};return p.vpmRooms;}
@@ -47,7 +75,7 @@
     const i=b.vpmFeeInvoice;
     const upload=edit?form(p,'invoice',`<input type="hidden" name="bookingId" value="${esc(b.id)}">`+field('Fattura PDF','document','file','','accept="application/pdf" required')+field('Numero fattura','number','text','','required')+field('Imponibile fattura','net','number',fee(p,b)??'','min="0" step="0.01" required')+field('IVA in euro, inserire 0 se non applicata','vat','number','','min="0" step="0.01" required')+field('Beneficiario','beneficiary','text','','required')+field('IBAN','iban','text','','required')+field('Scadenza','due','date','','required')+'<p>Il totale da pagare corrisponde all’imponibile più l’IVA indicata in fattura.</p>'):'';
     if(!i)return `<h4>Fattura servizio Vivere PM</h4>${upload||'<p>Fattura non ancora caricata dal gestore.</p>'}`;
-    return `<h4>Fattura ${esc(i.number)}</h4><p>Imponibile: ${money(i.net)} · IVA: ${money(i.vat)} · Totale: ${money(Number(i.net)+Number(i.vat))}</p><p>${esc(i.beneficiary)} · IBAN ${esc(i.iban)} · Scadenza ${esc(i.due)}</p><p>Pagamento: ${i.status==='paid'?'verificato dal gestore':i.status==='pending'?'bonifico dichiarato, da verificare':'da effettuare'}</p><a class="icon-btn" href="${esc(i.document)}" download="fattura-vivere-pm.pdf">Scarica fattura</a>${i.receipt?`<a class="icon-btn" href="${esc(i.receipt)}" download="contabile-bonifico">Scarica contabile</a>`:''}${!edit&&i.status!=='paid'?form(p,'invoice-payment',`<input type="hidden" name="bookingId" value="${esc(b.id)}">`+field('Data bonifico','date','date','','required')+field('Contabile PDF o immagine','receipt','file','','accept="application/pdf,image/jpeg,image/png" required')):''}${edit&&i.status==='pending'?form(p,'invoice-verify',`<input type="hidden" name="bookingId" value="${esc(b.id)}"><p>Conferma solo dopo aver verificato l’accredito.</p>`):''}`;
+    return `<h4>Fattura ${esc(i.number)}</h4><p>Imponibile: ${money(i.net)} · IVA: ${money(i.vat)} · Totale: ${money(Number(i.net)+Number(i.vat))}</p><p>${esc(i.beneficiary)} · IBAN ${esc(i.iban)} · Scadenza ${esc(i.due)}</p><p>Pagamento: ${i.status==='paid'?'verificato dal gestore':i.status==='pending'?'bonifico dichiarato, da verificare':'da effettuare'}</p><a class="icon-btn" href="${esc(i.document)}" download="fattura-vivere-pm.pdf">Scarica fattura</a>${i.receipt?`<a class="icon-btn" href="${esc(i.receipt)}" download="contabile-bonifico">Scarica contabile</a>`:''}${!edit&&!['paid','pending'].includes(i.status)?form(p,'invoice-payment',`<input type="hidden" name="bookingId" value="${esc(b.id)}">`+field('Data bonifico','date','date','','required')+field('Contabile PDF o immagine','receipt','file','','accept="application/pdf,image/jpeg,image/png" required')):''}${edit&&i.status==='pending'?form(p,'invoice-verify',`<input type="hidden" name="bookingId" value="${esc(b.id)}"><p>Conferma solo dopo aver verificato l’accredito.</p>`):''}`;
   }
   async function fileData(file){
     if(!file||!file.size)throw Error('Allega il documento.');
@@ -70,64 +98,72 @@
   document.addEventListener('submit',async e=>{
     const f=e.target.closest('[data-vpm-room-form]');if(!f)return;e.preventDefault();e.stopImmediatePropagation();
     const p=state.properties.find(p=>p.id===f.dataset.property);if(!p||!allowed(p))return;
-    const d=new FormData(f),kind=f.dataset.vpmRoomForm;if(!allowed(p,false,moduleFor(kind)))return;const c=mutable(p);
-    const numericFields={rate:['price'],unit:['capacity'],booking:['guests','amount'],'booking-finance':['night','cleaning','portal','refund'],invoice:['net','vat']}[kind]||[];
-    if(numericFields.some(k=>!validNumber(d.get(k))))return alert('Inserisci importi e quantità validi, finiti e non negativi.');
-    const dateFields={rate:['from','to'],booking:['checkin','checkout'],invoice:['due'],'invoice-payment':['date']}[kind]||[];
-    if(dateFields.some(k=>!validDate(String(d.get(k)||''))))return alert('Inserisci date valide.');
-    if(kind==='unit'&&(!Number.isInteger(Number(d.get('capacity')))||Number(d.get('capacity'))<1||Number(d.get('capacity'))>100||!String(d.get('name')||'').trim()))return alert('Indica nome camera e capienza intera da 1 a 100.');
-    if(kind==='booking'&&(!Number.isInteger(Number(d.get('guests')))||Number(d.get('guests'))<1||!String(d.get('name')||'').trim()))return alert('Indica il referente e almeno un ospite.');
-    if(['invoice','invoice-payment','invoice-verify'].includes(kind)){
-      const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return;
-      try{
+    const kind=f.dataset.vpmRoomForm;if(!allowed(p,false,moduleFor(kind)))return;
+    await mutate(p,f,async()=>{
+      const d=new FormData(f),c=mutable(p);
+      const numericFields={rate:['price'],unit:['capacity'],booking:['guests','amount'],'booking-finance':['night','cleaning','portal','refund'],invoice:['net','vat']}[kind]||[];
+      if(numericFields.some(k=>!validNumber(d.get(k))))throw Error('Inserisci importi e quantità validi, finiti e non negativi.');
+      const dateFields={rate:['from','to'],booking:['checkin','checkout'],invoice:['due'],'invoice-payment':['date']}[kind]||[];
+      if(dateFields.some(k=>!validDate(String(d.get(k)||''))))throw Error('Inserisci date valide.');
+      if(kind==='unit'&&(!Number.isInteger(Number(d.get('capacity')))||Number(d.get('capacity'))<1||Number(d.get('capacity'))>100||!String(d.get('name')||'').trim()))throw Error('Indica nome camera e capienza intera da 1 a 100.');
+      if(kind==='booking'&&(!Number.isInteger(Number(d.get('guests')))||Number(d.get('guests'))<1||!String(d.get('name')||'').trim()))throw Error('Indica il referente e almeno un ospite.');
+      if(['invoice','invoice-payment','invoice-verify'].includes(kind)){
+        const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return false;
         if(kind==='invoice'&&manager()){
-          if(b.vpmFeeInvoice)return alert('La fattura è già presente. Conservare lo storico prima di emettere una nuova fattura.');
-          const iban=String(d.get('iban')).replace(/\s/g,'').toUpperCase();if(!/^[A-Z]{2}[0-9A-Z]{13,32}$/.test(iban))return alert('Inserisci un IBAN valido.');
-          if(!String(d.get('number')||'').trim()||!String(d.get('beneficiary')||'').trim())return alert('Indica numero fattura e beneficiario.');
-          b.vpmFeeInvoice={number:String(d.get('number')),net:Number(d.get('net')),vat:Number(d.get('vat')),beneficiary:String(d.get('beneficiary')),iban,due:String(d.get('due')),document:await fileData(d.get('document')),status:'unpaid',createdAt:new Date().toISOString()};
+          if(b.vpmFeeInvoice)throw Error('La fattura è già presente. Conservare lo storico prima di emettere una nuova fattura.');
+          const iban=String(d.get('iban')).replace(/\s/g,'').toUpperCase();if(!/^[A-Z]{2}[0-9A-Z]{13,32}$/.test(iban))throw Error('Inserisci un IBAN valido.');
+          if(!String(d.get('number')||'').trim()||!String(d.get('beneficiary')||'').trim())throw Error('Indica numero fattura e beneficiario.');
+          const document=await fileData(d.get('document'));
+          b.vpmFeeInvoice={number:String(d.get('number')),net:Number(d.get('net')),vat:Number(d.get('vat')),beneficiary:String(d.get('beneficiary')),iban,due:String(d.get('due')),document,status:'unpaid',createdAt:new Date().toISOString()};
           notify(p,'Nuova fattura Vivere PM '+b.vpmFeeInvoice.number+' da pagare entro '+b.vpmFeeInvoice.due+'.','proprietario','economia');
-        }else if(kind==='invoice-payment'&&allowed(p,true)&&b.vpmFeeInvoice&&b.vpmFeeInvoice.status!=='paid'){
+        }else if(kind==='invoice-payment'&&allowed(p,true)&&b.vpmFeeInvoice&&!['paid','pending'].includes(b.vpmFeeInvoice.status)){
           const receipt=await fileData(d.get('receipt'));Object.assign(b.vpmFeeInvoice,{receipt,paymentDate:String(d.get('date')),status:'pending'});notify(p,'Bonifico dichiarato per fattura Vivere PM '+b.vpmFeeInvoice.number+': verifica l’accredito.','gestore','economia');
         }else if(kind==='invoice-verify'&&manager()&&b.vpmFeeInvoice?.status==='pending'){
           b.vpmFeeInvoice.status='paid';b.vpmFeeInvoice.verifiedAt=new Date().toISOString();notify(p,'Pagamento della fattura Vivere PM '+b.vpmFeeInvoice.number+' verificato.','proprietario','economia');
-        }else return;
-        await persist();return;
-      }catch(err){alert(err.message);return;}
-    }
-    if(kind==='rate'){
-      if(!allowed(p,true))return;
-      if(String(d.get('to'))<String(d.get('from')))return alert('La data finale deve seguire quella iniziale.');
-      const unitId=String(d.get('unitId')||'');if(unitId&&!units(p).some(u=>u.id===unitId))return;
-      (c.rates||(c.rates=[])).push({id:uid(),unitId,from:String(d.get('from')),to:String(d.get('to')),price:Number(d.get('price')),createdAt:new Date().toISOString(),portalUpdated:false});notify(p,'Il proprietario ha aggiornato una tariffa: aggiorna Booking e Airbnb.','gestore','listino');
-    }else{
-      if(!manager())return;
-      if(kind==='unit') (c.units||(c.units=[])).push({id:uid(),name:String(d.get('name')).trim(),capacity:Number(d.get('capacity')),basePrice:0});
-      if(kind==='fee'){if(!['lordo','netto-portale',''].includes(String(d.get('basis')||'')))return;c.feeBasis=String(d.get('basis')||'');c.includeCleaning=d.get('cleaning')==='yes';}
-      if(kind==='booking-finance'){
-        const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return;
-        b.vpmNightAmount=Number(d.get('night'));b.vpmCleaning=Number(d.get('cleaning'));b.vpmPortalCommission=Number(d.get('portal'));b.vpmRefund=Number(d.get('refund'));
+        }else return false;
+        return true;
       }
-      if(kind==='booking'||kind==='assign'){
-        const b=kind==='assign'?(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId')):{id:uid(),nome:String(d.get('name')),checkin:String(d.get('checkin')),checkout:String(d.get('checkout')),adulti:Number(d.get('guests')),totale:Number(d.get('amount')),vpmNightAmount:Number(d.get('amount')),stato:'confermata',createdAt:new Date().toISOString()};if(!b)return;
-        const unitId=String(d.get('unitId')||'');const u=units(p).find(u=>u.id===unitId);if(unitId&&!u)return;
-        if(b.checkout<=b.checkin)return alert('La partenza deve seguire l’arrivo.');
-        if(u&&Number(b.adulti||1)+Number(b.bambini||0)>Number(u.capacity))return alert('Il numero di ospiti supera la capienza della camera.');
-        if(conflicts(p,b,unitId,b.id))return alert('Le date si sovrappongono a una prenotazione o a un blocco della stessa unità o dell’intera struttura.');
-        b.unitId=unitId;if(kind==='booking')(p.prenotazioni||(p.prenotazioni=[])).push(b);
+      if(kind==='rate'){
+        if(!allowed(p,true))return false;
+        if(String(d.get('to'))<String(d.get('from')))throw Error('La data finale deve seguire quella iniziale.');
+        const unitId=String(d.get('unitId')||'');if(unitId&&!units(p).some(u=>u.id===unitId))return false;
+        (c.rates||(c.rates=[])).push({id:uid(),unitId,from:String(d.get('from')),to:String(d.get('to')),price:Number(d.get('price')),createdAt:new Date().toISOString(),portalUpdated:false});notify(p,'Il proprietario ha aggiornato una tariffa: aggiorna Booking e Airbnb.','gestore','listino');
+      }else{
+        if(!manager())return false;
+        if(kind==='unit') (c.units||(c.units=[])).push({id:uid(),name:String(d.get('name')).trim(),capacity:Number(d.get('capacity')),basePrice:0});
+        else if(kind==='fee'){if(!['lordo','netto-portale',''].includes(String(d.get('basis')||'')))return false;c.feeBasis=String(d.get('basis')||'');c.includeCleaning=d.get('cleaning')==='yes';}
+        else if(kind==='booking-finance'){
+          const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return false;
+          b.vpmNightAmount=Number(d.get('night'));b.vpmCleaning=Number(d.get('cleaning'));b.vpmPortalCommission=Number(d.get('portal'));b.vpmRefund=Number(d.get('refund'));
+        }
+        else if(kind==='booking'||kind==='assign'){
+          const b=kind==='assign'?(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId')):{id:uid(),nome:String(d.get('name')),checkin:String(d.get('checkin')),checkout:String(d.get('checkout')),adulti:Number(d.get('guests')),totale:Number(d.get('amount')),vpmNightAmount:Number(d.get('amount')),stato:'confermata',createdAt:new Date().toISOString()};if(!b)return false;
+          const unitId=String(d.get('unitId')||'');const u=units(p).find(u=>u.id===unitId);if(unitId&&!u)return false;
+          if(b.checkout<=b.checkin)throw Error('La partenza deve seguire l’arrivo.');
+          if(u&&Number(b.adulti||1)+Number(b.bambini||0)>Number(u.capacity))throw Error('Il numero di ospiti supera la capienza della camera.');
+          if(conflicts(p,b,unitId,b.id))throw Error('Le date si sovrappongono a una prenotazione o a un blocco della stessa unità o dell’intera struttura.');
+          b.unitId=unitId;if(kind==='booking')(p.prenotazioni||(p.prenotazioni=[])).push(b);
+        }else return false;
       }
-    }
-    await persist();
+      return true;
+    });
   },true);
   document.addEventListener('click',async e=>{
     const el=e.target.closest('[data-vpm-room-delete],[data-vpm-rate-published],[data-vpm-owner-received]');if(!el)return;
-    e.preventDefault();e.stopImmediatePropagation();const p=state.properties.find(p=>p.id===el.dataset.property);if(!p||!allowed(p,false,el.dataset.vpmRoomDelete?'prenotazioni':el.dataset.vpmRatePublished?'listino':'spese'))return;const c=mutable(p);
-    if(el.dataset.vpmRoomDelete&&manager()){
-      if((p.prenotazioni||[]).some(b=>b.unitId===el.dataset.vpmRoomDelete))return alert('La camera contiene prenotazioni. Conserva la camera per mantenere lo storico.');
-      if(!confirm('Rimuovere questa camera e le sue tariffe?'))return;c.units=units(p).filter(u=>u.id!==el.dataset.vpmRoomDelete);c.rates=(c.rates||[]).filter(r=>r.unitId!==el.dataset.vpmRoomDelete);
-    }
-    if(el.dataset.vpmRatePublished&&manager()){const r=(c.rates||[]).find(r=>r.id===el.dataset.vpmRatePublished);if(r){r.portalUpdated=true;r.portalUpdatedAt=new Date().toISOString();notify(p,'Il gestore ha confermato l’aggiornamento della tariffa sui portali.','proprietario','tariffe');}}
-    if(el.dataset.vpmOwnerReceived&&allowed(p,true)){const b=(p.prenotazioni||[]).find(b=>b.id===el.dataset.vpmOwnerReceived);if(b){b.vpmOwnerReceived=true;b.vpmOwnerReceivedAt=new Date().toISOString();}}
-    await persist();
+    e.preventDefault();e.stopImmediatePropagation();const p=state.properties.find(p=>p.id===el.dataset.property);if(!p||!allowed(p,false,el.dataset.vpmRoomDelete?'prenotazioni':el.dataset.vpmRatePublished?'listino':'spese'))return;
+    await mutate(p,el,async()=>{
+      const c=mutable(p);
+      if(el.dataset.vpmRoomDelete&&manager()){
+        if((p.prenotazioni||[]).some(b=>b.unitId===el.dataset.vpmRoomDelete))throw Error('La camera contiene prenotazioni. Conserva la camera per mantenere lo storico.');
+        if(!confirm('Rimuovere questa camera e le sue tariffe?'))return false;
+        c.units=units(p).filter(u=>u.id!==el.dataset.vpmRoomDelete);c.rates=(c.rates||[]).filter(r=>r.unitId!==el.dataset.vpmRoomDelete);
+      }else if(el.dataset.vpmRatePublished&&manager()){
+        const r=(c.rates||[]).find(r=>r.id===el.dataset.vpmRatePublished);if(!r||r.portalUpdated)return false;r.portalUpdated=true;r.portalUpdatedAt=new Date().toISOString();notify(p,'Il gestore ha confermato l’aggiornamento della tariffa sui portali.','proprietario','tariffe');
+      }else if(el.dataset.vpmOwnerReceived&&allowed(p,true)){
+        const b=(p.prenotazioni||[]).find(b=>b.id===el.dataset.vpmOwnerReceived);if(!b||b.vpmOwnerReceived)return false;b.vpmOwnerReceived=true;b.vpmOwnerReceivedAt=new Date().toISOString();
+      }else return false;
+      return true;
+    });
   },true);
   const legacyCalc=calcTotale;
   calcTotale=function(p,checkin,checkout){const result=legacyCalc(p,checkin,checkout);if(!result)return result;const custom=(cfg(p).rates||[]).some(r=>!r.unitId);if(!custom)return result;const a=calculate(p,'',checkin,checkout);if(!a)return null;return {...result,soggiornoBase:a.amount,totale:a.amount+result.totaleServizi};};

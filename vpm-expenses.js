@@ -18,7 +18,7 @@
   const statusLabel = e => (labels[paymentStatus(e)] || 'Stato da verificare') + (overdue(e)&&paymentStatus(e)!=='scaduta'?' · Scaduta':'');
   const button = (action,p,id,text,kind='spesa') => `<button type="button" class="icon-btn" data-vpm-finance="${action}" data-property="${esc(p.id)}" data-record="${esc(id)}" data-kind="${kind}">${text}</button>`;
   const oldRaw = renderModalRaw;
-  const persistChecked = async () => { const ok=await saveData(); if(ok===false||state.error)throw new Error(state.error||'Salvataggio non riuscito. Riprova.'); };
+  const persistChecked = async () => { const ok=await saveData({renderOnError:false}); if(ok===false||state.error)throw new Error(state.error||'Salvataggio non riuscito. Riprova.'); };
   const snapshot = p => JSON.parse(JSON.stringify(p));
   const restore = (p,backup) => { for(const key of Object.keys(p))delete p[key];Object.assign(p,backup); };
   const field = (label,name,type,value='',required=false) => `<div class="field"><label for="vpm-finance-${name}">${label}</label><input id="vpm-finance-${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?'required':''} ${type==='number'?'min="0.01" step="0.01"':''}></div>`;

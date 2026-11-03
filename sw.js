@@ -1,4 +1,4 @@
-const CACHE_NAME = 'viverepm-redesign-v20261102-portal-actions';
+const CACHE_NAME = 'viverepm-redesign-v20261103-workflows-navigation';
 const CORE_ASSETS = [
   './index.html',
   './vpm-workflows.css',

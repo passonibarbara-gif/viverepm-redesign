@@ -1,6 +1,6 @@
 # Vivere PM: gestione proprietari e B&B
 
-Ramo di revisione `feature/gestione-proprietari-bnb`. Nessuna modifica o distribuzione su main.
+Versione di lavoro di Vivere PM pubblicata su main e GitHub Pages, su autorizzazione della proprietaria del progetto.
 
 ## Funzioni
 
@@ -14,6 +14,14 @@ Ramo di revisione `feature/gestione-proprietari-bnb`. Nessuna modifica o distrib
 - Ospiti: più persone per prenotazione, dati per adempimenti, delega verificata e stato di trasmissione manuale.
 - Shop: catalogo configurabile con corredi lenzuola/asciugamani, prodotti o servizi con lavaggio, quantità, ordini/preventivi, fatture e stato di esecuzione. Prezzi inizialmente non inventati.
 - Attività pendenti e notifiche per entrambi i ruoli. Scadenze di bollette, interventi e fatture del 25% nei calendari.
+
+## Richieste e risposte della pratica
+
+Il gestore apre una richiesta di dati, documento, firma o conferma dalla scheda Booking e Airbnb. Ogni richiesta ha istruzioni, eventuale scadenza e obbligatorietà. Il proprietario risponde nella stessa scheda. Il gestore accetta la risposta oppure richiede un’integrazione motivata. Lo storico conserva messaggi e allegati precedenti.
+
+Gli stati della richiesta sono Da rispondere, Risposta da verificare, Da integrare e Completata. La pratica passa per In attesa del proprietario, Risposte da verificare e Verifiche del gestore. Annuncio attivo e Pratica completata richiedono le risposte obbligatorie accettate, i dati principali completi e la delega corrente verificata e non scaduta. Una risposta o un caricamento non costituisce trasmissione automatica al portale.
+
+Le vecchie note del gestore possono essere trasformate in richieste alle quali il proprietario può rispondere. Le richieste e le risposte pendenti sono riepilogate nell’area Richieste Booking/Airbnb del gestore.
 
 ## Prova isolata
 
@@ -41,6 +49,8 @@ python scripts/check-vpm.py
 node scripts/tests-vpm-expenses.cjs
 node scripts/tests-vpm-services.cjs
 node scripts/tests-vpm-rooms.js
+node scripts/test-navigation.cjs
+node scripts/tests-core-persistence.cjs
 ```
 
 I test verificano stati pagamento, errori salvataggio e ripristino, isolamento visitatore, permessi, sovrapposizioni camere, tariffe, calcolo compensi, ordini e deleghe.

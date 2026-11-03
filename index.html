@@ -1849,7 +1849,7 @@ body:has(.vpm-owner-picker){background:linear-gradient(135deg,#f0f8f5,#fcfaf6 70
 
 </style>
 <link rel="stylesheet" href="viverepm-dashboard.css?v=20260922-28">
-<link rel="stylesheet" href="vpm-workflows.css">
+<link rel="stylesheet" href="vpm-workflows.css?v=20261103">
 </head>
 <body>
 <div id="root"></div>
@@ -2425,21 +2425,23 @@ async function loadData(){
   render();
   subscribeRealtime();
 }
-async function persistAll(){
-  if(!SUPABASE_CONFIGURED) return;
+async function persistAll(options={}){
+  if(!SUPABASE_CONFIGURED){state.error='Database non configurato. Salvataggio non eseguito.';if(options.renderOnError!==false)render();return false;}
   try{
     const { error } = await supabase.from('app_data').update({
       properties: state.properties, clienti: state.clienti, settings: state.settings, operatori: state.operatori, updated_at: new Date().toISOString()
     }).eq('id','main');
     if(error) throw error;
     state.error = null;
+    return true;
   }catch(e){
     state.error = 'Salvataggio non riuscito: ' + (e && e.message ? e.message : 'errore sconosciuto') + '. Riprova tra poco.';
-    render();
+    if(options.renderOnError!==false)render();
+    return false;
   }
 }
-async function saveData(){ return persistAll(); }
-async function saveSettingsData(){ return persistAll(); }
+async function saveData(options){ return persistAll(options); }
+async function saveSettingsData(options){ return persistAll(options); }
 function subscribeRealtime(){
   supabase.channel('app_data_live')
     .on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_data', filter:'id=eq.main' }, payload=>{
@@ -2489,30 +2491,45 @@ function removeClienteDocumento(clienteId, index){
   openModal('cliente', c, null);
 }
 
-function saveProperty(data, editingId){
-  if(editingId){
-    const p = state.properties.find(x=>x.id===editingId);
-    Object.assign(p, data);
-  } else {
-    state.properties.push({
-      id: uid(),
-      ...data,
-      catasto: generaCodiceImmobile(),
-      spese: [],
-      manutenzioni: [],
-      prenotazioni: [],
-      tariffePersonalizzate: {},
-      notteMinima: 1,
-      prezziSettimanali: {},
-      servizi: [],
-      contrattoGestione: null,
-      versamentiProprietario: [],
-      controlli: [],
-      periodicitaControlli: 2,
-      listinoServizi: []
-    });
+function coreFormBusy(form,busy){
+  if(!form)return;
+  form.dataset.saving=busy?'true':'false';
+  form.querySelectorAll('[type=submit]').forEach(button=>{button.disabled=busy;});
+}
+function coreFormError(form,message){
+  if(!form){render();return;}
+  let box=form.querySelector('[data-core-form-error]');
+  if(!box){box=document.createElement('div');box.dataset.coreFormError='';box.className='vpm-service-error';box.setAttribute('role','alert');form.appendChild(box);}
+  box.textContent=message;
+}
+async function saveProperty(data, editingId){
+  const form=document.getElementById('propForm');
+  if(form?.dataset.saving==='true')return false;
+  const previousProperties=JSON.parse(JSON.stringify(state.properties));
+  const modalAtStart=state.modal;
+  coreFormBusy(form,true);
+  try{
+    if(editingId){
+      const p = state.properties.find(x=>x.id===editingId);
+      if(!p)throw Error('Immobile non trovato.');
+      Object.assign(p, data);
+    } else {
+      state.properties.push({
+        id: uid(), ...data, catasto: generaCodiceImmobile(),
+        spese: [], manutenzioni: [], prenotazioni: [], tariffePersonalizzate: {},
+        notteMinima: 1, prezziSettimanali: {}, servizi: [], contrattoGestione: null,
+        versamentiProprietario: [], controlli: [], periodicitaControlli: 2, listinoServizi: []
+      });
+    }
+    const saved=await saveData({renderOnError:false});
+    if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+    if(state.modal===modalAtStart)closeModal();render();return true;
+  }catch(error){
+    state.properties=previousProperties;
+    if(modalAtStart?.editing?.id)modalAtStart.editing=state.properties.find(p=>p.id===modalAtStart.editing.id)||modalAtStart.editing;
+    state.error=error.message||'Salvataggio non riuscito. Riprova.';
+    coreFormBusy(form,false);coreFormError(form,state.error);return false;
   }
-  saveData(); closeModal(); render();
 }
 function deleteProperty(id){
   if(!confirm('Eliminare definitivamente questo immobile e tutti i suoi dati?')) return;
@@ -6158,8 +6175,7 @@ function attachHandlers(){
       render();
     });
   });
-  const bookingCalDayCloseBtn = document.querySelector('[data-booking-cal-day-close]');
-  if(bookingCalDayCloseBtn) bookingCalDayCloseBtn.addEventListener('click', ()=>{ state.calendarSelectedDay = null; render(); });
+  document.querySelectorAll('[data-booking-cal-day-close]').forEach(btn=>btn.addEventListener('click', ()=>{ state.calendarSelectedDay = null; render(); }));
 
   document.querySelectorAll('[data-price-cal-nav]').forEach(b=>b.addEventListener('click', ()=>{
     state.priceCalendarOffset += Number(b.getAttribute('data-price-cal-nav'));
@@ -6885,6 +6901,8 @@ function attachHandlers(){
     });
     propForm.addEventListener('submit', async ev=>{
       ev.preventDefault();
+      if(propForm.dataset.saving==='true')return;
+      const previousClienti=JSON.parse(JSON.stringify(state.clienti));
       const fd = new FormData(propForm);
       let clienteId = fd.get('clienteId');
       if(!clienteId){
@@ -6904,7 +6922,7 @@ function attachHandlers(){
       } : (propEsistente && propEsistente.locazione ? {...propEsistente.locazione, attivo:false} : null);
       const amenitaSelezionate = fd.getAll('amenita');
       const altreRighe = (fd.get('caratteristicheAltro')||'').split('\n').map(r=>r.trim()).filter(Boolean);
-      saveProperty({
+      const saved=await saveProperty({
         nome: fd.get('nome'),
         indirizzo: fd.get('indirizzo'),
         tipo: fd.get('tipo'),
@@ -6920,6 +6938,7 @@ function attachHandlers(){
         caratteristicheAnnuncio: [...amenitaSelezionate, ...altreRighe].join('\n'),
         locazione
       }, (propEsistente && propEsistente.id) ? propEsistente.id : null);
+      if(!saved)state.clienti=previousClienti;
     });
   }
 
@@ -6996,24 +7015,33 @@ function attachHandlers(){
 
   const clienteForm = document.getElementById('clienteForm');
   if(clienteForm) clienteForm.addEventListener('submit', async ev=>{
-    ev.preventDefault();
-    const fd = new FormData(clienteForm);
-    const existingDocumenti = (state.modal.editing && state.modal.editing.documenti) || [];
-    const fileInput = clienteForm.querySelector('input[name=documenti]');
-    let nuoviDocumenti = [];
-    if(fileInput && fileInput.files.length){
-      nuoviDocumenti = await Promise.all([...fileInput.files].slice(0,4).map(f=>readAndCompressImage(f)));
+    ev.preventDefault();if(clienteForm.dataset.saving==='true')return;
+    const previousClienti=JSON.parse(JSON.stringify(state.clienti));
+    const modalAtStart=state.modal;
+    coreFormBusy(clienteForm,true);
+    try{
+      const fd = new FormData(clienteForm);
+      const existingDocumenti = (modalAtStart.editing && modalAtStart.editing.documenti) || [];
+      const fileInput = clienteForm.querySelector('input[name=documenti]');
+      let nuoviDocumenti = [];
+      if(fileInput && fileInput.files.length){
+        nuoviDocumenti = await Promise.all([...fileInput.files].slice(0,4).map(f=>readAndCompressImage(f)));
+      }
+      const editingId = modalAtStart.editing ? modalAtStart.editing.id : null;
+      const cliente = saveCliente({
+        nome: fd.get('nome'), telefono: fd.get('telefono'),
+        email: fd.get('email')||'', indirizzo: fd.get('indirizzo')||'',
+        documenti: existingDocumenti.concat(nuoviDocumenti)
+      }, editingId);
+      const saved=await saveData({renderOnError:false});
+      if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+      if(state.modal===modalAtStart){state.selectedClienteId = cliente.id;state.selectedId = null;closeModal();}render();
+    }catch(error){
+      state.clienti=previousClienti;
+      if(modalAtStart.editing?.id)modalAtStart.editing=state.clienti.find(c=>c.id===modalAtStart.editing.id)||modalAtStart.editing;
+      state.error=error.message||'Salvataggio non riuscito. Riprova.';
+      coreFormBusy(clienteForm,false);coreFormError(clienteForm,state.error);
     }
-    const editingId = state.modal.editing ? state.modal.editing.id : null;
-    const cliente = saveCliente({
-      nome: fd.get('nome'), telefono: fd.get('telefono'),
-      email: fd.get('email')||'', indirizzo: fd.get('indirizzo')||'',
-      documenti: existingDocumenti.concat(nuoviDocumenti)
-    }, editingId);
-    saveData(); closeModal();
-    state.selectedClienteId = cliente.id;
-    state.selectedId = null;
-    render();
   });
 
   document.querySelectorAll('[data-remove-documento]').forEach(b=>{
@@ -7151,17 +7179,32 @@ function attachHandlers(){
   });
 
   const settingsForm = document.getElementById('settingsForm');
-  if(settingsForm) settingsForm.addEventListener('submit', ev=>{
-    ev.preventDefault();
-    const fd = new FormData(settingsForm);
-    state.settings = { ...state.settings, nomeAgenzia: fd.get('nomeAgenzia') || 'Property Manager', telefonoGestore: fd.get('telefonoGestore') || '', gestoreEmail: state.settings.gestoreEmail || '', impegnoServizio: fd.get('impegnoServizio') || '' };
-    saveSettingsData();
-    closeModal();
+  if(settingsForm) settingsForm.addEventListener('submit', async ev=>{
+    ev.preventDefault();if(settingsForm.dataset.saving==='true')return;
+    const previousSettings=JSON.parse(JSON.stringify(state.settings));
+    const modalAtStart=state.modal;
+    coreFormBusy(settingsForm,true);
+    try{
+      const fd = new FormData(settingsForm);
+      state.settings = { ...state.settings, nomeAgenzia: fd.get('nomeAgenzia') || 'Property Manager', telefonoGestore: fd.get('telefonoGestore') || '', gestoreEmail: state.settings.gestoreEmail || '', impegnoServizio: fd.get('impegnoServizio') || '' };
+      const saved=await saveSettingsData({renderOnError:false});
+      if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+      if(state.modal===modalAtStart)closeModal();
+    }catch(error){
+      state.settings=previousSettings;state.error=error.message||'Salvataggio non riuscito. Riprova.';
+      coreFormBusy(settingsForm,false);coreFormError(settingsForm,state.error);
+    }
   });
 
   const bookingForm = document.getElementById('bookingForm');
   if(bookingForm) bookingForm.addEventListener('submit', ev=>ev.preventDefault());
 }
+
+
+
+
+
+
 
 
 
@@ -7193,7 +7236,7 @@ function attachHandlers(){
   const statusLabel = e => (labels[paymentStatus(e)] || 'Stato da verificare') + (overdue(e)&&paymentStatus(e)!=='scaduta'?' · Scaduta':'');
   const button = (action,p,id,text,kind='spesa') => `<button type="button" class="icon-btn" data-vpm-finance="${action}" data-property="${esc(p.id)}" data-record="${esc(id)}" data-kind="${kind}">${text}</button>`;
   const oldRaw = renderModalRaw;
-  const persistChecked = async () => { const ok=await saveData(); if(ok===false||state.error)throw new Error(state.error||'Salvataggio non riuscito. Riprova.'); };
+  const persistChecked = async () => { const ok=await saveData({renderOnError:false}); if(ok===false||state.error)throw new Error(state.error||'Salvataggio non riuscito. Riprova.'); };
   const snapshot = p => JSON.parse(JSON.stringify(p));
   const restore = (p,backup) => { for(const key of Object.keys(p))delete p[key];Object.assign(p,backup); };
   const field = (label,name,type,value='',required=false) => `<div class="field"><label for="vpm-finance-${name}">${label}</label><input id="vpm-finance-${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?'required':''} ${type==='number'?'min="0.01" step="0.01"':''}></div>`;
@@ -7325,18 +7368,54 @@ function attachHandlers(){
     ${ds.length ? ds.map(d=>`<section class="vpm-owner-form"><h3>${esc(d.title)}</h3><p>${esc(d.kind)} · Versione ${Number(d.version)||1} · ${esc(d.status)}${d.expiry?' · Scadenza '+esc(d.expiry):''}</p>${fileLink(d.file,'Scarica originale')} ${fileLink(d.signedFile,'Scarica copia sottoscritta')}${!manager ? form(p,'document-sign',`<input type="hidden" name="id" value="${esc(d.id)}">${upload('Carica copia sottoscritta')}${button('Invia copia al gestore')}`) : form(p,'document-status',`<input type="hidden" name="id" value="${esc(d.id)}">${select('Verifica documento','status',['Da firmare','Copia ricevuta, da verificare','Firmato verificato','Da correggere'],d.status)}${button('Aggiorna verifica')}`)}</section>`).join('') : empty('Il gestore non ha ancora caricato contratti o deleghe.')}`;
   }
   const portalFeedback = {};
-  const portalNotice = p => portalFeedback[p.id] ? `<div class="vpm-service-feedback" role="status">${esc(portalFeedback[p.id])}</div>` : '';
+  const portalFeedbackRole = {};
+  const portalNotice = p => portalFeedback[p.id] && portalFeedbackRole[p.id]===state.view ? `<div class="vpm-service-feedback" role="status">${esc(portalFeedback[p.id])}</div>` : '';
   function portalError(form,message){
     let box=form.querySelector('[data-service-error]');
     if(!box){box=document.createElement('div');box.dataset.serviceError='';box.className='vpm-service-error';box.setAttribute('role','alert');form.appendChild(box);}
     box.textContent=message;
   }
-  const portalStatuses = ['Bozza','Dati inviati al gestore','Dati mancanti','Attivazione in corso','Azione richiesta al proprietario','Annuncio attivo'];
+  const portalStatuses = ['Bozza','Dati inviati al gestore','Dati mancanti','In attesa del proprietario','Risposte da verificare','Verifiche del gestore','Attivazione in corso','Azione richiesta al proprietario','Annuncio attivo','Pratica completata'];
+  const requestTypes=['dati','documento','firma','conferma'];
+  const requestLabels={aperta:'Da rispondere','risposta-inviata':'Risposta da verificare','da-integrare':'Da integrare',completata:'Completata'};
+  const terminalStatuses=['Annuncio attivo','Pratica completata'];
+  function currentPortalDelegation(s){const docs=(s.documents||[]).filter(d=>d.kind==='Delega portali');return docs.length>0&&signed(docs[docs.length-1]);}
+  function portalMissing(v){
+    const required=['entity','legalName','taxId','address','email','phone','beneficiary','iban','platforms','accommodation','propertyAddress'];
+    const missing=required.filter(k=>!String(v[k]||'').trim());
+    if(v.entity==='Società'&&!String(v.representative||'').trim())missing.push('representative');
+    if(v.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email))missing.push('email valida');
+    if(v.iban&&!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(v.iban))missing.push('IBAN valido');
+    if(!['Persona fisica','Società'].includes(v.entity))missing.push('tipo intestatario');
+    if(!['Booking e Airbnb','Booking','Airbnb'].includes(v.platforms))missing.push('portali');
+    for(const platform of ['booking','airbnb'])if(v.platforms==='Booking e Airbnb'||v.platforms?.toLowerCase()===platform){if(!['Sì','No'].includes(v[platform+'Existing']))missing.push('account esistente '+platform);if(v[platform+'Existing']==='Sì'&&!String(v[platform+'Account']||'').trim())missing.push('account '+platform);}
+    return [...new Set(missing)];
+  }
+  function automaticPortalState(v){
+    const requests=v.requests||[];
+    if(requests.some(r=>r.status==='risposta-inviata'))v.status='Risposte da verificare';
+    else if(requests.some(r=>['aperta','da-integrare'].includes(r.status)))v.status='In attesa del proprietario';
+    else if(requests.length)v.status='Verifiche del gestore';
+  }
+  function requestFromNote(v,text){
+    const requests=v.requests||(v.requests=[]);
+    const existing=requests.find(r=>r.details===text&&r.required!==false&&r.status!=='completata');
+    if(existing)return existing;
+    const at=new Date().toISOString(),request={id:uid(),type:'dati',title:'Integrazione richiesta dal gestore',details:text,deadline:'',required:true,status:'aperta',createdAt:at,replies:[],history:[{id:uid(),actor:'gestore',at,text:'Richiesta inviata: '+text}]};
+    requests.push(request);return request;
+  }
+  function requestThreads(p,manager){
+    const requests=data(p).portal?.requests||[];
+    const legacyNote=data(p).portal?.managerNotes||'';
+    const legacy=manager&&legacyNote&&!requests.some(r=>r.details===legacyNote)?form(p,'portal-request-from-note','<p>La precedente nota del gestore non ha ancora una risposta tracciata. Trasformala in una richiesta obbligatoria per consentire al proprietario di rispondere.</p>'+button('Trasforma la nota in richiesta')):'';
+    const create=manager?form(p,'portal-request-add',select('Tipo richiesta','requestType',requestTypes)+field('Titolo richiesta','title','','text',true)+field('Istruzioni per il proprietario','details','','text',true)+field('Scadenza facoltativa','deadline','','date')+'<label><input type="checkbox" name="required" value="yes" checked> Richiesta obbligatoria per completare la pratica</label>'+upload('Documento da consultare o sottoscrivere, facoltativo','requestFile',false)+button('Invia richiesta al proprietario')):'';
+    return `<section class="vpm-request-thread"><h3>Richieste e risposte della pratica</h3>${note('Gestore e proprietario seguono qui ogni richiesta, le risposte e le verifiche. Le copie precedenti restano nello storico.')}<div class="vpm-request-grid">${requests.length?requests.map(r=>`<article class="vpm-request-card ${r.deadline&&r.deadline<new Date().toISOString().slice(0,10)&&r.status!=='completata'?'is-overdue':''}"><h4>${esc(r.title)}</h4><span class="vpm-request-status ${esc(r.status)}">${esc(requestLabels[r.status]||r.status)}</span><p>${esc(r.type)} · ${r.required!==false?'Obbligatoria':'Facoltativa'}${r.deadline?' · Scadenza '+esc(fmtDate(r.deadline))+(r.deadline<new Date().toISOString().slice(0,10)&&r.status!=='completata'?' · Scaduta':''):''}</p><p>${esc(r.details)}</p>${fileLink(r.file,'Scarica documento della richiesta')}<div class="vpm-request-history">${(r.history||[]).map(h=>`<div><strong>${h.actor==='gestore'?'Gestore':'Proprietario'} · ${esc(fmtDate(h.at))}</strong><p>${esc(h.text)}</p>${fileLink(h.attachment,'Scarica allegato storico')}</div>`).join('')}</div>${!manager&&['aperta','da-integrare'].includes(r.status)?form(p,'portal-request-reply',`<input type="hidden" name="requestId" value="${esc(r.id)}">${field('La tua risposta','response','','text',r.type==='dati')}${upload(r.type==='firma'?'Copia sottoscritta':r.type==='documento'?'Documento richiesto':'Allegato facoltativo','responseFile',['firma','documento'].includes(r.type))}${r.type==='conferma'?'<label><input type="checkbox" name="confirmed" value="yes" required> Confermo di aver completato quanto richiesto.</label>':''}${button('Invia risposta al gestore')}`):''}${manager&&r.status==='risposta-inviata'?form(p,'portal-request-review',`<input type="hidden" name="requestId" value="${esc(r.id)}">${field('Esito della verifica / motivo di integrazione','reason')}<div class="vpm-request-actions"><button class="btn-primary" type="submit" name="review" value="accept">Accetta e completa richiesta</button><button class="btn-secondary" type="submit" name="review" value="return">Richiedi integrazione</button></div>`):''}</article>`).join(''):empty('Non ci sono richieste aperte per questa pratica.')}</div>${legacy}${create}</section>`;
+  }
   function portals(p,manager) {
     const v = data(p).portal || {}, c = getCliente(p) || {};
-    const delegation = (data(p).documents || []).some(d=>d.kind==='Delega portali' && signed(d));
+    const delegation = currentPortalDelegation(data(p));
     const body = select('Intestatario account','entity',['Persona fisica','Società'],v.entity)+field('Nome e cognome o ragione sociale','legalName',v.legalName||c.nome,'text',true)+field('Codice fiscale / identificativo fiscale','taxId',v.taxId,'text',true)+field('Partita IVA, se applicabile','vat',v.vat)+field('Nome rappresentante, se società','representative',v.representative)+field('Indirizzo intestatario','address',v.address,'text',true)+field('Email del proprietario per gli account','email',v.email||c.email,'email',true)+field('Telefono','phone',v.phone||c.telefono,'tel',true)+field('Beneficiario degli incassi','beneficiary',v.beneficiary,'text',true)+field('IBAN beneficiario','iban',v.iban,'text',true)+select('Portali da attivare','platforms',['Booking e Airbnb','Booking','Airbnb'],v.platforms)+select('Account Booking esistente','bookingExisting',['No','Sì'],v.bookingExisting)+field('Email account Booking / link annuncio','bookingAccount',v.bookingAccount)+select('Account Airbnb esistente','airbnbExisting',['No','Sì'],v.airbnbExisting)+field('Email account Airbnb / link annuncio','airbnbAccount',v.airbnbAccount)+field('Nome struttura','accommodation',v.accommodation||p.nome,'text',true)+field('Indirizzo struttura','propertyAddress',v.propertyAddress||p.indirizzo,'text',true)+field('CIN / CIR / altri codici struttura','registration',v.registration)+field('Camere e posti letto','capacity',v.capacity)+field('Note per il gestore','notes',v.notes);
-    return `<h2>Booking e Airbnb</h2><p>Stato pratica: <strong>${esc(v.status||'Bozza')}</strong></p>${note('Il proprietario decide i prezzi e riceve gli incassi sul proprio conto. Il gestore prepara l’inserimento dei dati. Le verifiche e le conferme richieste dai portali devono essere completate dal titolare. Non inserire password.')}<p>Delega portali: ${delegation?'copia sottoscritta verificata':'da completare in Contratto e deleghe'}</p>${manager ? `<div class="vpm-owner-form">${['legalName','taxId','vat','representative','address','email','phone','beneficiary','iban','platforms','bookingExisting','bookingAccount','airbnbExisting','airbnbAccount','accommodation','propertyAddress','registration','capacity','notes'].map(k=>`<p><strong>${esc({legalName:'Intestatario',taxId:'Codice fiscale',vat:'Partita IVA',representative:'Rappresentante',address:'Indirizzo',email:'Email',phone:'Telefono',beneficiary:'Beneficiario',iban:'IBAN',platforms:'Portali',bookingExisting:'Booking esistente',bookingAccount:'Account Booking',airbnbExisting:'Airbnb esistente',airbnbAccount:'Account Airbnb',accommodation:'Struttura',propertyAddress:'Indirizzo struttura',registration:'Codici struttura',capacity:'Capienza',notes:'Note'}[k])}:</strong> ${esc(v[k]||'Da compilare')}</p>`).join('')}${fileLink(v.identityFile,'Documento identità')} ${fileLink(v.companyFile,'Documento società')}</div>`+form(p,'portal-status',select('Stato pratica','status',portalStatuses,v.status||'Bozza')+field('Attività richiesta al proprietario','managerNotes',v.managerNotes)+button('Aggiorna pratica')) : form(p,'portal-save',`<div class="field-row">${body}</div>${upload('Documento identità intestatario o rappresentante, se richiesto','identityFile',false)}${fileLink(v.identityFile,'Documento identità caricato')}${upload('Visura o documento società, se applicabile','companyFile',false)}${fileLink(v.companyFile,'Documento società caricato')}${note('Puoi salvare una bozza anche se mancano dei dati. Quando hai completato i campi richiesti, invia la richiesta al gestore. La delega verrà completata prima dell’attivazione degli annunci.')}<div class="vpm-service-buttons"><button class="btn-secondary" type="submit" name="portalSubmit" value="draft">Salva bozza</button><button class="btn-primary" type="submit" name="portalSubmit" value="send">Invia richiesta al gestore</button></div>${portalNotice(p)}`)}${v.managerNotes?`<div class="vpm-owner-empty">Richiesta del gestore: ${esc(v.managerNotes)}</div>`:''}${!delegation&&!manager?form(p,'delegation-request','<p>Richiedi al gestore il documento di delega per Booking e Airbnb.</p>'+(v.delegationRequested?'<div class="vpm-service-feedback" role="status">Richiesta inviata al gestore il '+esc(fmtDate(v.delegationRequested))+'. Troverai il documento nella sezione Contratto e deleghe appena il gestore lo avrà caricato.</div><button class="btn-secondary" type="button" disabled>Richiesta già inviata</button>':button('Richiedi invio delega'))):''}`;
+    return `<h2>Booking e Airbnb</h2><p>Stato pratica: <strong>${esc(v.status||'Bozza')}</strong></p>${portalNotice(p)}${requestThreads(p,manager)}${note('Il proprietario decide i prezzi e riceve gli incassi sul proprio conto. Il gestore prepara l’inserimento dei dati. Le verifiche e le conferme richieste dai portali devono essere completate dal titolare. Non inserire password.')}<p>Delega portali: ${delegation?'copia sottoscritta verificata':'da completare in Contratto e deleghe'}</p>${manager ? `<div class="vpm-owner-form">${['legalName','taxId','vat','representative','address','email','phone','beneficiary','iban','platforms','bookingExisting','bookingAccount','airbnbExisting','airbnbAccount','accommodation','propertyAddress','registration','capacity','notes'].map(k=>`<p><strong>${esc({legalName:'Intestatario',taxId:'Codice fiscale',vat:'Partita IVA',representative:'Rappresentante',address:'Indirizzo',email:'Email',phone:'Telefono',beneficiary:'Beneficiario',iban:'IBAN',platforms:'Portali',bookingExisting:'Booking esistente',bookingAccount:'Account Booking',airbnbExisting:'Airbnb esistente',airbnbAccount:'Account Airbnb',accommodation:'Struttura',propertyAddress:'Indirizzo struttura',registration:'Codici struttura',capacity:'Capienza',notes:'Note'}[k])}:</strong> ${esc(v[k]||'Da compilare')}</p>`).join('')}${fileLink(v.identityFile,'Documento identità')} ${fileLink(v.companyFile,'Documento società')}</div>`+form(p,'portal-status',select('Stato pratica','status',portalStatuses,v.status||'Bozza')+field('Attività richiesta al proprietario','managerNotes',v.managerNotes)+button('Aggiorna pratica')) : form(p,'portal-save',`<div class="field-row">${body}</div>${upload('Documento identità intestatario o rappresentante, se richiesto','identityFile',false)}${fileLink(v.identityFile,'Documento identità caricato')}${upload('Visura o documento società, se applicabile','companyFile',false)}${fileLink(v.companyFile,'Documento società caricato')}${note('Puoi salvare una bozza anche se mancano dei dati. Quando hai completato i campi richiesti, invia la richiesta al gestore. La delega verrà completata prima dell’attivazione degli annunci.')}<div class="vpm-service-buttons"><button class="btn-secondary" type="submit" name="portalSubmit" value="draft">Salva bozza</button><button class="btn-primary" type="submit" name="portalSubmit" value="send">Invia richiesta al gestore</button></div>`)}${v.managerNotes?`<div class="vpm-owner-empty">Richiesta del gestore: ${esc(v.managerNotes)}</div>`:''}${!delegation&&!manager?form(p,'delegation-request','<p>Richiedi al gestore il documento di delega per Booking e Airbnb.</p>'+(v.delegationRequested?'<div class="vpm-service-feedback" role="status">Richiesta inviata al gestore il '+esc(fmtDate(v.delegationRequested))+'. Troverai il documento nella sezione Contratto e deleghe appena il gestore lo avrà caricato.</div><button class="btn-secondary" type="button" disabled>Richiesta già inviata</button>':button('Richiedi invio delega'))):''}`;
   }
   function guests(p,manager) {
     const gs=data(p).guests||{}, bookings=p.prenotazioni||[];
@@ -7354,8 +7433,12 @@ function attachHandlers(){
       if(!manager && ['Da firmare','Da correggere'].includes(d.status)) items.push({tab:'contratti',title:'Documento da sottoscrivere: '+d.title});
     });
     const portal=s.portal||{};
+    (portal.requests||[]).forEach(r=>{
+      if(manager&&r.status==='risposta-inviata')items.push({tab:'portali',title:'Verifica risposta: '+r.title,requestId:r.id,status:r.status});
+      if(!manager&&['aperta','da-integrare'].includes(r.status))items.push({tab:'portali',title:(r.status==='da-integrare'?'Integra risposta: ':'Rispondi alla richiesta: ')+r.title,requestId:r.id,status:r.status});
+    });
     if(manager && portal.delegationRequested && !(s.documents||[]).some(d=>d.kind==='Delega portali')) items.push({tab:'portali',title:'Invia delega Booking e Airbnb'});
-    if(manager && ['Dati inviati al gestore','Attivazione in corso'].includes(portal.status)) items.push({tab:'portali',title:'Pratica portali: '+portal.status});
+    if(manager && ['Dati inviati al gestore','Attivazione in corso','Verifiche del gestore'].includes(portal.status)) items.push({tab:'portali',title:'Pratica portali: '+portal.status});
     if(!manager && ['Dati mancanti','Azione richiesta al proprietario'].includes(portal.status)) items.push({tab:'portali',title:'Completa pratica portali'});
     (s.orders||[]).forEach(o=>{
       if(manager && !['Consegnato / eseguito','Annullato'].includes(o.status)) items.push({tab:'shop',title:'Ordine da gestire: '+o.name});
@@ -7375,9 +7458,10 @@ function attachHandlers(){
     const f=event.target.closest('[data-service-form]'); if(!f)return;
     event.preventDefault(); event.stopImmediatePropagation();
     const p=state.properties.find(p=>p.id===f.dataset.serviceProperty);if(!p)return;
-    const action=f.dataset.serviceForm,manager=['document-add','document-status','portal-status','guest-status','catalog-add','order-status'].includes(action);
+    const action=f.dataset.serviceForm,manager=['document-add','document-status','portal-status','guest-status','catalog-add','order-status','portal-request-add','portal-request-review','portal-request-from-note'].includes(action);
     const actionModule=action.startsWith('guest-')?'prenotazioni':/^(catalog|order)-/.test(action)?'spese':null;
     if(!can(p,manager,actionModule)){alert('Accesso non consentito.');return;}
+    if(['portal-request-reply','portal-save','delegation-request','document-sign'].includes(action)&&state.view!=='proprietari'){alert('Questa azione spetta al proprietario.');return;}
     if(f.dataset.busy==='true')return;
     const fd=new FormData(f),get=k=>String(fd.get(k)||'').trim();
     const sending=action==='portal-save'&&(event.submitter?.value==='send'||get('send')==='yes');
@@ -7395,14 +7479,55 @@ function attachHandlers(){
       else if(action==='document-sign'){const d=s.documents.find(d=>d.id===get('id'));if(!d)throw Error('Documento non trovato.');d.signedFile=await fileFrom(f.elements.document,true);d.status='Copia ricevuta, da verificare';d.signedUploadedAt=new Date().toISOString();}
       else if(action==='document-status'){const d=s.documents.find(d=>d.id===get('id'));if(!d)throw Error('Documento non trovato.');if(get('status')==='Firmato verificato'&&!d.signedFile)throw Error('Occorre prima la copia sottoscritta.');d.status=get('status');}
       else if(action==='delegation-request'){if(s.portal.delegationRequested){portalFeedback[p.id]='La richiesta di delega è già stata inviata al gestore.';render();return;}s.portal.delegationRequested=new Date().toISOString();}
+      else if(action==='portal-request-from-note'){
+        if(!String(s.portal.managerNotes||'').trim())throw Error('Non ci sono note da trasformare.');
+        requestFromNote(s.portal,s.portal.managerNotes.trim());automaticPortalState(s.portal);
+      }
+      else if(action==='portal-request-add'){
+        if(!requestTypes.includes(get('requestType'))||!get('title')||!get('details'))throw Error('Indica tipo, titolo e istruzioni della richiesta.');
+        const deadline=get('deadline');if(deadline&&(!/^\d{4}-\d{2}-\d{2}$/.test(deadline)||Number.isNaN(Date.parse(deadline+'T12:00:00Z'))||new Date(deadline+'T12:00:00Z').toISOString().slice(0,10)!==deadline))throw Error('Inserisci una scadenza valida.');
+        const attachment=await fileFrom(f.elements.requestFile,false),at=new Date().toISOString();
+        const request={id:uid(),type:get('requestType'),title:get('title'),details:get('details'),deadline:get('deadline'),required:get('required')==='yes',status:'aperta',createdAt:at,replies:[],history:[{id:uid(),actor:'gestore',at,text:'Richiesta inviata: '+get('details'),attachment}]};
+        if(attachment)request.file=attachment;
+        (s.portal.requests||(s.portal.requests=[])).push(request);automaticPortalState(s.portal);
+      }
+      else if(action==='portal-request-reply'){
+        const request=(s.portal.requests||[]).find(r=>r.id===get('requestId'));if(!request)throw Error('Richiesta non trovata.');
+        if(!['aperta','da-integrare'].includes(request.status))throw Error('La risposta è già in verifica o la richiesta è completata.');
+        const attachment=await fileFrom(f.elements.responseFile,['documento','firma'].includes(request.type));
+        if(request.type==='dati'&&!get('response'))throw Error('Scrivi i dati richiesti nella risposta.');
+        if(request.type==='conferma'&&get('confirmed')!=='yes')throw Error('Conferma di aver completato l’attività richiesta.');
+        if(!get('response')&&!attachment&&get('confirmed')!=='yes')throw Error('Inserisci una risposta o un allegato.');
+        const reply={id:uid(),actor:'proprietario',at:new Date().toISOString(),text:get('response')||(request.type==='conferma'?'Attività confermata dal proprietario.':'Documento inviato dal proprietario.'),attachment,confirmed:get('confirmed')==='yes'};
+        (request.replies||(request.replies=[])).push(reply);(request.history||(request.history=[])).push({...reply});request.latestResponseId=reply.id;request.status='risposta-inviata';automaticPortalState(s.portal);
+      }
+      else if(action==='portal-request-review'){
+        const request=(s.portal.requests||[]).find(r=>r.id===get('requestId'));if(!request||request.status!=='risposta-inviata')throw Error('Non ci sono risposte in attesa di verifica per questa richiesta.');
+        if(!(request.replies||[]).some(reply=>reply.id===request.latestResponseId))throw Error('La risposta da verificare non è disponibile. Richiedi al proprietario di inviarla nuovamente.');
+        const decision=event.submitter?.value||get('review');if(!['accept','return'].includes(decision))throw Error('Scegli se accettare o richiedere un’integrazione.');
+        if(decision==='return'&&!get('reason'))throw Error('Indica il motivo e cosa deve integrare il proprietario.');
+        request.status=decision==='accept'?'completata':'da-integrare';
+        (request.history||(request.history=[])).push({id:uid(),actor:'gestore',at:new Date().toISOString(),text:(decision==='accept'?'Risposta accettata. Richiesta completata.':'Integrazione richiesta: ')+get('reason'),responseId:request.latestResponseId});
+        automaticPortalState(s.portal);
+      }
       else if(action==='portal-save'){
         if(sending&&get('entity')==='Società'&&!get('representative'))throw Error('Indica il rappresentante della società.');
         const identityFile=await fileFrom(f.elements.identityFile,false),companyFile=await fileFrom(f.elements.companyFile,false);
         if(identityFile)s.portal.identityFile=identityFile;if(companyFile)s.portal.companyFile=companyFile;
         const iban=get('iban').replace(/\s/g,'').toUpperCase();if(sending&&!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(iban))throw Error('Controlla il formato IBAN.');
-        for(const [k,v]of fd.entries())if(typeof v==='string'&&k!=='send')s.portal[k]=v.trim();s.portal.iban=iban;s.portal.status=sending?'Dati inviati al gestore':s.portal.submittedAt?s.portal.status||'Dati inviati al gestore':'Bozza';s.portal.updatedAt=new Date().toISOString();if(sending)s.portal.submittedAt=new Date().toISOString();
+        for(const [k,v]of fd.entries())if(typeof v==='string'&&['entity','legalName','taxId','vat','representative','address','email','phone','beneficiary','iban','platforms','bookingExisting','bookingAccount','airbnbExisting','airbnbAccount','accommodation','propertyAddress','registration','capacity','notes'].includes(k))s.portal[k]=v.trim();s.portal.iban=iban;s.portal.status=sending?'Dati inviati al gestore':s.portal.submittedAt?s.portal.status||'Dati inviati al gestore':'Bozza';s.portal.updatedAt=new Date().toISOString();if(sending&&portalMissing(s.portal).length)throw Error('Completa i dati obbligatori: '+portalMissing(s.portal).join(', ')+'.');if(sending)s.portal.submittedAt=new Date().toISOString();if((s.portal.requests||[]).length)automaticPortalState(s.portal);
       }
-      else if(action==='portal-status'){if(['Attivazione in corso','Annuncio attivo'].includes(get('status'))&&!s.documents.some(d=>d.kind==='Delega portali'&&signed(d)))throw Error('Verifica prima la copia sottoscritta della delega portali.');s.portal.status=get('status');s.portal.managerNotes=get('managerNotes');}
+      else if(action==='portal-status'){
+        const status=get('status');if(!portalStatuses.includes(status))throw Error('Seleziona uno stato valido.');
+        if(status==='Azione richiesta al proprietario'&&!get('managerNotes'))throw Error('Indica quale attività deve completare il proprietario.');
+        if(['Attivazione in corso',...terminalStatuses].includes(status)&&!currentPortalDelegation(s))throw Error('Verifica prima la copia sottoscritta della delega portali corrente, non scaduta.');
+        if(terminalStatuses.includes(status)){
+          if((s.portal.requests||[]).some(r=>r.required!==false&&r.status!=='completata'))throw Error('Completa prima tutte le richieste obbligatorie e verifica le risposte del proprietario.');
+          const missing=portalMissing(s.portal);if(missing.length)throw Error('Completa prima i dati obbligatori della pratica: '+missing.join(', ')+'.');
+        }
+        s.portal.status=status;s.portal.managerNotes=get('managerNotes');
+        if(status==='Azione richiesta al proprietario'){requestFromNote(s.portal,s.portal.managerNotes);automaticPortalState(s.portal);}
+      }
       else if(action==='guest-add') {if(!(p.prenotazioni||[]).some(b=>b.id===get('booking')))throw Error('Prenotazione non trovata.');if(get('birthDate')>new Date().toISOString().slice(0,10))throw Error('La data di nascita non può essere futura.');const g=s.guests[get('booking')]||(s.guests[get('booking')]={people:[],status:'Da preparare'});g.people.push({id:uid(),firstName:get('firstName'),lastName:get('lastName'),birthDate:get('birthDate'),birthPlace:get('birthPlace'),nationality:get('nationality'),documentType:get('documentType'),documentNumber:get('documentNumber'),issuedBy:get('issuedBy')});g.status='Da preparare';}
       else if(action==='guest-status'){const g=s.guests[get('booking')];if(!g||!g.people.length)throw Error('Inserisci prima i dati degli ospiti.');if(['Pronti per trasmissione','Trasmessi manualmente'].includes(get('status'))&&!s.documents.some(d=>d.kind==='Delega comunicazioni ospiti'&&signed(d)))throw Error('Verifica prima la delega comunicazioni ospiti.');if(get('status')==='Trasmessi manualmente'&&!get('reference'))throw Error('Inserisci un riferimento della trasmissione.');const receipt=await fileFrom(f.elements.receipt,false);Object.assign(g,{status:get('status'),reference:get('reference'),...(receipt?{receipt}:{})});}
       else if(action==='catalog-add'){const price=get('price')===''?null:Number(get('price'));if(price!==null&&(!Number.isFinite(price)||price<0))throw Error('Inserisci un prezzo valido.');s.catalog.push({id:uid(),name:get('name'),description:get('description'),kind:get('kind'),price,active:true});}
@@ -7413,6 +7538,10 @@ function attachHandlers(){
           'document-add':['Nuovo documento da sottoscrivere: '+get('title'),'proprietario','contratti'],
           'document-sign':['Copia sottoscritta ricevuta, da verificare.','gestore','contratti'],
           'delegation-request':['Richiesta invio delega Booking e Airbnb.','gestore','portali'],
+          'portal-request-from-note':['Nuova richiesta di integrazione per la pratica Booking e Airbnb.','proprietario','portali'],
+          'portal-request-add':['Nuova richiesta per la pratica Booking e Airbnb: '+get('title'),'proprietario','portali'],
+          'portal-request-reply':['Risposta del proprietario ricevuta, da verificare.','gestore','portali'],
+          'portal-request-review':['Verifica della tua risposta aggiornata. Consulta la richiesta nella pratica Booking e Airbnb.','proprietario','portali'],
           'order-add':['Nuovo ordine servizi del proprietario.','gestore','shop'],
           'portal-status':['Aggiornamento pratica Booking e Airbnb: '+get('status'),'proprietario','portali'],
           'order-status':['Aggiornamento ordine servizi: '+get('status'),'proprietario','shop']
@@ -7421,12 +7550,18 @@ function attachHandlers(){
         const n=notifications[action]; if(n) addNotifica(p,n[0],n[1],n[2]);
       }
       const saved=await saveData();if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+      portalFeedbackRole[p.id]=state.view;
+      if(action==='portal-request-from-note')portalFeedback[p.id]='Nota trasformata in richiesta obbligatoria. Il proprietario può ora inviare la risposta.';
+      if(action==='portal-request-add')portalFeedback[p.id]='Richiesta inviata al proprietario. La trovi nello storico della pratica.';
+      if(action==='portal-request-reply')portalFeedback[p.id]='Risposta inviata al gestore. Rimane disponibile nello storico ed è in attesa di verifica.';
+      if(action==='portal-request-review')portalFeedback[p.id]=(event.submitter?.value||get('review'))==='accept'?'Risposta accettata. Richiesta completata.':'Integrazione richiesta al proprietario. Il motivo è visibile nello storico.';
+      if(action==='portal-status')portalFeedback[p.id]='Pratica aggiornata. Stato: '+s.portal.status+'. Il proprietario trova un avviso nella propria area.';
       if(action==='portal-save')portalFeedback[p.id]=sending?'Richiesta inviata al gestore. Puoi seguire lo stato della pratica in questa sezione.':'Bozza salvata. Puoi completare i dati e inviare la richiesta in un secondo momento.';
       render();
     }catch(error){
       if(previousServices)p.vpmServices=previousServices;else delete p.vpmServices;
       p.notifiche=previousNotifications;f.dataset.busy='false';submitButtons.forEach(button=>button.disabled=false);
-      if(['portal-save','delegation-request'].includes(action))portalError(f,error.message||'Operazione non riuscita. Riprova.');
+      if(action.startsWith('portal-')||action==='delegation-request')portalError(f,error.message||'Operazione non riuscita. Riprova.');
       else alert(error.message||'Operazione non riuscita.');
     }
   },true);
@@ -7455,7 +7590,35 @@ function attachHandlers(){
   const moduleFor=kind=>['unit','booking','assign','camere'].includes(kind)?'prenotazioni':['rate','tariffe','published'].includes(kind)?'listino':'spese';
   const validNumber=v=>v!==null&&String(v).trim()!==''&&Number.isFinite(Number(v))&&Number(v)>=0;
   const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')&&!Number.isNaN(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
-  async function persist(){try{await saveData();if(state.error)return false;render();return true;}catch(err){state.error='Salvataggio non riuscito: '+err.message;render();return false;}}
+  const pendingProperties=new Set();
+  const transactionKeys=['vpmRooms','prenotazioni','notifiche'];
+  function snapshot(p){return Object.fromEntries(transactionKeys.map(key=>[key,{exists:Object.prototype.hasOwnProperty.call(p,key),value:p[key]===undefined?undefined:JSON.parse(JSON.stringify(p[key]))}]));}
+  function restore(p,before){transactionKeys.forEach(key=>{if(before[key].exists)p[key]=before[key].value;else delete p[key];});}
+  function showSaveError(target,message){
+    if(target&&typeof target.querySelector==='function'&&typeof document.createElement==='function'){
+      let box=target.querySelector('[data-vpm-room-error]');
+      if(!box){box=document.createElement('div');box.dataset.vpmRoomError='';box.className='vpm-service-error';box.setAttribute('role','alert');target.appendChild(box);}
+      box.textContent=message;
+    }else alert(message);
+  }
+  async function mutate(p,target,operation){
+    if(pendingProperties.has(p.id))return false;
+    const before=snapshot(p),controls=target&&typeof target.querySelectorAll==='function'?Array.from(target.querySelectorAll('button[type=submit]')):target&&target.tagName==='BUTTON'?[target]:[];
+    const previousDisabled=controls.map(button=>Boolean(button.disabled));
+    pendingProperties.add(p.id);if(target?.dataset)target.dataset.vpmRoomBusy='true';controls.forEach(button=>{button.disabled=true;});
+    try{
+      const changed=await operation();
+      if(changed!==true){restore(p,before);return false;}
+      const result=await saveData({renderOnError:false});
+      if(result===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
+      render();return true;
+    }catch(err){
+      restore(p,before);showSaveError(target,err?.message||'Salvataggio non riuscito. Riprova.');return false;
+    }finally{
+      pendingProperties.delete(p.id);if(target?.dataset)delete target.dataset.vpmRoomBusy;
+      controls.forEach((button,index)=>{button.disabled=previousDisabled[index];});
+    }
+  }
   function notify(p,text,recipient,tab){if(typeof addNotifica==='function')addNotifica(p,text,recipient,tab);}
   const cfg=p=>p.vpmRooms||{units:[],rates:[],feeBasis:'',includeCleaning:false};
   function mutable(p){if(!p.vpmRooms)p.vpmRooms={units:[],rates:[],feeBasis:'',includeCleaning:false};return p.vpmRooms;}
@@ -7490,7 +7653,7 @@ function attachHandlers(){
     const i=b.vpmFeeInvoice;
     const upload=edit?form(p,'invoice',`<input type="hidden" name="bookingId" value="${esc(b.id)}">`+field('Fattura PDF','document','file','','accept="application/pdf" required')+field('Numero fattura','number','text','','required')+field('Imponibile fattura','net','number',fee(p,b)??'','min="0" step="0.01" required')+field('IVA in euro, inserire 0 se non applicata','vat','number','','min="0" step="0.01" required')+field('Beneficiario','beneficiary','text','','required')+field('IBAN','iban','text','','required')+field('Scadenza','due','date','','required')+'<p>Il totale da pagare corrisponde all’imponibile più l’IVA indicata in fattura.</p>'):'';
     if(!i)return `<h4>Fattura servizio Vivere PM</h4>${upload||'<p>Fattura non ancora caricata dal gestore.</p>'}`;
-    return `<h4>Fattura ${esc(i.number)}</h4><p>Imponibile: ${money(i.net)} · IVA: ${money(i.vat)} · Totale: ${money(Number(i.net)+Number(i.vat))}</p><p>${esc(i.beneficiary)} · IBAN ${esc(i.iban)} · Scadenza ${esc(i.due)}</p><p>Pagamento: ${i.status==='paid'?'verificato dal gestore':i.status==='pending'?'bonifico dichiarato, da verificare':'da effettuare'}</p><a class="icon-btn" href="${esc(i.document)}" download="fattura-vivere-pm.pdf">Scarica fattura</a>${i.receipt?`<a class="icon-btn" href="${esc(i.receipt)}" download="contabile-bonifico">Scarica contabile</a>`:''}${!edit&&i.status!=='paid'?form(p,'invoice-payment',`<input type="hidden" name="bookingId" value="${esc(b.id)}">`+field('Data bonifico','date','date','','required')+field('Contabile PDF o immagine','receipt','file','','accept="application/pdf,image/jpeg,image/png" required')):''}${edit&&i.status==='pending'?form(p,'invoice-verify',`<input type="hidden" name="bookingId" value="${esc(b.id)}"><p>Conferma solo dopo aver verificato l’accredito.</p>`):''}`;
+    return `<h4>Fattura ${esc(i.number)}</h4><p>Imponibile: ${money(i.net)} · IVA: ${money(i.vat)} · Totale: ${money(Number(i.net)+Number(i.vat))}</p><p>${esc(i.beneficiary)} · IBAN ${esc(i.iban)} · Scadenza ${esc(i.due)}</p><p>Pagamento: ${i.status==='paid'?'verificato dal gestore':i.status==='pending'?'bonifico dichiarato, da verificare':'da effettuare'}</p><a class="icon-btn" href="${esc(i.document)}" download="fattura-vivere-pm.pdf">Scarica fattura</a>${i.receipt?`<a class="icon-btn" href="${esc(i.receipt)}" download="contabile-bonifico">Scarica contabile</a>`:''}${!edit&&!['paid','pending'].includes(i.status)?form(p,'invoice-payment',`<input type="hidden" name="bookingId" value="${esc(b.id)}">`+field('Data bonifico','date','date','','required')+field('Contabile PDF o immagine','receipt','file','','accept="application/pdf,image/jpeg,image/png" required')):''}${edit&&i.status==='pending'?form(p,'invoice-verify',`<input type="hidden" name="bookingId" value="${esc(b.id)}"><p>Conferma solo dopo aver verificato l’accredito.</p>`):''}`;
   }
   async function fileData(file){
     if(!file||!file.size)throw Error('Allega il documento.');
@@ -7513,64 +7676,72 @@ function attachHandlers(){
   document.addEventListener('submit',async e=>{
     const f=e.target.closest('[data-vpm-room-form]');if(!f)return;e.preventDefault();e.stopImmediatePropagation();
     const p=state.properties.find(p=>p.id===f.dataset.property);if(!p||!allowed(p))return;
-    const d=new FormData(f),kind=f.dataset.vpmRoomForm;if(!allowed(p,false,moduleFor(kind)))return;const c=mutable(p);
-    const numericFields={rate:['price'],unit:['capacity'],booking:['guests','amount'],'booking-finance':['night','cleaning','portal','refund'],invoice:['net','vat']}[kind]||[];
-    if(numericFields.some(k=>!validNumber(d.get(k))))return alert('Inserisci importi e quantità validi, finiti e non negativi.');
-    const dateFields={rate:['from','to'],booking:['checkin','checkout'],invoice:['due'],'invoice-payment':['date']}[kind]||[];
-    if(dateFields.some(k=>!validDate(String(d.get(k)||''))))return alert('Inserisci date valide.');
-    if(kind==='unit'&&(!Number.isInteger(Number(d.get('capacity')))||Number(d.get('capacity'))<1||Number(d.get('capacity'))>100||!String(d.get('name')||'').trim()))return alert('Indica nome camera e capienza intera da 1 a 100.');
-    if(kind==='booking'&&(!Number.isInteger(Number(d.get('guests')))||Number(d.get('guests'))<1||!String(d.get('name')||'').trim()))return alert('Indica il referente e almeno un ospite.');
-    if(['invoice','invoice-payment','invoice-verify'].includes(kind)){
-      const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return;
-      try{
+    const kind=f.dataset.vpmRoomForm;if(!allowed(p,false,moduleFor(kind)))return;
+    await mutate(p,f,async()=>{
+      const d=new FormData(f),c=mutable(p);
+      const numericFields={rate:['price'],unit:['capacity'],booking:['guests','amount'],'booking-finance':['night','cleaning','portal','refund'],invoice:['net','vat']}[kind]||[];
+      if(numericFields.some(k=>!validNumber(d.get(k))))throw Error('Inserisci importi e quantità validi, finiti e non negativi.');
+      const dateFields={rate:['from','to'],booking:['checkin','checkout'],invoice:['due'],'invoice-payment':['date']}[kind]||[];
+      if(dateFields.some(k=>!validDate(String(d.get(k)||''))))throw Error('Inserisci date valide.');
+      if(kind==='unit'&&(!Number.isInteger(Number(d.get('capacity')))||Number(d.get('capacity'))<1||Number(d.get('capacity'))>100||!String(d.get('name')||'').trim()))throw Error('Indica nome camera e capienza intera da 1 a 100.');
+      if(kind==='booking'&&(!Number.isInteger(Number(d.get('guests')))||Number(d.get('guests'))<1||!String(d.get('name')||'').trim()))throw Error('Indica il referente e almeno un ospite.');
+      if(['invoice','invoice-payment','invoice-verify'].includes(kind)){
+        const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return false;
         if(kind==='invoice'&&manager()){
-          if(b.vpmFeeInvoice)return alert('La fattura è già presente. Conservare lo storico prima di emettere una nuova fattura.');
-          const iban=String(d.get('iban')).replace(/\s/g,'').toUpperCase();if(!/^[A-Z]{2}[0-9A-Z]{13,32}$/.test(iban))return alert('Inserisci un IBAN valido.');
-          if(!String(d.get('number')||'').trim()||!String(d.get('beneficiary')||'').trim())return alert('Indica numero fattura e beneficiario.');
-          b.vpmFeeInvoice={number:String(d.get('number')),net:Number(d.get('net')),vat:Number(d.get('vat')),beneficiary:String(d.get('beneficiary')),iban,due:String(d.get('due')),document:await fileData(d.get('document')),status:'unpaid',createdAt:new Date().toISOString()};
+          if(b.vpmFeeInvoice)throw Error('La fattura è già presente. Conservare lo storico prima di emettere una nuova fattura.');
+          const iban=String(d.get('iban')).replace(/\s/g,'').toUpperCase();if(!/^[A-Z]{2}[0-9A-Z]{13,32}$/.test(iban))throw Error('Inserisci un IBAN valido.');
+          if(!String(d.get('number')||'').trim()||!String(d.get('beneficiary')||'').trim())throw Error('Indica numero fattura e beneficiario.');
+          const document=await fileData(d.get('document'));
+          b.vpmFeeInvoice={number:String(d.get('number')),net:Number(d.get('net')),vat:Number(d.get('vat')),beneficiary:String(d.get('beneficiary')),iban,due:String(d.get('due')),document,status:'unpaid',createdAt:new Date().toISOString()};
           notify(p,'Nuova fattura Vivere PM '+b.vpmFeeInvoice.number+' da pagare entro '+b.vpmFeeInvoice.due+'.','proprietario','economia');
-        }else if(kind==='invoice-payment'&&allowed(p,true)&&b.vpmFeeInvoice&&b.vpmFeeInvoice.status!=='paid'){
+        }else if(kind==='invoice-payment'&&allowed(p,true)&&b.vpmFeeInvoice&&!['paid','pending'].includes(b.vpmFeeInvoice.status)){
           const receipt=await fileData(d.get('receipt'));Object.assign(b.vpmFeeInvoice,{receipt,paymentDate:String(d.get('date')),status:'pending'});notify(p,'Bonifico dichiarato per fattura Vivere PM '+b.vpmFeeInvoice.number+': verifica l’accredito.','gestore','economia');
         }else if(kind==='invoice-verify'&&manager()&&b.vpmFeeInvoice?.status==='pending'){
           b.vpmFeeInvoice.status='paid';b.vpmFeeInvoice.verifiedAt=new Date().toISOString();notify(p,'Pagamento della fattura Vivere PM '+b.vpmFeeInvoice.number+' verificato.','proprietario','economia');
-        }else return;
-        await persist();return;
-      }catch(err){alert(err.message);return;}
-    }
-    if(kind==='rate'){
-      if(!allowed(p,true))return;
-      if(String(d.get('to'))<String(d.get('from')))return alert('La data finale deve seguire quella iniziale.');
-      const unitId=String(d.get('unitId')||'');if(unitId&&!units(p).some(u=>u.id===unitId))return;
-      (c.rates||(c.rates=[])).push({id:uid(),unitId,from:String(d.get('from')),to:String(d.get('to')),price:Number(d.get('price')),createdAt:new Date().toISOString(),portalUpdated:false});notify(p,'Il proprietario ha aggiornato una tariffa: aggiorna Booking e Airbnb.','gestore','listino');
-    }else{
-      if(!manager())return;
-      if(kind==='unit') (c.units||(c.units=[])).push({id:uid(),name:String(d.get('name')).trim(),capacity:Number(d.get('capacity')),basePrice:0});
-      if(kind==='fee'){if(!['lordo','netto-portale',''].includes(String(d.get('basis')||'')))return;c.feeBasis=String(d.get('basis')||'');c.includeCleaning=d.get('cleaning')==='yes';}
-      if(kind==='booking-finance'){
-        const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return;
-        b.vpmNightAmount=Number(d.get('night'));b.vpmCleaning=Number(d.get('cleaning'));b.vpmPortalCommission=Number(d.get('portal'));b.vpmRefund=Number(d.get('refund'));
+        }else return false;
+        return true;
       }
-      if(kind==='booking'||kind==='assign'){
-        const b=kind==='assign'?(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId')):{id:uid(),nome:String(d.get('name')),checkin:String(d.get('checkin')),checkout:String(d.get('checkout')),adulti:Number(d.get('guests')),totale:Number(d.get('amount')),vpmNightAmount:Number(d.get('amount')),stato:'confermata',createdAt:new Date().toISOString()};if(!b)return;
-        const unitId=String(d.get('unitId')||'');const u=units(p).find(u=>u.id===unitId);if(unitId&&!u)return;
-        if(b.checkout<=b.checkin)return alert('La partenza deve seguire l’arrivo.');
-        if(u&&Number(b.adulti||1)+Number(b.bambini||0)>Number(u.capacity))return alert('Il numero di ospiti supera la capienza della camera.');
-        if(conflicts(p,b,unitId,b.id))return alert('Le date si sovrappongono a una prenotazione o a un blocco della stessa unità o dell’intera struttura.');
-        b.unitId=unitId;if(kind==='booking')(p.prenotazioni||(p.prenotazioni=[])).push(b);
+      if(kind==='rate'){
+        if(!allowed(p,true))return false;
+        if(String(d.get('to'))<String(d.get('from')))throw Error('La data finale deve seguire quella iniziale.');
+        const unitId=String(d.get('unitId')||'');if(unitId&&!units(p).some(u=>u.id===unitId))return false;
+        (c.rates||(c.rates=[])).push({id:uid(),unitId,from:String(d.get('from')),to:String(d.get('to')),price:Number(d.get('price')),createdAt:new Date().toISOString(),portalUpdated:false});notify(p,'Il proprietario ha aggiornato una tariffa: aggiorna Booking e Airbnb.','gestore','listino');
+      }else{
+        if(!manager())return false;
+        if(kind==='unit') (c.units||(c.units=[])).push({id:uid(),name:String(d.get('name')).trim(),capacity:Number(d.get('capacity')),basePrice:0});
+        else if(kind==='fee'){if(!['lordo','netto-portale',''].includes(String(d.get('basis')||'')))return false;c.feeBasis=String(d.get('basis')||'');c.includeCleaning=d.get('cleaning')==='yes';}
+        else if(kind==='booking-finance'){
+          const b=(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId'));if(!b)return false;
+          b.vpmNightAmount=Number(d.get('night'));b.vpmCleaning=Number(d.get('cleaning'));b.vpmPortalCommission=Number(d.get('portal'));b.vpmRefund=Number(d.get('refund'));
+        }
+        else if(kind==='booking'||kind==='assign'){
+          const b=kind==='assign'?(p.prenotazioni||[]).find(b=>b.id===d.get('bookingId')):{id:uid(),nome:String(d.get('name')),checkin:String(d.get('checkin')),checkout:String(d.get('checkout')),adulti:Number(d.get('guests')),totale:Number(d.get('amount')),vpmNightAmount:Number(d.get('amount')),stato:'confermata',createdAt:new Date().toISOString()};if(!b)return false;
+          const unitId=String(d.get('unitId')||'');const u=units(p).find(u=>u.id===unitId);if(unitId&&!u)return false;
+          if(b.checkout<=b.checkin)throw Error('La partenza deve seguire l’arrivo.');
+          if(u&&Number(b.adulti||1)+Number(b.bambini||0)>Number(u.capacity))throw Error('Il numero di ospiti supera la capienza della camera.');
+          if(conflicts(p,b,unitId,b.id))throw Error('Le date si sovrappongono a una prenotazione o a un blocco della stessa unità o dell’intera struttura.');
+          b.unitId=unitId;if(kind==='booking')(p.prenotazioni||(p.prenotazioni=[])).push(b);
+        }else return false;
       }
-    }
-    await persist();
+      return true;
+    });
   },true);
   document.addEventListener('click',async e=>{
     const el=e.target.closest('[data-vpm-room-delete],[data-vpm-rate-published],[data-vpm-owner-received]');if(!el)return;
-    e.preventDefault();e.stopImmediatePropagation();const p=state.properties.find(p=>p.id===el.dataset.property);if(!p||!allowed(p,false,el.dataset.vpmRoomDelete?'prenotazioni':el.dataset.vpmRatePublished?'listino':'spese'))return;const c=mutable(p);
-    if(el.dataset.vpmRoomDelete&&manager()){
-      if((p.prenotazioni||[]).some(b=>b.unitId===el.dataset.vpmRoomDelete))return alert('La camera contiene prenotazioni. Conserva la camera per mantenere lo storico.');
-      if(!confirm('Rimuovere questa camera e le sue tariffe?'))return;c.units=units(p).filter(u=>u.id!==el.dataset.vpmRoomDelete);c.rates=(c.rates||[]).filter(r=>r.unitId!==el.dataset.vpmRoomDelete);
-    }
-    if(el.dataset.vpmRatePublished&&manager()){const r=(c.rates||[]).find(r=>r.id===el.dataset.vpmRatePublished);if(r){r.portalUpdated=true;r.portalUpdatedAt=new Date().toISOString();notify(p,'Il gestore ha confermato l’aggiornamento della tariffa sui portali.','proprietario','tariffe');}}
-    if(el.dataset.vpmOwnerReceived&&allowed(p,true)){const b=(p.prenotazioni||[]).find(b=>b.id===el.dataset.vpmOwnerReceived);if(b){b.vpmOwnerReceived=true;b.vpmOwnerReceivedAt=new Date().toISOString();}}
-    await persist();
+    e.preventDefault();e.stopImmediatePropagation();const p=state.properties.find(p=>p.id===el.dataset.property);if(!p||!allowed(p,false,el.dataset.vpmRoomDelete?'prenotazioni':el.dataset.vpmRatePublished?'listino':'spese'))return;
+    await mutate(p,el,async()=>{
+      const c=mutable(p);
+      if(el.dataset.vpmRoomDelete&&manager()){
+        if((p.prenotazioni||[]).some(b=>b.unitId===el.dataset.vpmRoomDelete))throw Error('La camera contiene prenotazioni. Conserva la camera per mantenere lo storico.');
+        if(!confirm('Rimuovere questa camera e le sue tariffe?'))return false;
+        c.units=units(p).filter(u=>u.id!==el.dataset.vpmRoomDelete);c.rates=(c.rates||[]).filter(r=>r.unitId!==el.dataset.vpmRoomDelete);
+      }else if(el.dataset.vpmRatePublished&&manager()){
+        const r=(c.rates||[]).find(r=>r.id===el.dataset.vpmRatePublished);if(!r||r.portalUpdated)return false;r.portalUpdated=true;r.portalUpdatedAt=new Date().toISOString();notify(p,'Il gestore ha confermato l’aggiornamento della tariffa sui portali.','proprietario','tariffe');
+      }else if(el.dataset.vpmOwnerReceived&&allowed(p,true)){
+        const b=(p.prenotazioni||[]).find(b=>b.id===el.dataset.vpmOwnerReceived);if(!b||b.vpmOwnerReceived)return false;b.vpmOwnerReceived=true;b.vpmOwnerReceivedAt=new Date().toISOString();
+      }else return false;
+      return true;
+    });
   },true);
   const legacyCalc=calcTotale;
   calcTotale=function(p,checkin,checkout){const result=legacyCalc(p,checkin,checkout);if(!result)return result;const custom=(cfg(p).rates||[]).some(r=>!r.unitId);if(!custom)return result;const a=calculate(p,'',checkin,checkout);if(!a)return null;return {...result,soggiornoBase:a.amount,totale:a.amount+result.totaleServizi};};
@@ -7643,7 +7814,7 @@ if(VPM_DEMO){
   const seed=()=>({clienti:[{id:'review-owner',nome:'Proprietario dimostrativo',email:'proprietario@example.test',telefono:'',indirizzo:'Sicilia'}],settings:{nomeAgenzia:'Vivere PM',gestoreEmail:'gestore@example.test',telefonoGestore:''},operatori:[],properties:[{id:'review-home',clienteId:'review-owner',nome:'Casa del Mediterraneo',tipo:'B&B',indirizzo:'Sicilia, Italia',catasto:'IMM-DEMO',disponibilePrenotazioni:true,prezzoNotte:0,capacitaAdulti:6,capacitaBambini:0,animaliAmmessi:false,foto:[],spese:[],manutenzioni:[],prenotazioni:[],tariffePersonalizzate:{},prezziSettimanali:{},notteMinima:1,servizi:[],controlli:[],periodicitaControlli:2,listinoServizi:[],messaggi:[],notifiche:[],vpmRooms:{units:[{id:'camera-sole',name:'Camera Sole',capacity:2,basePrice:0},{id:'camera-mare',name:'Camera Mare',capacity:2,basePrice:0}],rates:[],feeBasis:'',includeCleaning:false}}]});
   function useDemo(data){Object.assign(state,data,{loading:false,notConfigured:false,libError:false,error:null,gestoreUnlocked:true,gestoreRole:'admin',gestoreAuthUser:'gestore@example.test',ownerAuth:{email:'proprietario@example.test'},ownerPropId:'review-home',selectedId:'review-home',dossierTab:'camere'});}
   loadData=async function(){let data;try{data=JSON.parse(localStorage.getItem(demoKey)||'null');}catch(_){}useDemo(data||seed());render();};
-  persistAll=async function(){try{localStorage.setItem(demoKey,JSON.stringify({properties:state.properties,clienti:state.clienti,settings:state.settings,operatori:state.operatori}));state.error=null;return true;}catch(error){state.error='Salvataggio anteprima non riuscito: '+error.message;render();return false;}};
+  persistAll=async function(options={}){try{localStorage.setItem(demoKey,JSON.stringify({properties:state.properties,clienti:state.clienti,settings:state.settings,operatori:state.operatori}));state.error=null;return true;}catch(error){state.error='Salvataggio anteprima non riuscito: '+error.message;if(options.renderOnError!==false)render();return false;}};
   subscribeRealtime=function(){};
   checkAuthSession=async function(){};
   logoutOwner=async function(){state.view='gestore';render();};
@@ -7675,8 +7846,9 @@ renderCalendar=function(bookings,offset){
 };
 /* Manager-wide entry points for structures and owner portal requests. */
 let vpmPortalHubFilter='pending';
-function vpmPortalRequested(p){const x=p.vpmServices?.portal;return !!x&&(!!x.delegationRequested||!!x.submittedAt||!!x.status&&x.status!=='Bozza');}
-function vpmPortalPending(p){return vpmPortalRequested(p)&&p.vpmServices.portal.status!=='Annuncio attivo';}
+function vpmPortalRequested(p){const x=p.vpmServices?.portal;return !!x&&(!!x.requests?.length||!!x.delegationRequested||!!x.submittedAt||!!x.status&&x.status!=='Bozza');}
+function vpmPortalPending(p){const x=p.vpmServices?.portal||{};return vpmPortalRequested(p)&&(!['Annuncio attivo','Pratica completata'].includes(x.status)||(x.requests||[]).some(r=>r.required!==false&&r.status!=='completata'));}
+function vpmPortalRequestCounts(x){const rs=x.requests||[];return {waiting:rs.filter(r=>['aperta','da-integrare'].includes(r.status)).length,review:rs.filter(r=>r.status==='risposta-inviata').length,complete:rs.filter(r=>r.status==='completata').length};}
 function vpmBnbProperties(){return immobiliVisibili().filter(p=>['B&B','Affittacamere'].includes(p.tipo)||p.vpmRooms?.units?.length);}
 function vpmRenderBnbHub(){
   if(!haModulo('prenotazioni'))return '<div class="portal-shell">Non hai accesso alla gestione delle camere.</div>';
@@ -7684,9 +7856,10 @@ function vpmRenderBnbHub(){
   return vpmPortfolioShell('STRUTTURE','B&B e camere','Gestisci ogni struttura e le sue camere, con calendari e prenotazioni separati.',[['ti-building',props.length,'Strutture'],['ti-bed',rooms,'Camere'],['ti-calendar-event',bookings,'Prenotazioni registrate']],`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">${isAdmin()?'<button type="button" class="btn-primary" data-vpm-new-bnb>+ Nuovo B&B / affittacamere</button>':''}<button class="icon-btn" data-nav="immobili">Tutti gli immobili</button></div><section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Le tue strutture</h2></div><div class="vpm-portfolio-list">${props.map(p=>`<article class="vpm-portfolio-row"><span class="vpm-portfolio-avatar"><i class="ti ti-bed"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmOwnerEscape(p.nome)}</h3><p>${vpmOwnerEscape(p.indirizzo||'')} · ${vpmOwnerEscape(getCliente(p)?.nome||'Proprietario da associare')}</p><small>${p.vpmRooms?.units?.length||0} camere · ${vpmOwnerEscape(p.tipo)}</small></div><button data-vpm-open-tab="${vpmOwnerEscape(p.id)}::camere">Gestisci camere e calendario</button><button data-vpm-open-tab="${vpmOwnerEscape(p.id)}::portali">Booking e Airbnb</button></article>`).join('')||'<p class="vpm-portfolio-empty">Nessun B&B ancora presente. Crea una struttura oppure modifica il tipo di un immobile esistente in B&B o Affittacamere, poi aggiungi le camere.</p>'}</div></section>`);
 }
 function vpmRenderPortalHub(){
-  const all=immobiliVisibili(),pending=all.filter(vpmPortalPending),requested=all.filter(vpmPortalRequested),active=all.filter(p=>p.vpmServices?.portal?.status==='Annuncio attivo');
-  const shown=vpmPortalHubFilter==='all'?all:vpmPortalHubFilter==='active'?active:pending;
-  return vpmPortfolioShell('COLLEGAMENTI','Richieste Booking/Airbnb','Qui ricevi le richieste dei proprietari, prepari le deleghe e segui l’attivazione degli annunci.',[['ti-inbox',pending.length,'Richieste da gestire'],['ti-file-description',requested.filter(p=>p.vpmServices?.portal?.delegationRequested).length,'Richieste di delega'],['ti-world',active.length,'Annunci attivi']],`<div class="vpm-portfolio-filters"><button data-vpm-portal-filter="pending" class="${vpmPortalHubFilter==='pending'?'active':''}">Da gestire (${pending.length})</button><button data-vpm-portal-filter="active" class="${vpmPortalHubFilter==='active'?'active':''}">Annunci attivi (${active.length})</button><button data-vpm-portal-filter="all" class="${vpmPortalHubFilter==='all'?'active':''}">Tutti gli immobili (${all.length})</button></div><section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Pratiche dei proprietari</h2></div><div class="vpm-portfolio-list">${shown.map(p=>{const x=p.vpmServices?.portal||{},docs=p.vpmServices?.documents||[],signed=docs.some(d=>d.kind==='Delega portali'&&d.signedFile&&d.status==='Firmato verificato'&&(!d.expiry||d.expiry>=new Date().toISOString().slice(0,10)));return `<article class="vpm-portfolio-row"><span class="vpm-portfolio-avatar"><i class="ti ti-world"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmOwnerEscape(p.nome)}</h3><p>${vpmOwnerEscape(getCliente(p)?.nome||'Proprietario da associare')} · ${vpmOwnerEscape(x.status||(x.delegationRequested?'Invio delega richiesto':'Nessuna richiesta inviata'))}</p><small>${x.delegationRequested?'Invio delega richiesto il '+fmtDate(x.delegationRequested):'Delega non richiesta'} · ${signed?'Delega verificata':'Delega da completare'}</small>${x.managerNotes?'<small>'+vpmOwnerEscape(x.managerNotes)+'</small>':''}</div><button data-vpm-open-tab="${vpmOwnerEscape(p.id)}::portali">Apri dati e pratica</button><button data-vpm-open-tab="${vpmOwnerEscape(p.id)}::contratti">Contratto e deleghe</button></article>`;}).join('')||'<p class="vpm-portfolio-empty">Non ci sono richieste in questa sezione. Il proprietario può inviarle da Booking e Airbnb, con “Richiedi invio delega” oppure inviando i dati al gestore. Per preparare una pratica usa “Tutti gli immobili”.</p>'}</div></section>`);
+  const all=immobiliVisibili(),pending=all.filter(vpmPortalPending),requested=all.filter(vpmPortalRequested),active=all.filter(p=>p.vpmServices?.portal?.status==='Annuncio attivo'),completed=all.filter(p=>vpmPortalRequested(p)&&!vpmPortalPending(p));
+  const waiting=all.reduce((n,p)=>n+vpmPortalRequestCounts(p.vpmServices?.portal||{}).waiting,0),review=all.reduce((n,p)=>n+vpmPortalRequestCounts(p.vpmServices?.portal||{}).review,0);
+  const shown=vpmPortalHubFilter==='all'?all:vpmPortalHubFilter==='active'?active:vpmPortalHubFilter==='completed'?completed:pending;
+  return vpmPortfolioShell('COLLEGAMENTI','Richieste Booking/Airbnb','Qui ricevi le richieste dei proprietari, prepari le deleghe e segui l’attivazione degli annunci.',[['ti-inbox',pending.length,'Pratiche aperte'],['ti-user-question',waiting,'Risposte attese'],['ti-file-check',review,'Risposte da verificare'],['ti-circle-check',completed.length,'Pratiche concluse']],`<div class="vpm-portfolio-filters"><button data-vpm-portal-filter="pending" class="${vpmPortalHubFilter==='pending'?'active':''}">Da gestire (${pending.length})</button><button data-vpm-portal-filter="active" class="${vpmPortalHubFilter==='active'?'active':''}">Annunci attivi (${active.length})</button><button data-vpm-portal-filter="completed" class="${vpmPortalHubFilter==='completed'?'active':''}">Concluse (${completed.length})</button><button data-vpm-portal-filter="all" class="${vpmPortalHubFilter==='all'?'active':''}">Tutti gli immobili (${all.length})</button></div><section class="vpm-portfolio-panel"><div class="vpm-portfolio-heading"><h2>Pratiche dei proprietari</h2></div><div class="vpm-portfolio-list">${shown.map(p=>{const x=p.vpmServices?.portal||{},docs=p.vpmServices?.documents||[],signed=docs.some(d=>d.kind==='Delega portali'&&d.signedFile&&d.status==='Firmato verificato'&&(!d.expiry||d.expiry>=new Date().toISOString().slice(0,10)));return `<article class="vpm-portfolio-row"><span class="vpm-portfolio-avatar"><i class="ti ti-world"></i></span><div class="vpm-portfolio-row-main"><h3>${vpmOwnerEscape(p.nome)}</h3><p>${vpmOwnerEscape(getCliente(p)?.nome||'Proprietario da associare')} · ${vpmOwnerEscape(x.status||(x.delegationRequested?'Invio delega richiesto':'Nessuna richiesta inviata'))}</p><small>${x.delegationRequested?'Invio delega richiesto il '+fmtDate(x.delegationRequested):'Delega non richiesta'} · ${signed?'Delega verificata':'Delega da completare'}</small>${x.managerNotes?'<small>'+vpmOwnerEscape(x.managerNotes)+'</small>':''}${x.requests?.length?'<small class="vpm-portal-request-summary">'+vpmPortalRequestCounts(x).waiting+' risposte attese · '+vpmPortalRequestCounts(x).review+' da verificare · '+vpmPortalRequestCounts(x).complete+' completate</small>':''}</div><button data-vpm-open-tab="${vpmOwnerEscape(p.id)}::portali">Apri dati e pratica</button><button data-vpm-open-tab="${vpmOwnerEscape(p.id)}::contratti">Contratto e deleghe</button></article>`;}).join('')||'<p class="vpm-portfolio-empty">Non ci sono richieste in questa sezione. Il proprietario può inviarle da Booking e Airbnb, con “Richiedi invio delega” oppure inviando i dati al gestore. Per preparare una pratica usa “Tutti gli immobili”.</p>'}</div></section>`);
 }
 const vpmHubSidebar=renderSidebar;
 renderSidebar=function(){
@@ -7694,17 +7867,11 @@ renderSidebar=function(){
   const menu=`${haModulo('prenotazioni')?`<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='bnb-hub'&&!state.selectedId?'active':''}" data-vpm-hub="bnb-hub"><span class="nav-icon"><i class="ti ti-bed"></i></span>B&B e camere <span class="vpm-nav-count">${vpmBnbProperties().length}</span></button>`:''}<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='portali-hub'&&!state.selectedId?'active':''}" data-vpm-hub="portali-hub"><span class="nav-icon"><i class="ti ti-world"></i></span>Richieste Booking/Airbnb ${count?'<span class="nav-badge">'+count+'</span>':''}</button>`;
   return vpmHubSidebar().replace('<div class="vpm-sidebar-quick">',menu+'<div class="vpm-sidebar-quick">');
 };
-const vpmHubOverview=renderOverview;
-renderOverview=function(){
-  const html=vpmHubOverview(),pending=immobiliVisibili().filter(vpmPortalPending).length;
-  const shortcuts=`<section class="vpm-hub-shortcuts" aria-label="Strutture e portali">${haModulo('prenotazioni')?`<button data-vpm-hub="bnb-hub"><i class="ti ti-bed"></i><span><strong>B&B e camere</strong><small>${vpmBnbProperties().length} strutture · Calendari per camera</small></span><i class="ti ti-arrow-right"></i></button>`:''}<button data-vpm-hub="portali-hub"><i class="ti ti-world"></i><span><strong>Richieste Booking/Airbnb</strong><small>${pending} richieste da gestire · Dati e deleghe</small></span><i class="ti ti-arrow-right"></i></button></section>`;
-  return shortcuts+html;
-};
 document.addEventListener('click',event=>{
   const target=event.target.closest('[data-vpm-hub],[data-vpm-portal-filter],[data-vpm-new-bnb]');if(!target||state.view!=='gestore'||!state.gestoreUnlocked)return;
   event.preventDefault();event.stopImmediatePropagation();
   if(target.hasAttribute('data-vpm-new-bnb')){if(isAdmin())openModal('property',null,null,{bnb:true});return;}
-  if(target.dataset.vpmPortalFilter){if(!['pending','all','active'].includes(target.dataset.vpmPortalFilter))return;vpmPortalHubFilter=target.dataset.vpmPortalFilter;}
+  if(target.dataset.vpmPortalFilter){if(!['pending','all','active','completed'].includes(target.dataset.vpmPortalFilter))return;vpmPortalHubFilter=target.dataset.vpmPortalFilter;}
   else{if(!['bnb-hub','portali-hub'].includes(target.dataset.vpmHub)||target.dataset.vpmHub==='bnb-hub'&&!haModulo('prenotazioni'))return;state.vistaGestore=target.dataset.vpmHub;}
   state.selectedId=null;state.selectedClienteId=null;state.modal=null;render();
 },true);

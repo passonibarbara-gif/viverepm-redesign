@@ -1,10 +1,11 @@
 /* Navigation integration, read-only legacy prices and isolated review data. */
 function vpmNewTabAllowed(tab){
   if(tab==='ospiti')return false;
-  const modules={camere:'prenotazioni',tariffe:'listino',economia:'spese',contratti:'anagrafica',portali:'anagrafica',ospiti:'prenotazioni',shop:'spese'};
+  const modules={codes:'anagrafica',camere:'prenotazioni',tariffe:'listino',economia:'spese',contratti:'anagrafica',portali:'anagrafica',ospiti:'prenotazioni',shop:'spese'};
   return Object.hasOwn(modules,tab)&&(state.view==='proprietari'||modules[tab]==='anagrafica'||haModulo(modules[tab]));
 }
 function vpmRenderNewTab(p,role,tab){
+  if(tab==='codes')return vpmRenderCodesProperty(p,role);
   return ['camere','tariffe','economia'].includes(tab)?window.vpmRoomsRender(p,role,tab):window.vpmServicesRender(p,role,tab);
 }
 const vpmOriginalSpese=renderSpese;
@@ -109,7 +110,7 @@ function vpmRenderPortalHub(){
 const vpmHubSidebar=renderSidebar;
 renderSidebar=function(){
   const count=immobiliVisibili().filter(vpmPortalPending).length;
-  const menu=`${haModulo('prenotazioni')?`<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='bnb-hub'&&!state.selectedId?'active':''}" data-vpm-hub="bnb-hub"><span class="nav-icon"><i class="ti ti-bed"></i></span>B&B e camere <span class="vpm-nav-count">${vpmBnbProperties().length}</span></button>`:''}<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='portali-hub'&&!state.selectedId?'active':''}" data-vpm-hub="portali-hub"><span class="nav-icon"><i class="ti ti-world"></i></span>Richieste Booking/Airbnb ${count?'<span class="nav-badge">'+count+'</span>':''}</button>`;
+  const menu=`<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='codes-hub'&&!state.selectedId?'active':''}" data-vpm-hub="codes-hub"><span class="nav-icon"><i class="ti ti-id"></i></span>CIN e CIR da richiedere <span class="vpm-nav-count">${immobiliVisibili().filter(vpmCodePending).length}</span></button>${haModulo('prenotazioni')?`<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='bnb-hub'&&!state.selectedId?'active':''}" data-vpm-hub="bnb-hub"><span class="nav-icon"><i class="ti ti-bed"></i></span>B&B e camere <span class="vpm-nav-count">${vpmBnbProperties().length}</span></button>`:''}<button type="button" class="nav-item vpm-hub-nav ${state.vistaGestore==='portali-hub'&&!state.selectedId?'active':''}" data-vpm-hub="portali-hub"><span class="nav-icon"><i class="ti ti-world"></i></span>Richieste Booking/Airbnb ${count?'<span class="nav-badge">'+count+'</span>':''}</button>`;
   return vpmHubSidebar().replace('<div class="vpm-sidebar-quick">',menu+'<div class="vpm-sidebar-quick">');
 };
 document.addEventListener('click',event=>{
@@ -117,6 +118,6 @@ document.addEventListener('click',event=>{
   event.preventDefault();event.stopImmediatePropagation();
   if(target.hasAttribute('data-vpm-new-bnb')){if(isAdmin())openModal('property',null,null,{bnb:true});return;}
   if(target.dataset.vpmPortalFilter){if(!['pending','all','active','completed'].includes(target.dataset.vpmPortalFilter))return;vpmPortalHubFilter=target.dataset.vpmPortalFilter;}
-  else{if(!['bnb-hub','portali-hub'].includes(target.dataset.vpmHub)||target.dataset.vpmHub==='bnb-hub'&&!haModulo('prenotazioni'))return;state.vistaGestore=target.dataset.vpmHub;}
+  else{if(!['bnb-hub','portali-hub','codes-hub'].includes(target.dataset.vpmHub)||target.dataset.vpmHub==='bnb-hub'&&!haModulo('prenotazioni'))return;state.vistaGestore=target.dataset.vpmHub;}
   state.selectedId=null;state.selectedClienteId=null;state.modal=null;render();
 },true);

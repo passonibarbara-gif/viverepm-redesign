@@ -1,7 +1,7 @@
 from pathlib import Path
 import re,subprocess,tempfile
 source=Path('index.html').read_text()
-for name in ['vpm-expenses.js','vpm-services.js','vpm-rooms.js','vpm-integration.js']:
+for name in ['vpm-expenses.js','vpm-services.js','vpm-rooms.js','vpm-codes.js','vpm-integration.js']:
     assert Path(name).read_text() in source, f'Rebuild required: {name}'
 for code in re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',source,re.S):
     with tempfile.NamedTemporaryFile(suffix='.js',mode='w') as f:

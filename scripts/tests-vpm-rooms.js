@@ -15,6 +15,21 @@ function harness(){
   return h;
 }
 (async()=>{
+  const finance=harness(),fp=finance.p;
+  fp.prenotazioni=[{id:'fin',nome:'Test',vpmNightAmount:1000,vpmCleaning:100,vpmPortalCommission:150,stato:'confermata'}];
+  const details={bookingId:'fin',received:'950',cleaningCost:'100',withholding:'210',touristTax:'0',deposit:'0',otherCosts:'0',taxStatus:'pending',touristStatus:'not-due',taxReference:'',touristReference:'',notes:'Base ritenuta verificata: 1000'};
+  await finance.submit('settlement',details);
+  assert.equal(finance.ctx.window.vpmSettlement(fp,fp.prenotazioni[0]).residual,390,'portal commission must not be deducted twice, cleaning excluded from fee');
+  assert.equal(finance.ctx.window.vpmSettlement(fp,fp.prenotazioni[0]).compensation,250);
+  const previous=JSON.stringify(fp);
+  await finance.submit('settlement',{...details,taxStatus:'paid'});assert.equal(JSON.stringify(fp),previous,'paid tax requires reference');
+  await finance.submit('settlement',{...details,taxStatus:'external',taxReference:'Booking'});assert.equal(JSON.stringify(fp),previous,'external tax cannot be withheld twice');
+  await finance.submit('settlement-transfer',{bookingId:'fin',transferAmount:'391',transferDate:'2026-11-03',transferReference:'REF'});assert.equal(JSON.stringify(fp),previous,'transfer cannot exceed owner balance');
+  finance.ctx.state.view='proprietari';finance.ctx.state.ownerAuth={email:'owner@example.com'};
+  await finance.submit('settlement',{...details,received:'10000'});assert.equal(JSON.stringify(fp),previous,'owner cannot change settlement');
+  assert(finance.ctx.window.vpmRoomsRender(fp,'proprietario','economia').includes('390'));
+  finance.ctx.state.view='gestore';finance.ctx.saveData=async()=>false;
+  await finance.submit('settlement',{...details,received:'1000'});assert.equal(JSON.stringify(fp),previous,'failed save restores settlement');
   const h=harness(),{ctx,p}=h;
   p.prenotazioni=[{id:'a',unitId:'A',stato:'confermata',checkin:'2026-12-01',checkout:'2026-12-04'}];
   function booking(id,unitId,checkin='2026-12-02',checkout='2026-12-03'){p.prenotazioni.push({id,unitId,checkin,checkout,stato:'richiesta'});}
@@ -26,7 +41,7 @@ function harness(){
   ctx.submitBooking('p',{checkin:'2027-01-01',checkout:'2027-01-02'});assert.equal(h.submitted,0,'guest cannot silently book whole B&B');
   h.permissions.delete('prenotazioni');ctx.updateBookingStatus('p','f','rifiutata');assert.equal(h.confirmed,2,'operator needs booking permission');assert(ctx.window.vpmRoomsRender(p,'gestore','camere').includes('Accesso non consentito'));h.permissions.add('prenotazioni');
   ctx.setPrezzoSettimanale('p','2026-W01',100);assert(!ctx.window.vpmRoomsRender(p,'gestore','tariffe').includes('data-vpm-room-form="rate"'),'manager price view read only');
-  const b={vpmNightAmount:1000,vpmPortalCommission:150,vpmCleaning:50};assert.equal(ctx.window.vpmRoomFee(p,b),null);p.vpmRooms.feeBasis='lordo';assert.equal(ctx.window.vpmRoomFee(p,b),250);p.vpmRooms.feeBasis='netto-portale';assert.equal(ctx.window.vpmRoomFee(p,b),212.5);p.vpmRooms.includeCleaning=true;assert.equal(ctx.window.vpmRoomFee(p,b),225);assert.equal(ctx.window.vpmRoomFee(p,{...b,vpmNightAmount:NaN}),null);
+  const b={vpmNightAmount:1000,vpmPortalCommission:150,vpmCleaning:50};assert.equal(ctx.window.vpmRoomFee(p,b),250);p.vpmRooms.feeBasis='lordo';assert.equal(ctx.window.vpmRoomFee(p,b),250);p.vpmRooms.feeBasis='netto-portale';assert.equal(ctx.window.vpmRoomFee(p,b),250);p.vpmRooms.includeCleaning=true;assert.equal(ctx.window.vpmRoomFee(p,b),250);assert.equal(ctx.window.vpmRoomFee(p,{...b,vpmNightAmount:NaN}),null);
   p.vpmRooms.rates=[{unitId:'',from:'2026-12-01',to:'2026-12-31',price:120,createdAt:'2026-11-02'}];assert.equal(ctx.window.vpmRoomCalculate(p,'','2026-12-01','2026-12-03').amount,240);assert.equal(ctx.calcTotale(p,'2026-12-01','2026-12-03').totale,250);assert.equal(ctx.window.vpmRoomCalculate(p,'','2026-02-30','2026-03-03'),null);
   await h.submit('unit',{name:'Bad',capacity:'Infinity'});assert.equal(h.saved,0);await h.submit('unit',{name:'Bad',capacity:'0'});assert.equal(h.saved,0);
   h.permissions.delete('spese');await h.submit('fee',{basis:'lordo',cleaning:'no'});assert.equal(h.saved,0);assert(ctx.window.vpmRoomsRender(p,'gestore','economia').includes('Accesso non consentito'));h.permissions.add('spese');

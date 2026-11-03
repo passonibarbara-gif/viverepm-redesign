@@ -18,19 +18,19 @@ renderModalRaw=function(){
   const box=document.createElement('div');box.innerHTML=html;
   box.querySelectorAll('[name="prezzoNotte"],[name="percentualeProprietario"]').forEach(el=>{
     const field=el.closest('.field')||el.parentElement;
-    field.innerHTML='<p class="vpm-owner-hint">Le tariffe vengono decise dal proprietario nella sezione Tariffe. Incassi diretti al proprietario, compenso Vivere PM 25% secondo la base concordata.</p>';
+    field.innerHTML='<p class="vpm-owner-hint">Le tariffe vengono decise dal proprietario nella sezione Tariffe. Incassi gestiti da Vivere PM per conto del proprietario. Compenso del 25% sul soggiorno lordo, pulizie separate escluse.</p>';
   });
   return box.innerHTML;
 };
 // Clarify payer/recipient in legacy booking labels and reporting.
 const vpmLegacyBookings=renderPrenotazioni;
-renderPrenotazioni=function(p){return vpmLegacyBookings(p).replaceAll('Segna pagamento ricevuto','Registra incasso ricevuto dal proprietario').replaceAll('✓ pagamento ricevuto','✓ incasso del proprietario registrato');};
+renderPrenotazioni=function(p){return vpmLegacyBookings(p).replaceAll('Segna pagamento ricevuto','Registra incasso ricevuto da Vivere PM').replaceAll('✓ pagamento ricevuto','✓ incasso Vivere PM registrato');};
 const vpmLegacyFinance=renderContabilitaPortfolio;
 renderContabilitaPortfolio=function(){return '<div class="vpm-owner-empty" style="margin:16px">Movimenti degli immobili dei proprietari. Per compensi e fatture Vivere PM, apri la sezione Incassi e compensi del singolo immobile.</div>'+vpmLegacyFinance();};
 // Old agency payout PDFs are replaced with an explicit reservation and fee report.
 scaricaReport=function(p){
   const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const rows=[['Immobile','Prenotazione','Arrivo','Partenza','Totale prenotazione EUR','Incasso proprietario','Compenso Vivere PM 25% EUR'],...(p.prenotazioni||[]).map(b=>[p.nome,b.nome,b.checkin,b.checkout,b.totale||0,b.vpmOwnerReceived?'Confermato':'Da confermare',window.vpmRoomFee(p,b)??'Base o dati da definire'])];
+  const rows=[['Immobile','Prenotazione','Arrivo','Partenza','Totale prenotazione EUR','Incasso Vivere PM EUR','Compenso EUR','Ritenuta EUR','Imposta soggiorno EUR','Saldo previsto EUR','Bonifico eseguito EUR','Residuo EUR'],...(p.prenotazioni||[]).map(b=>{const v=b.vpmSettlement,r=window.vpmSettlement(p,b);return [p.nome,b.nome,b.checkin,b.checkout,b.totale||0,v?.received??'',r?.compensation??window.vpmRoomFee(p,b)??'',v?.withholding??'',v?.touristTax??'',r?.residual??'',v?.transferAmount??'',r?.remaining??''];})];
   const url=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.map(quote).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}));
   const link=document.createElement('a');link.href=url;link.download='viverepm-riepilogo.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };

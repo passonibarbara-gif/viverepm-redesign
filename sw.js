@@ -1,4 +1,4 @@
-const CACHE_NAME = 'viverepm-redesign-v20261103-contract-rooms';
+const CACHE_NAME = 'viverepm-redesign-v20261103-sidebar-font';
 const CORE_ASSETS = [
   './index.html',
   './vpm-workflows.css',

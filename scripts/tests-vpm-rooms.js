@@ -34,6 +34,21 @@ function harness(){
   ctx.state.ownerAuth.email='wrong@example.com';await h.submit('rate',{unitId:'A',from:'2027-01-01',to:'2027-01-05',price:'200'});assert.equal(h.saved,1,'owner cannot mutate another owner property');
   ctx.state.view='gestore';ctx.state.error='Database offline';const before=h.rendered;await h.submit('unit',{name:'Test',capacity:'2'});assert.equal(h.rendered,before,'failed persisted state does not proceed with success render');
   p.vpmRooms.units[0].name='<script>alert(1)</script>';assert(!ctx.window.vpmRoomsRender(p,'gestore','camere').includes('<script>'),'room labels are escaped');
+  // Room creation survives serialization and a fresh application load, including partial legacy config.
+  for(const legacy of [undefined,{}, {units:{bad:true},rates:'invalid',feeBasis:'lordo'}, {units:[null,{id:'keep',name:'Esistente',capacity:2}],rates:[null]}]){
+    const rooms=harness();rooms.p.vpmRooms=legacy;
+    assert.doesNotThrow(()=>rooms.ctx.window.vpmRoomsRender(rooms.p,'gestore','camere'));
+    let stored;
+    rooms.ctx.saveData=async()=>{stored=JSON.stringify(rooms.p);return true;};
+    await rooms.submit('unit',{name:'Camera Nuova',capacity:'3'});
+    assert(stored,'room persisted');assert.equal(rooms.rendered,1);
+    assert(rooms.ctx.window.vpmRoomsRender(rooms.p,'gestore','camere').includes('Camera aggiunta e salvata'));
+    const fresh=harness();Object.assign(fresh.p,JSON.parse(stored));
+    const html=fresh.ctx.window.vpmRoomsRender(fresh.p,'gestore','camere');
+    assert(html.includes('Camera Nuova'));assert(html.includes('Capienza: 3 ospiti'));assert(Array.isArray(fresh.p.vpmRooms.rates));
+    if(legacy?.units?.some?.(u=>u?.id==='keep'))assert(html.includes('Esistente'),'valid existing rooms retained');
+  }
+  const denied=harness();denied.permissions.delete('prenotazioni');await denied.submit('unit',{name:'Denied',capacity:'2'});assert.equal(denied.saved,0);assert(denied.alerts.some(m=>m.includes('permessi')),'denied save explains required permission');
   // Failed persistence must restore every module-owned field and retain the form for retry.
   for(const failure of ['false','state-error','throw']){
     const tx=harness(),before=JSON.stringify(tx.p),form=tx.makeForm('unit',{name:'Retry camera',capacity:'2'});

@@ -13,6 +13,7 @@
   const validNumber=v=>v!==null&&String(v).trim()!==''&&Number.isFinite(Number(v))&&Number(v)>=0;
   const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')&&!Number.isNaN(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
   const pendingProperties=new Set();
+  const roomFeedback=new Map();
   const transactionKeys=['vpmRooms','prenotazioni','notifiche'];
   function snapshot(p){return Object.fromEntries(transactionKeys.map(key=>[key,{exists:Object.prototype.hasOwnProperty.call(p,key),value:p[key]===undefined?undefined:JSON.parse(JSON.stringify(p[key]))}]));}
   function restore(p,before){transactionKeys.forEach(key=>{if(before[key].exists)p[key]=before[key].value;else delete p[key];});}
@@ -33,7 +34,10 @@
       if(changed!==true){restore(p,before);return false;}
       const result=await saveData({renderOnError:false});
       if(result===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
-      render();return true;
+      if(target?.dataset?.vpmRoomForm==='unit')roomFeedback.set(p.id,'Camera aggiunta e salvata. Puoi gestirla nell’elenco qui sotto.');
+      render();
+      if(target?.dataset?.vpmRoomForm==='unit'&&typeof document.querySelector==='function'){const list=document.querySelector('[data-vpm-room-list="'+String(p.id).replace(/["\\]/g,'')+'"]');if(list&&typeof list.scrollIntoView==='function')list.scrollIntoView({behavior:'smooth',block:'nearest'});}
+      return true;
     }catch(err){
       restore(p,before);showSaveError(target,err?.message||'Salvataggio non riuscito. Riprova.');return false;
     }finally{
@@ -42,9 +46,12 @@
     }
   }
   function notify(p,text,recipient,tab){if(typeof addNotifica==='function')addNotifica(p,text,recipient,tab);}
-  const cfg=p=>p.vpmRooms||{units:[],rates:[],feeBasis:'',includeCleaning:false};
-  function mutable(p){if(!p.vpmRooms)p.vpmRooms={units:[],rates:[],feeBasis:'',includeCleaning:false};return p.vpmRooms;}
-  const units=p=>cfg(p).units||[];
+  function cfg(p){
+    const raw=p.vpmRooms&&typeof p.vpmRooms==='object'&&!Array.isArray(p.vpmRooms)?p.vpmRooms:{};
+    return {...raw,units:Array.isArray(raw.units)?raw.units.filter(u=>u&&typeof u==='object'&&u.id):[],rates:Array.isArray(raw.rates)?raw.rates.filter(r=>r&&typeof r==='object'):[],feeBasis:raw.feeBasis||'',includeCleaning:raw.includeCleaning===true};
+  }
+  function mutable(p){p.vpmRooms=cfg(p);return p.vpmRooms;}
+  const units=p=>cfg(p).units;
   const active=b=>!['rifiutata','annullata','cancellata'].includes(b.stato);
   const overlap=(a,b)=>a.checkin<b.checkout&&a.checkout>b.checkin;
   function conflicts(p,b,unitId,ignore){
@@ -88,7 +95,7 @@
   window.vpmRoomsRender=function(p,role,tab){
     if(!allowed(p,false,moduleFor(tab)))return '<p class="vpm-owner-empty">Accesso non consentito a questa sezione.</p>';
     const edit=role==='gestore'&&manager();const editRate=role!=='gestore'&&allowed(p,true);const c=cfg(p);
-    if(tab==='camere')return `<div class="vpm-owner-section-intro"><div><strong>Struttura e camere</strong><small>Disponibilità, ospiti e prenotazioni distinti per camera. Una prenotazione dell'intera struttura occupa tutte le camere.</small></div></div>${edit?form(p,'unit',field('Nome camera','name','text','','required maxlength="100"')+field('Ospiti massimi','capacity','number',2,'min="1" max="100" required')):''}<div>${units(p).map(u=>`<article class="vpm-owner-form"><h3>${esc(u.name)}</h3><p>Capienza: ${esc(u.capacity)} ospiti · Prezzo base: ${money(u.basePrice)} / notte</p>${edit?`<button class="icon-btn" data-vpm-room-delete="${esc(u.id)}" data-property="${esc(p.id)}">Rimuovi camera</button>`:''}${renderCalendar((p.prenotazioni||[]).filter(b=>!b.unitId||b.unitId===u.id),state.calendarOffset||0)}</article>`).join('')||'<p class="vpm-owner-empty">Nessuna camera inserita. L’immobile viene gestito come unità intera.</p>'}</div><h3>Prenotazioni per unità</h3>${edit?form(p,'booking',field('Nome referente','name','text','','required')+selectUnit(p)+field('Arrivo','checkin','date','','required')+field('Partenza','checkout','date','','required')+field('Numero ospiti','guests','number',1,'min="1" required')+field('Importo soggiorno confermato dal proprietario','amount','number','','min="0" step="0.01" required')+'<p>Registra una prenotazione già ricevuta dal proprietario o dai suoi portali. Gli incassi spettano al proprietario.</p>'):''}${(p.prenotazioni||[]).map(b=>`<article class="vpm-owner-block"><div><strong>${esc(b.nome)}</strong><small>${esc(units(p).find(u=>u.id===b.unitId)?.name||'Intera struttura')} · ${esc(b.checkin)} / ${esc(b.checkout)} · ${esc(b.stato)}</small></div>${edit?`<form data-vpm-room-form="assign" data-property="${esc(p.id)}"><input type="hidden" name="bookingId" value="${esc(b.id)}">${selectUnit(p,b.unitId||'')}<button class="icon-btn" type="submit">Assegna unità</button></form>`:''}</article>`).join('')}`;
+    if(tab==='camere')return `<div class="vpm-owner-section-intro"><div><strong>Struttura e camere</strong><small>Disponibilità, ospiti e prenotazioni distinti per camera. Una prenotazione dell'intera struttura occupa tutte le camere.</small></div></div>${roomFeedback.has(p.id)?`<p class="vpm-owner-hint" role="status">${esc(roomFeedback.get(p.id))}</p>`:''}${edit?form(p,'unit',field('Nome camera','name','text','','required maxlength="100"')+field('Ospiti massimi','capacity','number',2,'min="1" max="100" required')):''}<div data-vpm-room-list="${esc(p.id)}">${units(p).map(u=>`<article class="vpm-owner-form"><h3>${esc(u.name)}</h3><p>Capienza: ${esc(u.capacity)} ospiti · Prezzo base: ${money(u.basePrice)} / notte</p>${edit?`<button class="icon-btn" data-vpm-room-delete="${esc(u.id)}" data-property="${esc(p.id)}">Rimuovi camera</button>`:''}${renderCalendar((p.prenotazioni||[]).filter(b=>!b.unitId||b.unitId===u.id),state.calendarOffset||0)}</article>`).join('')||'<p class="vpm-owner-empty">Nessuna camera inserita. L’immobile viene gestito come unità intera.</p>'}</div><h3>Prenotazioni per unità</h3>${edit?form(p,'booking',field('Nome referente','name','text','','required')+selectUnit(p)+field('Arrivo','checkin','date','','required')+field('Partenza','checkout','date','','required')+field('Numero ospiti','guests','number',1,'min="1" required')+field('Importo soggiorno confermato dal proprietario','amount','number','','min="0" step="0.01" required')+'<p>Registra una prenotazione già ricevuta dal proprietario o dai suoi portali. Gli incassi spettano al proprietario.</p>'):''}${(p.prenotazioni||[]).map(b=>`<article class="vpm-owner-block"><div><strong>${esc(b.nome)}</strong><small>${esc(units(p).find(u=>u.id===b.unitId)?.name||'Intera struttura')} · ${esc(b.checkin)} / ${esc(b.checkout)} · ${esc(b.stato)}</small></div>${edit?`<form data-vpm-room-form="assign" data-property="${esc(p.id)}"><input type="hidden" name="bookingId" value="${esc(b.id)}">${selectUnit(p,b.unitId||'')}<button class="icon-btn" type="submit">Assegna unità</button></form>`:''}</article>`).join('')}`;
     if(tab==='tariffe')return `<div class="vpm-owner-section-intro"><div><strong>Tariffe del proprietario</strong><small>Il proprietario decide i prezzi. Le modifiche non cambiano le prenotazioni già registrate e richiedono aggiornamento sui portali.</small></div></div>${editRate?form(p,'rate',selectUnit(p)+field('Valida dal','from','date','','required')+field('Valida fino al','to','date','','required')+field('Prezzo a notte','price','number','','min="0" step="0.01" required')):'<p class="vpm-owner-hint">Il gestore consulta le tariffe e conferma quando le ha riportate sui portali.</p>'}<p>Prezzo base dell’intero immobile: ${money(p.prezzoNotte)} / notte. Senza tariffa configurata il prezzo è zero.</p>${(c.rates||[]).slice().reverse().map(r=>`<article class="vpm-owner-block"><div><strong>${esc(units(p).find(u=>u.id===r.unitId)?.name||'Intero immobile')} · ${money(r.price)} / notte</strong><small>${esc(r.from)} / ${esc(r.to)} · ${r.portalUpdated?'Aggiornamento sui portali confermato dal gestore':'Da aggiornare sui portali'}</small></div>${edit&&!r.portalUpdated?`<button class="icon-btn" data-vpm-rate-published="${esc(r.id)}" data-property="${esc(p.id)}">Conferma aggiornamento portali</button>`:''}</article>`).join('')||'<p class="vpm-owner-empty">Nessuna tariffa per periodo inserita.</p>'}`;
     if(tab==='economia'){
       const bookings=(p.prenotazioni||[]).filter(active);const fees=bookings.map(b=>fee(p,b));const total=bookings.reduce((s,b)=>s+Number(b.totale||0),0);
@@ -97,8 +104,8 @@
   };
   document.addEventListener('submit',async e=>{
     const f=e.target.closest('[data-vpm-room-form]');if(!f)return;e.preventDefault();e.stopImmediatePropagation();
-    const p=state.properties.find(p=>p.id===f.dataset.property);if(!p||!allowed(p))return;
-    const kind=f.dataset.vpmRoomForm;if(!allowed(p,false,moduleFor(kind)))return;
+    const p=state.properties.find(p=>p.id===f.dataset.property);if(!p){showSaveError(f,'Immobile non disponibile. Riapri la scheda e riprova.');return;}
+    const kind=f.dataset.vpmRoomForm;if(!allowed(p,false,moduleFor(kind))||(kind==='unit'&&!manager())){showSaveError(f,'Non hai i permessi per questa operazione. Accedi come gestore con accesso alle prenotazioni di questo immobile.');return;}
     await mutate(p,f,async()=>{
       const d=new FormData(f),c=mutable(p);
       const numericFields={rate:['price'],unit:['capacity'],booking:['guests','amount'],'booking-finance':['night','cleaning','portal','refund'],invoice:['net','vat']}[kind]||[];

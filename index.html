@@ -2003,7 +2003,7 @@ function notificheNonLette(props, ruolo){
 }
 
 const CATEGORIE_SPESA = ['Tasse (IMU/TARI)','Condominio','Manutenzione','Assicurazione','Utenze','Altro'];
-const TIPI_IMMOBILE = ['Appartamento','Villa','B&B','Affittacamere','Box/Garage','Negozio','Ufficio','Terreno'];
+const TIPI_IMMOBILE = ['Appartamento','Villa','B&B','Affittacamere'];
 const AMENITA_COMUNI = [
   'Wi-Fi gratuito','Aria condizionata','Riscaldamento','Parcheggio privato','Piscina','Vista mare',
   'Cucina attrezzata','Lavatrice','Balcone o terrazza','Ascensore','TV','Culla disponibile'
@@ -4135,7 +4135,7 @@ function renderClienteCRM(c){
         </div>
         <aside class="vpm-client-aside">
           <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>ANAGRAFICA</span><h2>Contatti e dati</h2></div></div><dl class="vpm-client-contact"><dt><i class="ti ti-phone"></i> Telefono</dt><dd>${safe(c.telefono||'Non inserito')}</dd><dt><i class="ti ti-mail"></i> Email</dt><dd>${c.email?`<a href="mailto:${safe(c.email)}">${safe(c.email)}</a>`:'Non inserita'}</dd><dt><i class="ti ti-map-pin"></i> Indirizzo</dt><dd>${safe(c.indirizzo||'Non inserito')}</dd></dl></section>
-          <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>ARCHIVIO</span><h2>Documenti del cliente</h2></div></div>${c.documenti&&c.documenti.length?renderPhotoGallery(c.documenti):'<p class="vpm-client-empty">Nessun documento caricato.</p>'}</section>
+          <section class="vpm-client-panel"><div class="vpm-client-panel-title"><div><span>ARCHIVIO</span><h2>Documenti del cliente</h2></div></div>${vpmIdentityArchive(c)}${c.documenti&&c.documenti.length?renderPhotoGallery(c.documenti):c.identityDocument?'':'<p class="vpm-client-empty">Nessun documento caricato.</p>'}</section>
         </aside>
       </div>
     </div>`;
@@ -5352,6 +5352,66 @@ function renderVpmGuestHeader(){
   </header>`;
 }
 
+// Identity documents are staged in the open form until persistence succeeds.
+function vpmIdentityEscape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function vpmIdentityFile(file,label){
+  if(!file?.url||!/^data:(image\/(jpeg|png|webp)|application\/pdf);base64,/.test(file.url))return '';
+  const e=vpmIdentityEscape;
+  return `<div><strong>${e(label)}</strong><p>${e(file.name||label)}</p>${file.url.startsWith('data:image/')?`<img src="${e(file.url)}" alt="${e(label)}" style="max-width:160px;max-height:110px;object-fit:contain">`:''}<p><a class="icon-btn" href="${e(file.url)}" download="${e(file.name||label)}">Apri / scarica</a></p></div>`;
+}
+function vpmIdentityArchive(c){
+  const d=c.identityDocument;if(!d)return '';
+  return `<div class="vpm-owner-form"><h3>${vpmIdentityEscape(d.type==='passport'?'Passaporto':d.type==='licence'?'Patente':'Carta d’identità')}</h3><div class="field-row">${vpmIdentityFile(d.front,d.type==='passport'?'Pagina dati del passaporto':'Fronte')}${d.type!=='passport'?vpmIdentityFile(d.back,'Retro'):''}</div><p>Documento salvato nella scheda cliente.</p></div>`;
+}
+function vpmIdentitySlots(d){
+  return ['front',...(d.type==='passport'?[]:['back'])].map(side=>{const label=side==='back'?'Retro':d.type==='passport'?'Pagina dati del passaporto':'Fronte';return `<div class="field"><label for="identity-${side}">${label}</label><input id="identity-${side}" type="file" name="identity-${side}" data-identity-side="${side}" accept="image/jpeg,image/png,image/webp,application/pdf"><div data-identity-status="${side}" role="status" aria-live="polite">${d[side]?'File già salvato. Seleziona un file solo per sostituirlo.':'Nessun file selezionato.'}</div><div data-identity-preview="${side}">${vpmIdentityFile(d[side],label)}</div></div>`;}).join('');
+}
+function vpmIdentityEditor(c){
+  const d=c.identityDocument||{type:'idcard'};
+  return `<div class="vpm-client-doc-heading"><span>DOCUMENTI E IDENTITÀ</span></div><div class="field"><label for="identity-type">Tipo documento (caricamento facoltativo)</label><select id="identity-type" name="identityType">${[['idcard','Carta d’identità'],['licence','Patente'],['passport','Passaporto']].map(([v,l])=>`<option value="${v}" ${d.type===v?'selected':''}>${l}</option>`).join('')}</select></div><p data-identity-guidance>${d.type==='passport'?'Carica una sola pagina: quella con foto e dati personali.':'Carica due file distinti: fronte e retro.'} JPG, PNG, WEBP o PDF, massimo 5 MB per file.</p><div class="field-row" data-identity-slots>${vpmIdentitySlots(d)}</div><p data-identity-overall role="status" aria-live="polite">${c.identityDocument?'Documento salvato.':'Nessun nuovo documento salvato.'} I nuovi file vengono salvati solo premendo “Salva proprietario”.</p>`;
+}
+function vpmValidateIdentity(d){
+  if(d.pending)throw Error('Attendi la preparazione dei file prima di salvare.');
+  if(d.errors&&Object.values(d.errors).some(Boolean))throw Error('Correggi i file segnalati prima di salvare.');
+  if(!['idcard','licence','passport'].includes(d.type))throw Error('Seleziona un tipo documento valido.');
+  const has=d.front||d.back;
+  if(has&&(!d.front||(d.type!=='passport'&&!d.back)))throw Error(d.type==='passport'?'Carica la pagina dati del passaporto.':'Carica sia il fronte sia il retro del documento.');
+  if(!has)return null;
+  return {type:d.type,front:d.front,back:d.type==='passport'?null:d.back};
+}
+function vpmBindIdentity(form,client){
+  const d=JSON.parse(JSON.stringify(client.identityDocument||{type:'idcard'}));d.pending=0;d.errors={};form.vpmIdentityDraft=d;
+  const overall=form.querySelector('[data-identity-overall]');
+  const type=form.querySelector('[name=identityType]');
+  type.addEventListener('change',()=>{
+    if(d.pending)return;
+    d.type=type.value;d.front=null;d.back=null;d.errors={};
+    form.querySelector('[data-identity-slots]').innerHTML=vpmIdentitySlots(d);
+    form.querySelector('[data-identity-guidance]').textContent=d.type==='passport'?'Carica una sola pagina: quella con foto e dati personali. JPG, PNG, WEBP o PDF, massimo 5 MB.':'Carica due file distinti: fronte e retro. JPG, PNG, WEBP o PDF, massimo 5 MB per file.';
+    overall.textContent='Tipo modificato. I documenti precedenti restano salvati fino al salvataggio della scheda. Carica il nuovo documento completo.';
+  });
+  form.addEventListener('change',async event=>{
+    const input=event.target;if(!input.dataset?.identitySide)return;
+    const side=input.dataset.identitySide,file=input.files?.[0];if(!file)return;
+    const status=form.querySelector('[data-identity-status="'+side+'"]'),preview=form.querySelector('[data-identity-preview="'+side+'"]');
+    d.pending++;d.errors[side]=null;input.disabled=true;type.disabled=true;form.setAttribute('aria-busy','true');
+    status.textContent='Preparazione del file: '+file.name+'…';overall.textContent='Caricamento in corso. Attendi prima di salvare.';
+    form.querySelectorAll('[type=submit]').forEach(b=>b.disabled=true);
+    try{
+      if(file.size>5*1024*1024||file.size===0)throw Error('Scegli un file non vuoto, massimo 5 MB.');
+      if(!['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type))throw Error('Formato non supportato. Usa JPG, PNG, WEBP o PDF.');
+      const url=await readFileAsDataUrl(file);d[side]={name:file.name,url};
+      preview.innerHTML=vpmIdentityFile(d[side],side==='back'?'Retro':d.type==='passport'?'Pagina dati del passaporto':'Fronte');
+      status.textContent='File acquisito: '+file.name+'. Da salvare.';
+    }catch(error){d.errors[side]=error.message||'Impossibile leggere il file. Riprova.';status.textContent=d.errors[side];}
+    finally{
+      d.pending--;input.disabled=false;type.disabled=!!d.pending;form.setAttribute('aria-busy',String(!!d.pending));
+      form.querySelectorAll('[type=submit]').forEach(b=>b.disabled=!!d.pending||form.dataset.saving==='true');
+      if(!d.pending){try{const complete=vpmValidateIdentity(d);overall.textContent=complete?'Documento completo e pronto. Premi “Salva proprietario” per confermare il caricamento.':'Nessun documento selezionato.';}catch(error){overall.textContent=error.message;}}
+    }
+  });
+}
+
 // ---------- Modali ----------
 function renderModalRaw(){
   if(!state.modal) return '';
@@ -5368,7 +5428,7 @@ function renderModalRaw(){
           <div class="field"><label><i class="ti ti-mail"></i> Email</label><input type="email" name="email" required value="${c.email||''}" placeholder="nome@esempio.it"></div>
           <div class="field"><label><i class="ti ti-map-pin"></i> Indirizzo di residenza (facoltativo)</label><input name="indirizzo" value="${c.indirizzo||''}" placeholder="Via, città"></div>
           </div><p class="vpm-client-email-note"><i class="ti ti-mail-check"></i> Il proprietario userà questa email per creare autonomamente il suo accesso dall’Area Proprietari.</p>
-          <div class="vpm-client-doc-heading"><span class="vpm-client-doc-heading-icon"><i class="ti ti-id"></i></span><span>DOCUMENTI E IDENTITÀ</span></div><div class="field vpm-client-document"><label><i class="ti ti-id"></i> Documento d’identità (facoltativo)</label><div class="vpm-client-file"><i class="ti ti-cloud-upload"></i><div><strong>Carica un documento</strong><small>Foto o immagini del documento</small></div><span class="vpm-client-file-art" aria-hidden="true"><i class="ti ti-photo"></i><i class="ti ti-paperclip"></i></span><input type="file" name="documenti" accept="image/*" multiple></div></div>
+          ${vpmIdentityEditor(c)}
           ${(c.documenti && c.documenti.length) ? `<div class="photo-strip" style="margin-bottom:14px;">${c.documenti.map((f,i)=>`
             <span class="photo-thumb-wrap">
               <img class="photo-thumb" src="${f}">
@@ -7013,12 +7073,15 @@ function attachHandlers(){
   });
 
   const clienteForm = document.getElementById('clienteForm');
+  if(clienteForm?.querySelector('[name=identityType]'))vpmBindIdentity(clienteForm,state.modal.editing||{});
   if(clienteForm) clienteForm.addEventListener('submit', async ev=>{
     ev.preventDefault();if(clienteForm.dataset.saving==='true')return;
     const previousClienti=JSON.parse(JSON.stringify(state.clienti));
     const modalAtStart=state.modal;
     coreFormBusy(clienteForm,true);
     try{
+      const identityDocument=clienteForm.vpmIdentityDraft?vpmValidateIdentity(clienteForm.vpmIdentityDraft):modalAtStart.editing?.identityDocument;
+      if(modalAtStart.editing?.identityDocument&&clienteForm.vpmIdentityDraft&&!identityDocument)throw Error('Carica il nuovo documento completo prima di sostituire quello salvato.');
       const fd = new FormData(clienteForm);
       const existingDocumenti = (modalAtStart.editing && modalAtStart.editing.documenti) || [];
       const fileInput = clienteForm.querySelector('input[name=documenti]');
@@ -7030,8 +7093,10 @@ function attachHandlers(){
       const cliente = saveCliente({
         nome: fd.get('nome'), telefono: fd.get('telefono'),
         email: fd.get('email')||'', indirizzo: fd.get('indirizzo')||'',
-        documenti: existingDocumenti.concat(nuoviDocumenti)
+        documenti: existingDocumenti.concat(nuoviDocumenti),
+        ...(identityDocument?{identityDocument}:{})
       }, editingId);
+      const status=clienteForm.querySelector('[data-identity-overall]');if(status)status.textContent='Salvataggio della scheda e dei documenti in corso…';
       const saved=await saveData({renderOnError:false});
       if(saved===false||state.error)throw Error(state.error||'Salvataggio non riuscito. Riprova.');
       if(state.modal===modalAtStart){state.selectedClienteId = cliente.id;state.selectedId = null;closeModal();}render();

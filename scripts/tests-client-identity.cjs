@@ -20,7 +20,7 @@ assert.equal(ctx.vpmIdentityFile({url:'javascript:alert(1)'},'Bad'),'');
 assert(!ctx.vpmIdentityFile({...front,name:'<script>alert(1)</script>'},'Fronte').includes('<script>'));
 // Upload feedback, unsaved staging, failed read and retained saved data.
 (async()=>{
- const elements={};for(const key of ['[data-identity-overall]','[name=identityType]','[data-identity-slots]','[data-identity-guidance]','[data-identity-status="front"]','[data-identity-preview="front"]'])elements[key]={textContent:'',innerHTML:'',addEventListener(type,fn){this[type]=fn;}};
+ const elements={};for(const key of ['[data-identity-overall]','[name=identityType]','[data-identity-slots]','[data-identity-guidance]','[data-identity-status="front"]','[data-identity-preview="front"]'])elements[key]={textContent:'',innerHTML:'',style:{},addEventListener(type,fn){this[type]=fn;}};
  const submit={disabled:false},handlers={},saved={identityDocument:{type:'passport',front}};
  const form={dataset:{},querySelector:k=>elements[k],querySelectorAll:()=>[submit],setAttribute(){},addEventListener:(type,fn)=>handlers[type]=fn};
  let resolveRead;ctx.readFileAsDataUrl=()=>new Promise(resolve=>resolveRead=resolve);
